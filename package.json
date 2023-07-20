@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-env": "npx vercel env pull .env.development.local"
   },
   "dependencies": {
     "@types/node": "20.4.2",
