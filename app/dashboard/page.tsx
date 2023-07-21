@@ -11,7 +11,7 @@ export default function Page() {
 
   return (
     <>
-      <h1 className="text-4xl uppercase tracking-wide">A page</h1>
+      <h1 className="text-4xl uppercase tracking-tighter">My<span className="text-gray-400">dashboard</span></h1>
       <p>Hi {data.user.name}!</p>
       <button onClick={() => signOut()}>Sign out</button>
     </>

@@ -9,6 +9,9 @@ const authOptions = {
     })
   ],
   secret: process.env.AUTH_SECRET as string,
+  pages: {
+    signIn: '/login'
+  }
 };
 
 const handler = NextAuth(authOptions);

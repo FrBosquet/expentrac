@@ -1,10 +1,11 @@
 import { Provider } from '@components/Provider'
 import type { Metadata } from 'next'
 import { Session } from 'next-auth'
-import { Inter } from 'next/font/google'
+import { Inter, Oswald } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const oswald = Oswald({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'LookBook',
@@ -19,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={oswald.className}>
         <Provider >
           {children}
         </Provider>
