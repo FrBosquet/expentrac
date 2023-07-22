@@ -10,10 +10,10 @@ export default function Page() {
   if (!data || !data.user) return null
 
   return (
-    <>
+    <main className="p-12 flex flex-col gap-4">
       <h1 className="text-4xl uppercase tracking-tighter">My<span className="text-gray-400">dashboard</span></h1>
       <p>Hi {data.user.name}!</p>
-      <button onClick={() => signOut()}>Sign out</button>
-    </>
+      <button className="inline-block" onClick={() => signOut()}>Sign out</button>
+    </main>
   )
 }
