@@ -7,6 +7,18 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: '#6985C0',
+        secondary: '#FFD37E',
+        gradient: {
+          start: '#799AE3',
+          end: '#EDE2D3',
+        }
+      },
+      fontFamily: {
+        sans: ['__Oswald_2880cd', '__Oswald_Fallback_2880cd'],
+        logo: ['__montserrat_d57222', '__montserrat_Fallback_d57222'],
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
