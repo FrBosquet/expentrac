@@ -11,3 +11,9 @@ export const hasUser = (data: Session | null): data is SessionWithUser => {
 
   return true
 }
+
+export const getUser = (data: Session | null): User => {
+  if (!hasUser(data)) return {} as User
+
+  return data.user
+}

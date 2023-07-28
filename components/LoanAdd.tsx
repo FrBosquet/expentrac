@@ -1,7 +1,6 @@
 'use client'
 
 import { getUrl } from "@lib/api"
-import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
 import { buttonClassnames } from "./Button"
@@ -10,7 +9,6 @@ import { Close, Modal } from "./Modal"
 
 export const LoanAdd = () => {
   const router = useRouter()
-  const session = useSession()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -18,7 +16,7 @@ export const LoanAdd = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl(`/loan?userId=${session.data?.user.id}`), {
+    const result = await fetch(getUrl(`/loan`), {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
     })
