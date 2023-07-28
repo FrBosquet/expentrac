@@ -1,10 +1,10 @@
 'use client'
 
-import { Button } from "@components/Button";
-import { AiOutlineGoogle } from "@components/Icons";
-import { Logo } from "@components/Logo";
-import { signIn, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { Button } from "@components/Button"
+import { AiOutlineGoogle } from "@components/Icons"
+import { Logo } from "@components/Logo"
+import { signIn, useSession } from "next-auth/react"
+import { redirect } from "next/navigation"
 
 export default function Home() {
   const { data: session } = useSession()

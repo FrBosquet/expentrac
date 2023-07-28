@@ -1,7 +1,7 @@
 'use client'
 
-import * as Dialog from '@radix-ui/react-dialog';
-import { RxCross2 } from "react-icons/rx";
+import * as Dialog from '@radix-ui/react-dialog'
+import { RxCross2 } from "react-icons/rx"
 
 export const Close = Dialog.Close
 
@@ -37,4 +37,4 @@ export const Modal = ({ trigger, children, title, description, open, onOpenChang
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>
-);
+)

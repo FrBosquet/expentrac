@@ -1,4 +1,5 @@
 import { LoanAdd } from "@components/LoanAdd"
+import { LoanRow } from "@components/LoanRow"
 import { getUrl } from "@lib/api"
 import { getUser } from "@lib/session"
 import { Loan } from "@prisma/client"
@@ -22,11 +23,14 @@ export default async function Page() {
   const loans = await getUserLoans(user.id as string)
 
   return (
-    <section className="flex-1 bg-white p-2">
+    <section className="flex-1 bg-white w-screen max-w-3xl p-12 mx-auto">
+      <h1 className="text-4xl uppercase p-2">My<span className="text-gray-700">dashboard</span></h1>
       <LoanAdd />
-      <h1 className="text-4xl uppercase">My<span className="text-gray-700">dashboard</span></h1>
-      <h3>Your loans</h3>
-      {loans.map(loan => <div key={loan.id}>{loan.name}</div>)}
+      <h3 className="p-2 text-xl text-primary">Your loans:</h3>
+      <ul className="flex flex-col gap-2 py-2">
+        {loans.map(loan => <LoanRow key={loan.id} loan={loan} />)}
+
+      </ul>
     </section>
   )
 }

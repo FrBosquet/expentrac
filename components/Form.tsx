@@ -1,6 +1,6 @@
-import * as Form from '@radix-ui/react-form';
-import { FormEventHandler } from 'react';
-import { buttonClassnames } from './Button';
+import * as Form from '@radix-ui/react-form'
+import { FormEventHandler } from 'react'
+import { buttonClassnames } from './Button'
 
 type Props = {
   children: React.ReactNode
@@ -36,7 +36,7 @@ export const TextField = ({ name, label = name }: FieldProps) => {
     <FormLabel label={label} />
     <FormInput name={name} type="text" />
   </Form.Field>
-};
+}
 
 export const NumberField = ({ name, label = name }: FieldProps) => {
   return <Form.Field className="FormField" name={name}>
@@ -45,14 +45,14 @@ export const NumberField = ({ name, label = name }: FieldProps) => {
       <input className="w-full border-b border-primary p-2" type="number" step="0.1" min="0.1" required />
     </Form.Control>
   </Form.Field>
-};
+}
 
 export const DateField = ({ name, label = name }: FieldProps) => {
   return <Form.Field className="FormField" name={name}>
     <FormLabel label={label} />
     <FormInput name={name} type="date" />
   </Form.Field>
-};
+}
 
 type SubmitProps = {
   children: React.ReactNode
