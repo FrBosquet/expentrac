@@ -3,6 +3,8 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { RxCross2 } from "react-icons/rx";
 
+export const Close = Dialog.Close
+
 type Props = {
   trigger: React.ReactNode
   children: React.ReactNode
@@ -20,11 +22,13 @@ export const Modal = ({ trigger, children, title, description, open, onOpenChang
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-gray-100/50" />
       <Dialog.Content className="bg-white fixed shadow-md p-2 rounded-sm left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
-        <Dialog.Title className="uppercase text-2xl flex justify-between">
-          <h2>{title}</h2>
-          <Dialog.Close asChild>
-            <button><RxCross2 /></button>
-          </Dialog.Close>
+        <Dialog.Title asChild >
+          <div className="uppercase text-2xl flex justify-between">
+            <h2>{title}</h2>
+            <Dialog.Close asChild>
+              <button><RxCross2 /></button>
+            </Dialog.Close>
+          </div>
         </Dialog.Title>
         <Dialog.Description className="DialogDescription">
           {description}

@@ -5,6 +5,7 @@ import { Oswald } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
 
+
 const montserrat = localFont({
   src: [
     { path: '../public/fonts/MontserratAlt1-SemiBold.woff2', weight: '500', style: 'normal' },
@@ -16,6 +17,7 @@ const oswald = Oswald({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Expentrac',
   description: 'Track your recurrent expenses.',
+  icons: '/favicon.ico',
 }
 
 export default function RootLayout({

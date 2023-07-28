@@ -1,5 +1,6 @@
 import * as Form from '@radix-ui/react-form';
 import { FormEventHandler } from 'react';
+import { buttonClassnames } from './Button';
 
 type Props = {
   children: React.ReactNode
@@ -14,27 +15,42 @@ export const Root = ({ children, onSubmit }: Props) => {
 
 type FieldProps = {
   name: string
+  label?: string
+  type?: string
 }
 
-export const TextField = ({ name }: FieldProps) => {
+const FormLabel = ({ label }: Pick<FieldProps, 'label'>) => {
+  return <div>
+    <Form.Label className="text-xs">{label}</Form.Label>
+  </div>
+}
+
+const FormInput = ({ name, type }: FieldProps) => {
+  return <Form.Control name={name} asChild>
+    <input className="w-full border-b border-primary p-2" type={type} required />
+  </Form.Control>
+}
+
+export const TextField = ({ name, label = name }: FieldProps) => {
+  return <Form.Field className="w-full pt-2 pb-6" name={name}>
+    <FormLabel label={label} />
+    <FormInput name={name} type="text" />
+  </Form.Field>
+};
+
+export const NumberField = ({ name, label = name }: FieldProps) => {
   return <Form.Field className="FormField" name={name}>
-    <div>
-      <Form.Label className="FormLabel">{name}</Form.Label>
-    </div>
-    <Form.Control asChild>
-      <input className="Input" type="text" required />
+    <FormLabel label={label} />
+    <Form.Control name={name} asChild>
+      <input className="w-full border-b border-primary p-2" type="number" step="0.1" min="0.1" required />
     </Form.Control>
   </Form.Field>
 };
 
-export const NumberField = ({ name }: FieldProps) => {
+export const DateField = ({ name, label = name }: FieldProps) => {
   return <Form.Field className="FormField" name={name}>
-    <div>
-      <Form.Label className="FormLabel">{name}</Form.Label>
-    </div>
-    <Form.Control asChild>
-      <input className="Input" type="number" required />
-    </Form.Control>
+    <FormLabel label={label} />
+    <FormInput name={name} type="date" />
   </Form.Field>
 };
 
@@ -44,7 +60,7 @@ type SubmitProps = {
 
 export const SubmitButton = ({ children }: SubmitProps) => {
   return <Form.Submit asChild>
-    <button className="Button" style={{ marginTop: 10 }}>
+    <button className={`${buttonClassnames} bg-primary`}>
       {children}
     </button>
   </Form.Submit>

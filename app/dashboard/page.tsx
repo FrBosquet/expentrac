@@ -31,7 +31,7 @@ export default async function Page() {
   return (
     <main className="flex flex-col min-h-screen">
       <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
-        <Logo className="text-4xl">et</Logo>
+        <Logo className="text-4xl -tracking-widest px-2">et</Logo>
         <SignOutButton />
         <img src={user.image as string} alt={user.name as string} className="rounded-full w-12 h-12" />
       </header>
