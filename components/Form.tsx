@@ -42,7 +42,7 @@ export const NumberField = ({ name, label = name }: FieldProps) => {
   return <Form.Field className="FormField" name={name}>
     <FormLabel label={label} />
     <Form.Control name={name} asChild>
-      <input className="w-full border-b border-primary p-2" type="number" step="0.1" min="0.1" required />
+      <input className="w-full border-b border-primary p-2" type="number" step="0.01" min="0.1" required />
     </Form.Control>
   </Form.Field>
 }
