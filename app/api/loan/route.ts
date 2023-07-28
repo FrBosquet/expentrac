@@ -1,8 +1,10 @@
-import { prisma } from "@services/prisma";
-import { NextResponse } from "next/server";
+import { authOptions } from "@services/auth"
+import { prisma } from "@services/prisma"
+import { getServerSession } from "next-auth/next"
+import { NextResponse } from "next/server"
 
 export const GET = async (req: Request) => {
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(req.url)
   const userId = searchParams.get('userId')
 
   if (!userId) {
@@ -13,16 +15,15 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const loans = await prisma.loan.findMany({ where: { userId } });
+  const loans = await prisma.loan.findMany({ where: { userId } })
 
   return NextResponse.json(loans)
 }
 
 export const POST = async (req: Request) => {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId')
+  const session = await getServerSession(authOptions)
 
-  if (!userId) {
+  if (!session) {
     return NextResponse.json({
       message: 'userId is required'
     }, {
@@ -30,7 +31,9 @@ export const POST = async (req: Request) => {
     })
   }
 
-  const body = await req.json();
+  const userId = session.user.id
+
+  const body = await req.json()
 
   const newLoan = await prisma.loan.create({
     data: {
