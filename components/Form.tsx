@@ -1,6 +1,5 @@
 import * as Form from '@radix-ui/react-form'
 import { FormEventHandler } from 'react'
-import { buttonClassnames } from './Button'
 
 type Props = {
   children: React.ReactNode
@@ -56,11 +55,12 @@ export const DateField = ({ name, label = name }: FieldProps) => {
 
 type SubmitProps = {
   children: React.ReactNode
+  className?: string
 }
 
-export const SubmitButton = ({ children }: SubmitProps) => {
+export const SubmitButton = ({ children, className }: SubmitProps) => {
   return <Form.Submit asChild>
-    <button className={`${buttonClassnames} bg-primary`}>
+    <button className={className}>
       {children}
     </button>
   </Form.Submit>

@@ -20,11 +20,11 @@ export const Modal = ({ trigger, children, title, description, open, onOpenChang
       {trigger}
     </Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 bg-gray-100/50" />
-      <Dialog.Content className="bg-white fixed shadow-md p-2 rounded-sm left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
+      <Dialog.Overlay className="fixed inset-0 bg-gray-700/70" />
+      <Dialog.Content className="bg-white fixed shadow-md p-4 rounded-sm left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
         <Dialog.Title asChild >
-          <div className="uppercase text-2xl flex justify-between">
-            <h2>{title}</h2>
+          <div className="flex justify-between text-2xl font-semibold uppercase pb-4">
+            <h2 className='tracking-tighter'>{title}</h2>
             <Dialog.Close asChild>
               <button><RxCross2 /></button>
             </Dialog.Close>

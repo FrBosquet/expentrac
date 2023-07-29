@@ -1,5 +1,5 @@
-import { LoanAdd } from "@components/LoanAdd"
-import { LoanRow } from "@components/LoanRow"
+import { LoanAdd } from "@components/loan/LoanAdd"
+import { LoanRow } from "@components/loan/LoanRow"
 import { getUrl } from "@lib/api"
 import { getUser } from "@lib/session"
 import { Loan } from "@prisma/client"
