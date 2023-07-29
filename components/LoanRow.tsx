@@ -21,8 +21,8 @@ export const LoanRow = ({ loan }: Props) => {
   return (
     <article className="p-2 border-b border-primary grid grid-cols-[1fr_auto_5rem_5rem]">
       <p>{loan.name}</p>
-      <p className="text-gray-600">{alreadyPaid}/{totalMonths}</p>
-      <p className="text-right text-gray-600">{monthsLeft} to go</p>
+      <p className="text-gray-600 font-medium">{alreadyPaid}/{totalMonths}</p>
+      <p className="text-left text-gray-500 text-sm pl-2">{monthsLeft} left</p>
       <p className="text-right font-bold">{loan.fee.toFixed(2)}€/m</p>
     </article>
   )
