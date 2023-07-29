@@ -51,3 +51,48 @@ export const POST = async (req: Request) => {
 
   return NextResponse.json({ message: 'POST', data: newLoan }, { status: 201 })
 }
+
+export const DELETE = async (req: Request) => {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json({
+      message: 'forbidden'
+    }, {
+      status: 403
+    })
+  }
+
+  const { searchParams } = new URL(req.url)
+  const id = searchParams.get('id')
+
+  if (!id) {
+    return NextResponse.json({
+      message: 'id is required'
+    }, {
+      status: 400
+    })
+  }
+
+  const loan = await prisma.loan.findUnique({ where: { id } })
+
+  if (!loan) {
+    return NextResponse.json({
+      message: 'loan not found'
+    }, {
+      status: 404
+    })
+  }
+
+  if (session.user.id !== loan?.userId) {
+    return NextResponse.json({
+      message: 'user does not own this resource'
+    }, {
+      status: 403
+    })
+  }
+
+  await prisma.loan.delete({ where: { id } })
+
+  return NextResponse.json({ message: 'DELETED' }, { status: 200 })
+}
