@@ -1,7 +1,7 @@
 import { Provider } from '@components/Provider'
 import type { Metadata } from 'next'
 import { Session } from 'next-auth'
-import { Oswald } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
 
@@ -12,7 +12,7 @@ const montserrat = localFont({
     { path: '../public/fonts/MontserratAlt1-ExtraBold.woff2', weight: '800', style: 'normal' },
   ]
 })
-const oswald = Oswald({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Expentrac',
@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${oswald.className} ${montserrat.className} bg-primary text-black`}>
+      <body className={`${inter.className} ${montserrat.className} bg-primary text-black`}>
         <Provider >
           {children}
         </Provider>
