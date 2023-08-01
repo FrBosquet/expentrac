@@ -36,14 +36,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   loans         Loan[]
+  subscriptions Subscription[]
 }
 
 model VerificationToken {
@@ -62,4 +63,12 @@ model Loan {
   endDate   DateTime
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id     String @id @default(cuid())
+  name   String
+  fee    Float
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
