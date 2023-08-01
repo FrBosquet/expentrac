@@ -1,3 +1,4 @@
+import { Summary } from "@components/Summary"
 import { LoanAdd } from "@components/loan/LoanAdd"
 import { LoanRow } from "@components/loan/LoanRow"
 import { SubscriptionAdd } from "@components/subscription/SubscriptionAdd"
@@ -42,6 +43,7 @@ export default async function Page() {
         <LoanAdd />
         <SubscriptionAdd />
       </menu>
+      <Summary loans={loans} subs={subscriptions} />
 
       {loans.length > 0 && <h3 className="p-2 text-xl text-primary">Your loans:</h3>}
       <ul className="flex flex-col gap-2 py-2">
