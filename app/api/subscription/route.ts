@@ -15,15 +15,14 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const loans = await prisma.loan.findMany({
+  const subs = await prisma.subscription.findMany({
     where: { userId },
     orderBy: [
-      { startDate: 'desc' },
       { name: 'desc' }
     ]
   })
 
-  return NextResponse.json(loans)
+  return NextResponse.json(subs)
 }
 
 export const POST = async (req: Request) => {
@@ -41,12 +40,10 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  const newLoan = await prisma.loan.create({
+  const newSub = await prisma.subscription.create({
     data: {
       ...body,
       fee: Number(body.fee),
-      startDate: new Date(body.startDate).toISOString(),
-      endDate: new Date(body.endDate).toISOString(),
       user: {
         connect: {
           id: userId
@@ -55,7 +52,7 @@ export const POST = async (req: Request) => {
     }
   })
 
-  return NextResponse.json({ message: 'POST', data: newLoan }, { status: 201 })
+  return NextResponse.json({ message: 'POST', data: newSub }, { status: 201 })
 }
 
 export const DELETE = async (req: Request) => {
@@ -80,17 +77,17 @@ export const DELETE = async (req: Request) => {
     })
   }
 
-  const loan = await prisma.loan.findUnique({ where: { id } })
+  const sub = await prisma.subscription.findUnique({ where: { id } })
 
-  if (!loan) {
+  if (!sub) {
     return NextResponse.json({
-      message: 'loan not found'
+      message: 'subscription not found'
     }, {
       status: 404
     })
   }
 
-  if (session.user.id !== loan?.userId) {
+  if (session.user.id !== sub?.userId) {
     return NextResponse.json({
       message: 'user does not own this resource'
     }, {
@@ -98,7 +95,7 @@ export const DELETE = async (req: Request) => {
     })
   }
 
-  await prisma.loan.delete({ where: { id } })
+  await prisma.subscription.delete({ where: { id } })
 
   return NextResponse.json({ message: 'DELETED' }, { status: 200 })
 }
