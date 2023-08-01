@@ -19,7 +19,9 @@ export const GET = async (req: Request) => {
     where: { userId },
     orderBy: [
       { startDate: 'desc' },
-      { name: 'desc' }
+      {
+        name: 'asc',
+      }
     ]
   })
 

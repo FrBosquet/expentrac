@@ -18,7 +18,9 @@ export const GET = async (req: Request) => {
   const subs = await prisma.subscription.findMany({
     where: { userId },
     orderBy: [
-      { name: 'desc' }
+      {
+        name: 'asc',
+      }
     ]
   })
 
