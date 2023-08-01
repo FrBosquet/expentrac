@@ -1,5 +1,5 @@
-import { Loan } from "@prisma/client";
-import { LoanExtendedInfo } from "@types";
+import { Loan } from "@prisma/client"
+import { LoanExtendedInfo } from "@types"
 
 const now = new Date()
 

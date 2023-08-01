@@ -16,3 +16,4 @@
 - [ ] Add hero
 - [ ] Add pwc
 - [ ] Buy domain and publish app
+- [ ] Add dark mode
