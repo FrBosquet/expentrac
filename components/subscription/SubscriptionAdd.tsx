@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { getUrl } from "@lib/api"
 import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
-import { NumberField, Root, SubmitButton, TextField } from "../Form"
+import { FieldSet, FormField, Root, SubmitButton } from "../Form"
 
 export const SubscriptionAdd = () => {
   const router = useRouter()
@@ -40,13 +40,13 @@ export const SubscriptionAdd = () => {
           </DialogDescription>
         </DialogHeader>
         <Root onSubmit={handleSubmit}>
-          <fieldset disabled={loading}>
-            <TextField name="name" />
-            <NumberField name="fee" label="monthly fee" />
-            <div className="flex justify-end gap-2 pt-4">
+          <FieldSet disabled={loading}>
+            <FormField name="name" label="Name" />
+            <FormField name="fee" label="Fee" type="number" step="0.01" />
+            <div className="flex justify-end gap-2 pt-4 col-span-2">
               <SubmitButton className="btn-sm-create">Submit</SubmitButton>
             </div>
-          </fieldset>
+          </FieldSet>
         </Root>
       </DialogContent>
     </Dialog>

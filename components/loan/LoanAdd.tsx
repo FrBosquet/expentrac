@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { getUrl } from "@lib/api"
 import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
-import { DateField, NumberField, Root, SubmitButton, TextField } from "../Form"
+import { FieldSet, FormField, Root, SubmitButton } from "../Form"
 
 export const LoanAdd = () => {
   const router = useRouter()
@@ -40,15 +40,16 @@ export const LoanAdd = () => {
           </DialogDescription>
         </DialogHeader>
         <Root onSubmit={handleSubmit}>
-          <fieldset disabled={loading}>
-            <TextField name="name" />
-            <NumberField name="fee" label="monthly fee" />
-            <DateField name="startDate" type="date" />
-            <DateField name="endDate" type="date" />
-            <div className="flex justify-end gap-2 pt-4">
+          <FieldSet disabled={loading}>
+            <FormField name="name" label="Name" />
+            <FormField name="fee" label="Fee" type="number" step="0.01" />
+            <FormField name="startDate" label="Start date" type="date" />
+            <FormField name="endDate" label="End date" type="date" />
+
+            <div className="flex justify-end gap-2 pt-4 col-span-2">
               <SubmitButton className="btn-sm-create">Submit</SubmitButton>
             </div>
-          </fieldset>
+          </FieldSet>
         </Root>
       </DialogContent>
     </Dialog>

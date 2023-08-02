@@ -1,5 +1,7 @@
 import * as Form from '@radix-ui/react-form'
 import { FormEventHandler } from 'react'
+import { Input, InputProps } from './ui/input'
+import { Label } from './ui/label'
 
 type Props = {
   children: React.ReactNode
@@ -12,46 +14,20 @@ export const Root = ({ children, onSubmit }: Props) => {
   </Form.Root>
 }
 
-type FieldProps = {
-  name: string
-  label?: string
-  type?: string
+export const FieldSet = ({ children, disabled }: { children: React.ReactNode, disabled: boolean }) => {
+  return <fieldset disabled={disabled}>
+    <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+      {children}
+    </div>
+  </fieldset>
 }
 
-const FormLabel = ({ label }: Pick<FieldProps, 'label'>) => {
-  return <div>
-    <Form.Label className="text-xs">{label}</Form.Label>
-  </div>
-}
-
-const FormInput = ({ name, type }: FieldProps) => {
-  return <Form.Control name={name} asChild>
-    <input className="w-full border-b border-primary p-2" type={type} required />
-  </Form.Control>
-}
-
-export const TextField = ({ name, label = name }: FieldProps) => {
-  return <Form.Field className="w-full pt-2 pb-6" name={name}>
-    <FormLabel label={label} />
-    <FormInput name={name} type="text" />
-  </Form.Field>
-}
-
-export const NumberField = ({ name, label = name }: FieldProps) => {
-  return <Form.Field className="FormField" name={name}>
-    <FormLabel label={label} />
-    <Form.Control name={name} asChild>
-      <input className="w-full border-b border-primary p-2" type="number" step="0.01" min="0.1" required />
-    </Form.Control>
-  </Form.Field>
-}
-
-export const DateField = ({ name, label = name }: FieldProps) => {
-  return <Form.Field className="FormField" name={name}>
-    <FormLabel label={label} />
-    <FormInput name={name} type="date" />
-  </Form.Field>
-}
+export const FormField = ({ label, name, ...props }: { label: string } & InputProps) => <>
+  <Label htmlFor={name} className="text-right">
+    {label}
+  </Label>
+  <Input id={name} name={name} {...props} />
+</>
 
 type SubmitProps = {
   children: React.ReactNode
