@@ -14,7 +14,7 @@ export default function Home() {
   }
 
   return (
-    <main className="p-12 flex flex-col gap-4 justify-center h-screen items-center">
+    <main className="p-12 flex flex-col gap-4 justify-center h-screen items-center w-screen bg-primary">
       <Logo className="text-8xl">expentrac</Logo>
       <Button onClick={() => signIn('google')}><AiOutlineGoogle /></Button>
     </main>

@@ -38,12 +38,11 @@ export default async function Page() {
 
   return (
     <section className="flex-1 bg-white w-screen max-w-3xl p-12 mx-auto">
-      <h1 className="text-4xl uppercase p-2">My<span className="text-gray-700">dashboard</span></h1>
+      <Summary loans={loans} subs={subscriptions} />
       <menu className="flex gap-2 p-2">
         <LoanAdd />
         <SubscriptionAdd />
       </menu>
-      <Summary loans={loans} subs={subscriptions} />
 
       {loans.length > 0 && <h3 className="p-2 text-xl text-primary">Your loans:</h3>}
       <ul className="flex flex-col gap-2 py-2">
