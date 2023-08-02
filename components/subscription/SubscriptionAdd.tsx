@@ -44,7 +44,7 @@ export const SubscriptionAdd = () => {
             <FormField name="name" label="Name" />
             <FormField name="fee" label="Fee" type="number" step="0.01" />
             <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton className="btn-sm-create">Submit</SubmitButton>
+              <SubmitButton submitting={loading} />
             </div>
           </FieldSet>
         </Root>

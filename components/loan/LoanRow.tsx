@@ -1,6 +1,6 @@
+import { getLoanExtendedInformation } from "@lib/loan"
 import { Loan } from "@prisma/client"
 import { LoanDelete } from "./LoanDelete"
-import { getLoanExtendedInformation } from "@lib/loan"
 
 type Props = {
   loan: Loan

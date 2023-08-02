@@ -1,8 +1,8 @@
 'use client'
 
-import { Button } from "@components/Button"
 import { AiOutlineGoogle } from "@components/Icons"
 import { Logo } from "@components/Logo"
+import { Button } from "@components/ui/button"
 import { signIn, useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
 

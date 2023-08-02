@@ -1,8 +1,11 @@
 'use client'
 
+import { SubmitButton } from "@components/Form"
+import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { Loan } from "@prisma/client"
+import { Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -18,24 +21,23 @@ export const LoanDelete = ({ loan }: Props) => {
 
   const handleDelete = async () => {
     setLoading(true)
+    setOpen(false)
 
     const result = await fetch(getUrl(`/loan?id=${id}`), {
       method: 'DELETE'
     })
-    setLoading(false)
-
-    console.log(result)
 
     if (result.ok) {
-      setOpen(false)
       router.refresh()
+    } else {
+      setLoading(false)
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className='btn-sm-destroy' onClick={() => setOpen(true)}>Delete</button>
+        <Button variant='destructive' className="p-2 h-auto" onClick={() => setOpen(true)}><Trash size={12} /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -45,8 +47,7 @@ export const LoanDelete = ({ loan }: Props) => {
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
-          <button disabled={loading} className='btn-sm-grayed' onClick={() => setOpen(false)}>Cancel</button>
-          <button disabled={loading} className='btn-sm-destroy' onClick={handleDelete}>Delete</button>
+          <SubmitButton submitting={loading} />
         </div>
       </DialogContent>
     </Dialog>

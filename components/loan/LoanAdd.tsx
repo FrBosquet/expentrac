@@ -41,13 +41,13 @@ export const LoanAdd = () => {
         </DialogHeader>
         <Root onSubmit={handleSubmit}>
           <FieldSet disabled={loading}>
-            <FormField name="name" label="Name" />
-            <FormField name="fee" label="Fee" type="number" step="0.01" />
-            <FormField name="startDate" label="Start date" type="date" />
-            <FormField name="endDate" label="End date" type="date" />
+            <FormField required name="name" label="Name" />
+            <FormField required name="fee" label="Fee" type="number" step="0.01" />
+            <FormField required name="startDate" label="Start date" type="date" />
+            <FormField required name="endDate" label="End date" type="date" />
 
             <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton className="btn-sm-create">Submit</SubmitButton>
+              <SubmitButton submitting={loading} />
             </div>
           </FieldSet>
         </Root>
