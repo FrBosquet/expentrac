@@ -1,10 +1,10 @@
 'use client'
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
 import { DateField, NumberField, Root, SubmitButton, TextField } from "../Form"
-import { Close, Modal } from "../Modal"
 
 export const LoanAdd = () => {
   const router = useRouter()
@@ -28,21 +28,29 @@ export const LoanAdd = () => {
   }
 
   return (
-    <Modal open={open} onOpenChange={setOpen} title="Add loan" trigger={<button className='btn-sm-create'>Add loan</button>}>
-      <Root onSubmit={handleSubmit}>
-        <fieldset disabled={loading}>
-          <TextField name="name" />
-          <NumberField name="fee" label="monthly fee" />
-          <DateField name="startDate" type="date" />
-          <DateField name="endDate" type="date" />
-          <div className="flex justify-end gap-2 pt-4">
-            <Close asChild>
-              <button disabled={loading} className='btn-sm-grayed'>Cancel</button>
-            </Close>
-            <SubmitButton className="btn-sm-create">Submit</SubmitButton>
-          </div>
-        </fieldset>
-      </Root>
-    </Modal>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button className='btn-sm-create' onClick={() => setOpen(true)}>New loan</button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add loan</DialogTitle>
+          <DialogDescription>
+            Track a new loan
+          </DialogDescription>
+        </DialogHeader>
+        <Root onSubmit={handleSubmit}>
+          <fieldset disabled={loading}>
+            <TextField name="name" />
+            <NumberField name="fee" label="monthly fee" />
+            <DateField name="startDate" type="date" />
+            <DateField name="endDate" type="date" />
+            <div className="flex justify-end gap-2 pt-4">
+              <SubmitButton className="btn-sm-create">Submit</SubmitButton>
+            </div>
+          </fieldset>
+        </Root>
+      </DialogContent>
+    </Dialog>
   )
 }

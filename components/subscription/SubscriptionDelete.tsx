@@ -1,10 +1,10 @@
 'use client'
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
+import { Subscription } from "@prisma/client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Modal } from "../Modal"
-import { Subscription } from "@prisma/client"
 
 type Props = {
   sub: Subscription
@@ -33,12 +33,22 @@ export const SubscriptionDelete = ({ sub }: Props) => {
   }
 
   return (
-    <Modal open={open} onOpenChange={setOpen} title="Delete subscription" trigger={<button className='btn-sm-destroy' onClick={() => setOpen(true)}>Delete</button>}>
-      <p className="py-4">Are you sure you want to delete <strong>{name}</strong></p>
-      <div className="flex justify-end gap-2">
-        <button disabled={loading} className='btn-sm-grayed' onClick={() => setOpen(false)}>Cancel</button>
-        <button disabled={loading} className='btn-sm-destroy' onClick={handleDelete}>Delete</button>
-      </div>
-    </Modal>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button className='btn-sm-destroy' onClick={() => setOpen(true)}>Delete</button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete subscription</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete <strong>{name}</strong>?
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex justify-end gap-2">
+          <button disabled={loading} className='btn-sm-grayed' onClick={() => setOpen(false)}>Cancel</button>
+          <button disabled={loading} className='btn-sm-destroy' onClick={handleDelete}>Delete</button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
