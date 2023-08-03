@@ -1,7 +1,5 @@
 import { Summary } from "@components/Summary"
-import { LoanAdd } from "@components/loan/LoanAdd"
 import { LoanSummary } from "@components/loan/LoanSummary"
-import { SubscriptionAdd } from "@components/subscription/SubscriptionAdd"
 import { SubscriptionSummary } from "@components/subscription/SubscriptionSummary"
 import { getUrl } from "@lib/api"
 import { getUser } from "@lib/session"
@@ -39,10 +37,6 @@ export default async function Page() {
   return (
     <section className="flex-1 bg-white w-screen max-w-3xl p-12 mx-auto">
       <Summary loans={loans} subs={subscriptions} />
-      <menu className="flex gap-2 p-2">
-        <LoanAdd />
-        <SubscriptionAdd />
-      </menu>
 
       {loans.length > 0 && <LoanSummary loans={loans} />}
       {

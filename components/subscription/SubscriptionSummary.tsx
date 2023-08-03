@@ -7,6 +7,7 @@ import {
   TableRow
 } from "@components/ui/table"
 import { Subscription } from "@prisma/client"
+import { SubscriptionAdd } from "./SubscriptionAdd"
 import { SubscriptionDelete } from "./SubscriptionDelete"
 
 type Props = {
@@ -15,8 +16,11 @@ type Props = {
 
 export const SubscriptionSummary = ({ subscriptions }: Props) => {
   return (
-    <section className="flex flex-col gap-2 py-4">
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Your subscriptions:</h3>
+    <section className="flex flex-col gap-2 pt-8">
+      <div className="flex justify-between">
+        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Your subscriptions:</h4>
+        <SubscriptionAdd />
+      </div>
       <Table>
         <TableHeader>
           <TableRow>

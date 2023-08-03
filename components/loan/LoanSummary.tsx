@@ -8,6 +8,7 @@ import {
 } from "@components/ui/table"
 import { getLoanExtendedInformation } from "@lib/loan"
 import { Loan } from "@prisma/client"
+import { LoanAdd } from "./LoanAdd"
 import { LoanDelete } from "./LoanDelete"
 
 type Props = {
@@ -16,8 +17,11 @@ type Props = {
 
 export const LoanSummary = ({ loans }: Props) => {
   return (
-    <section className="flex flex-col gap-2 py-4">
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Your loans:</h3>
+    <section className="flex flex-col gap-2 pt-8">
+      <div className="flex justify-between">
+        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Your loans:</h4>
+        <LoanAdd />
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
