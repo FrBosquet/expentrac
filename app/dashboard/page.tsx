@@ -1,8 +1,8 @@
 import { Summary } from "@components/Summary"
 import { LoanAdd } from "@components/loan/LoanAdd"
-import { LoanRow } from "@components/loan/LoanRow"
+import { LoanSummary } from "@components/loan/LoanSummary"
 import { SubscriptionAdd } from "@components/subscription/SubscriptionAdd"
-import { SubscriptionRow } from "@components/subscription/SubscriptionRow"
+import { SubscriptionSummary } from "@components/subscription/SubscriptionSummary"
 import { getUrl } from "@lib/api"
 import { getUser } from "@lib/session"
 import { Loan, Subscription } from "@prisma/client"
@@ -44,17 +44,10 @@ export default async function Page() {
         <SubscriptionAdd />
       </menu>
 
-      {loans.length > 0 && <h3 className="p-2 text-xl text-primary">Your loans:</h3>}
-      <ul className="flex flex-col gap-2 py-2">
-        {loans.map(loan => <LoanRow key={loan.id} loan={loan} />)}
-      </ul>
-
+      {loans.length > 0 && <LoanSummary loans={loans} />}
       {
-        subscriptions.length > 0 && <h3 className="p-2 text-xl mt-4 text-primary">Your subscriptions:</h3>
+        subscriptions.length > 0 && <SubscriptionSummary subscriptions={subscriptions} />
       }
-      <ul>
-        {subscriptions.map(sub => <SubscriptionRow key={sub.id} sub={sub} />)}
-      </ul>
     </section>
   )
 }
