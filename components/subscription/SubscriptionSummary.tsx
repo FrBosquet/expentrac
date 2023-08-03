@@ -15,8 +15,8 @@ type Props = {
 
 export const SubscriptionSummary = ({ subscriptions }: Props) => {
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="p-2 text-xl text-primary">Your subscriptions:</h3>
+    <section className="flex flex-col gap-2 py-4">
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Your subscriptions:</h3>
       <Table>
         <TableHeader>
           <TableRow>
@@ -40,6 +40,6 @@ export const SubscriptionSummary = ({ subscriptions }: Props) => {
           })}
         </TableBody>
       </Table>
-    </div>
+    </section>
   )
 }

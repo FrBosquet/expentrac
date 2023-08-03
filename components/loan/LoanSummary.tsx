@@ -16,8 +16,8 @@ type Props = {
 
 export const LoanSummary = ({ loans }: Props) => {
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="p-2 text-xl text-primary">Your loans:</h3>
+    <section className="flex flex-col gap-2 py-4">
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Your loans:</h3>
       <Table>
         <TableHeader>
           <TableRow>
@@ -46,6 +46,6 @@ export const LoanSummary = ({ loans }: Props) => {
           })}
         </TableBody>
       </Table>
-    </div>
+    </section>
   )
 }
