@@ -31,8 +31,8 @@ export const FormField = ({ label, name, ...props }: { label: string } & InputPr
   <Input id={name} name={name} {...props} />
 </>
 
-export const SubmitButton = ({ submitting }: { submitting: boolean }) => {
-  return <Button variant="ghost" type="submit">
+export const SubmitButton = ({ submitting, onClick }: { submitting: boolean, onClick?: () => void }) => {
+  return <Button variant="ghost" type={onClick ? 'button' : "submit"} onClick={onClick}>
     {submitting ?
       <Loader2 size={16} className="animate animate-spin" />
       : 'Submit'
