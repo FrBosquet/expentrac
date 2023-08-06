@@ -1,3 +1,4 @@
+import { DialogTrigger } from "@components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -10,6 +11,7 @@ import { getLoanExtendedInformation } from "@lib/loan"
 import { Loan } from "@prisma/client"
 import { LoanAdd } from "./LoanAdd"
 import { LoanDelete } from "./LoanDelete"
+import { LoanDetail } from "./LoanDetail"
 import { LoanEdit } from "./LoanEdit"
 
 type Props = {
@@ -39,7 +41,13 @@ export const LoanSummary = ({ loans }: Props) => {
 
             return (
               <TableRow key={loan.id}>
-                <TableCell className="font-medium">{loan.name}</TableCell>
+                <TableCell className="font-medium">
+                  <LoanDetail key={loan.id} loan={loan} trigger={
+                    <DialogTrigger asChild>
+                      <button className="hover:text-primary">{loan.name}</button>
+                    </DialogTrigger>
+                  } />
+                </TableCell>
                 <TableCell>{paymentsDone}/{payments}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
                 <TableCell className="font-semibold text-right">{loan.fee.toFixed(2)}€/m</TableCell>
@@ -48,6 +56,7 @@ export const LoanSummary = ({ loans }: Props) => {
                   <LoanDelete loan={loan} />
                 </TableCell>
               </TableRow>
+
             )
           })}
         </TableBody>

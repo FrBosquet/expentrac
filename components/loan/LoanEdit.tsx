@@ -3,6 +3,8 @@
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
+import { toHTMLInputFormat } from "@lib/dates"
+import { cn } from "@lib/utils"
 import { Loan } from "@prisma/client"
 import { Edit } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -11,20 +13,14 @@ import { FieldSet, FormField, Root, SubmitButton } from "../Form"
 
 type Props = {
   loan: Loan
+  className?: string
+  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  triggerDecorator?: React.ReactNode
 }
 
+const TRIGGER_DECORATOR = <Edit size={12} />
 
-const toDefFormat = (d: Date) => {
-  const date = new Date(d)
-  const year = date.getFullYear()
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  const formattedDate = `${year}-${month}-${day}`
-  return formattedDate
-}
-
-
-export const LoanEdit = ({ loan }: Props) => {
+export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -51,7 +47,7 @@ export const LoanEdit = ({ loan }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="p-2 h-auto" onClick={() => setOpen(true)}><Edit size={12} /></Button>
+        <Button variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -64,8 +60,8 @@ export const LoanEdit = ({ loan }: Props) => {
           <FieldSet disabled={loading}>
             <FormField required defaultValue={loan.name} name="name" label="Name" />
             <FormField required defaultValue={loan.fee} name="fee" label="Fee" type="number" step="0.01" />
-            <FormField required defaultValue={toDefFormat(loan.startDate)} name="startDate" label="Start date" type="date" />
-            <FormField required defaultValue={toDefFormat(loan.endDate)} name="endDate" label="End date" type="date" />
+            <FormField required defaultValue={toHTMLInputFormat(loan.startDate)} name="startDate" label="Start date" type="date" />
+            <FormField required defaultValue={toHTMLInputFormat(loan.endDate)} name="endDate" label="End date" type="date" />
 
             <div className="flex justify-end gap-2 pt-4 col-span-2">
               <SubmitButton submitting={loading} />
