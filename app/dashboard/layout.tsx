@@ -1,4 +1,5 @@
 import { Logo } from "@components/Logo"
+import { Navigation } from "@components/NavigationMenu"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
 import { authOptions } from "@services/auth"
@@ -23,6 +24,8 @@ export default async function Layout({ children }: Props) {
       <Logo className="text-4xl -tracking-widest px-2">et</Logo>
       <Menu user={user} />
     </header>
+    <Navigation />
+
 
     {children}
 
