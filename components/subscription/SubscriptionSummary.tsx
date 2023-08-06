@@ -9,6 +9,7 @@ import {
 import { Subscription } from "@prisma/client"
 import { SubscriptionAdd } from "./SubscriptionAdd"
 import { SubscriptionDelete } from "./SubscriptionDelete"
+import { SubscriptionDetail } from "./SubscriptionDetail"
 import { SubscriptionEdit } from "./SubscriptionEdit"
 
 type Props = {
@@ -35,7 +36,9 @@ export const SubscriptionSummary = ({ subscriptions }: Props) => {
 
             return (
               <TableRow key={sub.id}>
-                <TableCell className="font-medium">{sub.name} </TableCell>
+                <TableCell className="font-medium">
+                  <SubscriptionDetail sub={sub} />
+                </TableCell>
                 <TableCell className="font-semibold text-right">{sub.fee.toFixed(2)}€/m</TableCell>
                 <TableCell className="flex gap-1">
                   <SubscriptionEdit sub={sub} />

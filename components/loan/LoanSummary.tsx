@@ -1,4 +1,3 @@
-import { DialogTrigger } from "@components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -42,11 +41,7 @@ export const LoanSummary = ({ loans }: Props) => {
             return (
               <TableRow key={loan.id}>
                 <TableCell className="font-medium">
-                  <LoanDetail key={loan.id} loan={loan} trigger={
-                    <DialogTrigger asChild>
-                      <button className="hover:text-primary">{loan.name}</button>
-                    </DialogTrigger>
-                  } />
+                  <LoanDetail key={loan.id} loan={loan} />
                 </TableCell>
                 <TableCell>{paymentsDone}/{payments}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>

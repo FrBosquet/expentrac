@@ -3,6 +3,7 @@
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
+import { cn } from "@lib/utils"
 import { Subscription } from "@prisma/client"
 import { Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -10,9 +11,15 @@ import { useState } from "react"
 
 type Props = {
   sub: Subscription
+  className?: string
+  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  triggerDecorator?: React.ReactNode
+  sideEffect?: () => void
 }
 
-export const SubscriptionDelete = ({ sub }: Props) => {
+const TRIGGER_DECORATOR = <Trash size={12} />
+
+export const SubscriptionDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
   const { id, name } = sub
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -24,12 +31,11 @@ export const SubscriptionDelete = ({ sub }: Props) => {
     const result = await fetch(getUrl(`/subscription?id=${id}`), {
       method: 'DELETE'
     })
+
     setLoading(false)
-
-    console.log(result)
-
     if (result.ok) {
       setOpen(false)
+      sideEffect?.()
       router.refresh()
     }
   }
@@ -37,7 +43,7 @@ export const SubscriptionDelete = ({ sub }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='destructive' className="p-2 h-auto" onClick={() => setOpen(true)}><Trash size={12} /></Button>
+        <Button variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

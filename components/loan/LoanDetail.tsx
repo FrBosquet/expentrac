@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Progress } from "@components/ui/progress"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
@@ -13,10 +13,10 @@ import { LoanEdit } from "./LoanEdit"
 
 type Props = {
   loan: Loan;
-  trigger: React.ReactNode;
+  triggerContent?: React.ReactNode;
 };
 
-export const LoanDetail = ({ loan, trigger }: Props) => {
+export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   const [open, setOpen] = useState(false)
 
   const { startDate, endDate, fee, name } = loan
@@ -27,7 +27,9 @@ export const LoanDetail = ({ loan, trigger }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger}
+      <DialogTrigger asChild>
+        <button className="hover:text-primary">{triggerContent}</button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>

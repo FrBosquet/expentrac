@@ -3,6 +3,7 @@
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
+import { cn } from "@lib/utils"
 import { Subscription } from "@prisma/client"
 import { Edit } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -11,9 +12,14 @@ import { FieldSet, FormField, Root, SubmitButton } from "../Form"
 
 type Props = {
   sub: Subscription
+  className?: string
+  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  triggerDecorator?: React.ReactNode
 }
 
-export const SubscriptionEdit = ({ sub }: Props) => {
+const TRIGGER_DECORATOR = <Edit size={12} />
+
+export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,7 +46,7 @@ export const SubscriptionEdit = ({ sub }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="p-2 h-auto" onClick={() => setOpen(true)}><Edit size={12} /></Button>
+        <Button variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
