@@ -10,6 +10,7 @@ import { getLoanExtendedInformation } from "@lib/loan"
 import { Loan } from "@prisma/client"
 import { LoanAdd } from "./LoanAdd"
 import { LoanDelete } from "./LoanDelete"
+import { LoanEdit } from "./LoanEdit"
 
 type Props = {
   loans: Loan[]
@@ -42,7 +43,8 @@ export const LoanSummary = ({ loans }: Props) => {
                 <TableCell>{paymentsDone}/{payments}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
                 <TableCell className="font-semibold text-right">{loan.fee.toFixed(2)}€/m</TableCell>
-                <TableCell>
+                <TableCell className="flex gap-1">
+                  <LoanEdit loan={loan} />
                   <LoanDelete loan={loan} />
                 </TableCell>
               </TableRow>

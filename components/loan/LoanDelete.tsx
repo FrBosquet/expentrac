@@ -47,7 +47,7 @@ export const LoanDelete = ({ loan }: Props) => {
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
-          <SubmitButton submitting={loading} />
+          <SubmitButton submitting={loading} onClick={handleDelete} />
         </div>
       </DialogContent>
     </Dialog>
