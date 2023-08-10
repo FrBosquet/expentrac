@@ -1,5 +1,8 @@
+import { Brand } from "@components/BrandAutocomplete"
 import { authOptions } from "@services/auth"
+import { fetchBrandInfo } from "@services/brandfetch"
 import { prisma } from "@services/prisma"
+import { BrandExtendedInfo } from "@types"
 import { getServerSession } from "next-auth/next"
 import { NextResponse } from "next/server"
 
@@ -48,20 +51,34 @@ export const POST = async (req: Request) => {
   }
 
   const userId = session.user.id
+  const body = await req.json() as Brand
 
-  const body = await req.json()
+  let extendedData: BrandExtendedInfo
 
-  const parsedBody = parseBody<{ name: string, providerId?: string }>(body)
+  const existingProviderInfo = await prisma.provider.findUnique({
+    where: {
+      id: body.brandId
+    }
+  })
+
+  if (!existingProviderInfo) {
+    extendedData = await fetchBrandInfo(body.domain);
+  } else {
+    extendedData = existingProviderInfo.rawContent as BrandExtendedInfo
+  }
 
   const newLoan = await prisma.userProvider.create({
     data: {
       provider: {
         connectOrCreate: {
           where: {
-            name: parsedBody.name
+            id: body.brandId
           },
           create: {
-            name: parsedBody.name
+            id: body.brandId,
+            name: body.name,
+            isFetched: true,
+            rawContent: extendedData
           }
         },
       },
@@ -76,7 +93,7 @@ export const POST = async (req: Request) => {
     }
   })
 
-  return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
+  return NextResponse.json({ message: 'success', newLoan }, { status: 201 })
 }
 
 // export const PATCH = async (req: Request) => {

@@ -1,15 +1,15 @@
+import { FetchedProvider } from "@components/provider/FetchedProvider"
 import { ProviderAdd } from "@components/provider/ProviderAdd"
+import { UnfetchedProvider } from "@components/provider/UnfetchedProvider"
 import { getUrl } from "@lib/api"
+import { isFetchedProvider } from "@lib/provider"
 import { getUser } from "@lib/session"
-import { Provider, UserProvider } from "@prisma/client"
+import { UserProvider } from "@prisma/client"
 import { authOptions } from "@services/auth"
-import { HelpCircle } from "lucide-react"
+import { ProviderFetched, ProviderUnfetched } from "@types"
 import { getServerSession } from "next-auth"
 
-type UnfetchedProvider = { isFetched: false } & Pick<Provider, 'id' | 'name'>
-type FetchedProvider = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
-type SafeProvider = FetchedProvider | UnfetchedProvider
-type SafeUserProvider = UserProvider & { provider: SafeProvider }
+type SafeUserProvider = UserProvider & { provider: ProviderFetched | ProviderUnfetched }
 
 const getUserProviders = async (userId: string) => {
   const url = getUrl(`user-provider?userId=${userId}`)
@@ -18,10 +18,6 @@ const getUserProviders = async (userId: string) => {
   const providers = await response.json()
 
   return providers as SafeUserProvider[]
-}
-
-const isFetchedProvider = (provider: SafeProvider): provider is FetchedProvider => {
-  return provider.isFetched
 }
 
 export default async function Page() {
@@ -42,12 +38,9 @@ export default async function Page() {
       <section className="grid grid-cols-3 gap-4">
         {userProviders.map(({ provider }) => {
           if (isFetchedProvider(provider)) {
-            return <article><h3 className="text-md">{provider.name}</h3></article>
+            return <FetchedProvider key={provider.id} provider={provider} />
           } else {
-            return <article className="shadow-md p-2 flex flex-col justify-center gap-2 items-center">
-              <HelpCircle />
-              <h3 className="text-md">{provider.name}</h3>
-            </article>
+            return <UnfetchedProvider key={provider.id} provider={provider} />
           }
         })}
       </section>

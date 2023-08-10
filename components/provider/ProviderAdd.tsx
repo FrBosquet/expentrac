@@ -1,25 +1,27 @@
 'use client'
 
+import { Brand, BrandAutocomplete } from "@components/BrandAutocomplete"
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { useRouter } from "next/navigation"
-import { FormEventHandler, useState } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { useState } from "react"
 
 export const ProviderAdd = () => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (brand: Brand) => {
     setLoading(true)
 
     const result = await fetch(getUrl(`/user-provider`), {
       method: 'POST',
-      body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
+      body: JSON.stringify(brand)
     })
+
+    const body = await result.json()
+
     setLoading(false)
 
     if (result.ok) {
@@ -40,15 +42,7 @@ export const ProviderAdd = () => {
             Add a new provider to yout list
           </DialogDescription>
         </DialogHeader>
-        <Root onSubmit={handleSubmit}>
-          <FieldSet disabled={loading}>
-            <FormField required name="name" label="Name" />
-
-            <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton submitting={loading} />
-            </div>
-          </FieldSet>
-        </Root>
+        <BrandAutocomplete loading={loading} onSelect={handleSubmit} />
       </DialogContent>
     </Dialog>
   )
