@@ -29,7 +29,7 @@ const components: { title: string; href: string; description: string }[] = [
     title: "Providers",
     href: "/dashboard/providers",
     description:
-      "The companies and services that you use to buy, to pay or the get money from.",
+      "The companies and services that you use to buy, to pay or to get money from.",
   },
 ]
 

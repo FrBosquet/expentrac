@@ -53,8 +53,8 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
-          <button disabled={loading} className='btn-sm-grayed' onClick={() => setOpen(false)}>Cancel</button>
-          <button disabled={loading} className='btn-sm-destroy' onClick={handleDelete}>Delete</button>
+          <button disabled={loading} onClick={() => setOpen(false)}>Cancel</button>
+          <button disabled={loading} onClick={handleDelete}>Delete</button>
         </div>
       </DialogContent>
     </Dialog>
