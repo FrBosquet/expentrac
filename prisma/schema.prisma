@@ -45,6 +45,7 @@ model User {
   sessions      Session[]
   loans         Loan[]
   subscriptions Subscription[]
+  providers     UserProvider[]
 }
 
 model VerificationToken {
@@ -71,4 +72,23 @@ model Subscription {
   fee    Float
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Provider {
+  id             String         @id @default(cuid())
+  name           String
+  users          UserProvider[]
+  isFetched      Boolean        @default(false)
+  logo           String?
+  mainColor      String?
+  secondaryColor String?
+  rawContent     Json?
+}
+
+model UserProvider {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 }
