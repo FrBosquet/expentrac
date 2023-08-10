@@ -62,7 +62,7 @@ export const POST = async (req: Request) => {
   })
 
   if (!existingProviderInfo) {
-    extendedData = await fetchBrandInfo(body.domain);
+    extendedData = await fetchBrandInfo(body.domain)
   } else {
     extendedData = existingProviderInfo.rawContent as BrandExtendedInfo
   }

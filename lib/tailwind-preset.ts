@@ -1,5 +1,5 @@
-import { Config } from "tailwindcss";
-import animatePlugin from "tailwindcss-animate";
+import { Config } from "tailwindcss"
+import animatePlugin from "tailwindcss-animate"
 
 export const tailwindPreset = {
   darkMode: ["class"],

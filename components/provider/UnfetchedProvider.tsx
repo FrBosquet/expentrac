@@ -1,5 +1,5 @@
-import { ProviderUnfetched } from "@types";
-import { HelpCircle } from "lucide-react";
+import { ProviderUnfetched } from "@types"
+import { HelpCircle } from "lucide-react"
 
 type Props = {
   provider: ProviderUnfetched

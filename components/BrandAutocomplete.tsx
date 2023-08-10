@@ -6,10 +6,10 @@ import {
   useCallback,
   useEffect,
   useState
-} from "react";
+} from "react"
 
-import { Search, ServerOff, X } from "lucide-react";
-import { Spinner } from "./ui/spinner";
+import { Search, ServerOff, X } from "lucide-react"
+import { Spinner } from "./ui/spinner"
 
 export type Brand = {
   name: string;
@@ -30,49 +30,49 @@ type Props = {
 }
 
 export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
-  const [value, setValue] = useState({ text: "", active: false, brand: null as Brand | null });
-  const [queries, setQueries] = useState<Brand[]>([]);
+  const [value, setValue] = useState({ text: "", active: false, brand: null as Brand | null })
+  const [queries, setQueries] = useState<Brand[]>([])
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const text = queries?.[0]?.domain || value.text;
-    setValue({ text, active: false, brand: null });
-    setQueries([]);
-  };
+    const text = queries?.[0]?.domain || value.text
+    setValue({ text, active: false, brand: null })
+    setQueries([])
+  }
 
   const handleClick = (brand: Brand) => {
-    setValue({ text: '', active: false, brand });
-    onSelect(brand);
-  };
+    setValue({ text: '', active: false, brand })
+    onSelect(brand)
+  }
 
   const reset = () => {
-    setQueries([]);
-    setValue({ text: "", active: false, brand: null });
-  };
+    setQueries([])
+    setValue({ text: "", active: false, brand: null })
+  }
 
   const getQueries = useCallback(async (searchValue: string) => {
     if (searchValue !== "") {
       try {
-        const url = `https://api.brandfetch.io/v2/search/${searchValue}`;
+        const url = `https://api.brandfetch.io/v2/search/${searchValue}`
 
-        const res = await fetch(url);
+        const res = await fetch(url)
         if (res.ok) {
-          const data = await res.json();
-          setQueries(data);
+          const data = await res.json()
+          setQueries(data)
         }
       } catch (err) {
-        console.log("Something went wrong, try again later.");
+        console.log("Something went wrong, try again later.")
       }
-      return;
+      return
     }
 
-    setQueries([]);
-  }, []);
+    setQueries([])
+  }, [])
 
   useEffect(() => {
-    getQueries(value.text);
-  }, [getQueries, value.text]);
+    getQueries(value.text)
+  }, [getQueries, value.text])
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -136,5 +136,5 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
         </a>
       </p>
     </div>
-  );
-};
+  )
+}
