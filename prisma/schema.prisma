@@ -76,9 +76,10 @@ model Subscription {
 
 model Provider {
   id             String         @id @default(cuid())
-  name           String
+  name           String         @unique
   users          UserProvider[]
   isFetched      Boolean        @default(false)
+  url            String?
   logo           String?
   mainColor      String?
   secondaryColor String?
