@@ -52,14 +52,19 @@ const parseBody = <T>(body: Record<string, string>) => {
       case 'platformId':
       case 'lenderId':
         if (value === SELECT_OPTIONS.CREATE) return acc
-        if (value === SELECT_OPTIONS.NONE) return acc
+        parsedKey = key.slice(0, -2)
 
-        parsedValue = {
-          connect: {
-            id: value
+        if (value === SELECT_OPTIONS.NONE) {
+          parsedValue = {
+            disconnect: true
+          }
+        } else {
+          parsedValue = {
+            connect: {
+              id: value
+            }
           }
         }
-        parsedKey = key.slice(0, -2)
 
         break
     }
@@ -139,6 +144,9 @@ export const PATCH = async (req: Request) => {
       id: body.id
     }
   }
+
+  console.log({ args })
+
 
   const updatedLoan = await prisma.loan.update(args)
 

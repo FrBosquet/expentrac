@@ -1,20 +1,37 @@
 'use client'
 
+import { ProviderLogo } from "@components/provider/ProviderLogo"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Progress } from "@components/ui/progress"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
 import { getLoanExtendedInformation } from "@lib/loan"
+import { getProviderLink } from "@lib/provider"
+import { cn } from "@lib/utils"
+import { Provider } from "@prisma/client"
 import { LoanComplete } from "@types"
-import { Edit, Trash } from "lucide-react"
+import { CircleOff, Edit, Trash } from "lucide-react"
 import { useEffect, useState } from "react"
-import { LoanDelete } from "./LoanDelete"
-import { LoanEdit } from "./LoanEdit"
+import { LoanDelete } from "./Delete"
+import { LoanEdit } from "./Edit"
 
 type Props = {
   loan: LoanComplete;
   triggerContent?: React.ReactNode;
 };
+
+const ProviderDetail = ({ provider, label, className }: { provider?: Provider, label: string, className: string }) => {
+  const exist = provider != undefined
+
+  return (
+    <article className={cn("flex items-center justify-center flex-col gap-2", className)}>
+      <h4 className={cn("text-xs font-semibold text-center", exist ? 'text-slate-800' : 'text-slate-400')}>{label}</h4>
+      {exist ?
+        <a href={getProviderLink(provider)} target="_blank" ><ProviderLogo className="h-12 w-12" provider={provider} /></a> :
+        <CircleOff className="text-slate-400 flex-1" />}
+    </article>
+  )
+}
 
 export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   const [open, setOpen] = useState(false)
@@ -49,6 +66,12 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           </DialogDescription>
         </DialogHeader>
         <section className="grid grid-cols-2 gap-4">
+          <article className="grid grid-cols-3 gap-2 col-span-2">
+            <ProviderDetail provider={loan.vendor?.provider} label="Vendor" className="col-start-1" />
+            <ProviderDetail provider={loan.platform?.provider} label="Platform" className="col-start-2" />
+            <ProviderDetail provider={loan.lender?.provider} label="Lender" className="col-start-3" />
+          </article>
+
           <article className="flex flex-col gap-2 col-span-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
             <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>

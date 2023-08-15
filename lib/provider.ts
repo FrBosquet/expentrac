@@ -16,3 +16,10 @@ export const getAccentColor = (provider?: Provider) => {
   return accent?.hex
 }
 
+export const getProviderLink = (provider?: Provider) => {
+  if (!provider || !provider?.isFetched || !provider.rawContent) return ''
+
+  const data = provider.rawContent as BrandExtendedInfo
+
+  return `https://${data.domain}`
+}

@@ -42,14 +42,14 @@ export const LoanForm = ({ loan, onSubmit, disabled = false, userProviders }: Pr
           <Label htmlFor='platformId' className="text-xs text-center">
             Platform
           </Label>
-          <Select required name="platformId" items={brandOptions} />
+          <Select required name="platformId" items={brandOptions} defaultValue={loan?.platformId} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='lenderId' className="text-xs text-center">
             Lender
           </Label>
-          <Select required name="lenderId" items={brandOptions} />
+          <Select required name="lenderId" items={brandOptions} defaultValue={loan?.lenderId} />
         </span>
 
       </div>

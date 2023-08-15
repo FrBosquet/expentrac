@@ -11,10 +11,10 @@ import { getLoanExtendedInformation } from "@lib/loan"
 import { getAccentColor } from "@lib/provider"
 import { UserProvider } from "@prisma/client"
 import { LoanComplete } from "@types"
-import { LoanAdd } from "./LoanAdd"
-import { LoanDelete } from "./LoanDelete"
-import { LoanDetail } from "./LoanDetail"
-import { LoanEdit } from "./LoanEdit"
+import { LoanAdd } from "./Add"
+import { LoanDelete } from "./Delete"
+import { LoanDetail } from "./Detail"
+import { LoanEdit } from "./Edit"
 
 type Props = {
   loans: LoanComplete[]
