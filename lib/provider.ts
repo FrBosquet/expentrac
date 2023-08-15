@@ -15,3 +15,4 @@ export const getAccentColor = (provider?: Provider) => {
 
   return accent?.hex
 }
+

@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth"
 const getUserLoans = async (userId: string) => {
   const url = getUrl(`loan?userId=${userId}`)
 
-  const response = await fetch(url, { cache: 'no-store', credentials: 'include' })
+  const response = await fetch(url, { credentials: 'include' })
   const loans: Loan[] = await response.json()
 
   return loans
@@ -19,7 +19,7 @@ const getUserLoans = async (userId: string) => {
 const getUserSubscriptions = async (userId: string) => {
   const url = getUrl(`subscription?userId=${userId}`)
 
-  const response = await fetch(url, { cache: 'no-store', credentials: 'include' })
+  const response = await fetch(url, { credentials: 'include' })
   const subscriptions: Subscription[] = await response.json()
 
   return subscriptions
@@ -28,7 +28,7 @@ const getUserSubscriptions = async (userId: string) => {
 const getUserProviders = async (userId: string) => {
   const url = getUrl(`user-provider?userId=${userId}`)
 
-  const response = await fetch(url, { cache: 'no-store', credentials: 'include' })
+  const response = await fetch(url, { credentials: 'include' })
   const subscriptions: UserProvider[] = await response.json()
 
   return subscriptions

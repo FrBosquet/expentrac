@@ -23,9 +23,6 @@ export enum SELECT_OPTIONS {
 }
 
 export const Select = ({ items, name, required, defaultValue = SELECT_OPTIONS.NONE }: Props) => {
-  console.log({ defaultValue, items })
-
-
   return <UiSelect defaultValue={defaultValue || SELECT_OPTIONS.NONE} name={name} required={required}>
     <SelectTrigger className="overflow-hidden whitespace-nowrap text-ellipsis w-full">
       <SelectValue />
