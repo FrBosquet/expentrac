@@ -4,7 +4,6 @@ import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
-import { UserProvider } from "@prisma/client"
 import { LoanComplete } from "@types"
 import { Edit, EditIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -16,12 +15,11 @@ type Props = {
   className?: string
   variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
   triggerDecorator?: React.ReactNode
-  userProviders: UserProvider[]
 }
 
 const TRIGGER_DECORATOR = <Edit size={12} />
 
-export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR, userProviders }: Props) => {
+export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -60,7 +58,7 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
             Edit <strong className="font-semibold">{loan.name}</strong>.
           </DialogDescription>
         </DialogHeader>
-        <LoanForm loan={loan} onSubmit={handleSubmit} disabled={loading} userProviders={userProviders as any} />
+        <LoanForm loan={loan} onSubmit={handleSubmit} disabled={loading} />
       </DialogContent>
     </Dialog>
   )

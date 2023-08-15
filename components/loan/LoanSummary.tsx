@@ -9,7 +9,6 @@ import {
 } from "@components/ui/table"
 import { getLoanExtendedInformation } from "@lib/loan"
 import { getAccentColor } from "@lib/provider"
-import { UserProvider } from "@prisma/client"
 import { LoanComplete } from "@types"
 import { LoanAdd } from "./Add"
 import { LoanDelete } from "./Delete"
@@ -18,10 +17,9 @@ import { LoanEdit } from "./Edit"
 
 type Props = {
   loans: LoanComplete[]
-  userProviders: UserProvider[]
 }
 
-export const LoanSummary = ({ loans, userProviders }: Props) => {
+export const LoanSummary = ({ loans }: Props) => {
   return (
     <section className="flex flex-col gap-2 pt-8">
       <div className="flex justify-between">
@@ -55,11 +53,10 @@ export const LoanSummary = ({ loans, userProviders }: Props) => {
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
                 <TableCell className="font-semibold text-right">{loan.fee.toFixed(2)}€/m</TableCell>
                 <TableCell className="flex gap-1">
-                  <LoanEdit userProviders={userProviders} loan={loan} />
+                  <LoanEdit loan={loan} />
                   <LoanDelete loan={loan} />
                 </TableCell>
               </TableRow>
-
             )
           })}
         </TableBody>

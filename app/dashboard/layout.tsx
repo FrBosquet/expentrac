@@ -1,7 +1,9 @@
 import { Logo } from "@components/Logo"
 import { Navigation } from "@components/NavigationMenu"
+import { ProvidersProvider } from "@components/ProvidersProvider"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
+import { getUserProviders } from "@services/api"
 import { authOptions } from "@services/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
@@ -19,6 +21,8 @@ export default async function Layout({ children }: Props) {
 
   const { user } = data
 
+  const providers = await getUserProviders(user.id)
+
   return <main className="flex flex-col min-h-screen">
     <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
       <Logo className="text-4xl -tracking-widest px-2">et</Logo>
@@ -26,8 +30,9 @@ export default async function Layout({ children }: Props) {
     </header>
     <Navigation />
 
-
-    {children}
+    <ProvidersProvider serverValue={providers} >
+      {children}
+    </ProvidersProvider>
 
     <footer className="flex gap-4 bg-white p-2 justify-between items-center border-t border-gray-300">
       footer

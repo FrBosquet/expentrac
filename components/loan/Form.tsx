@@ -1,11 +1,12 @@
 'use client'
 
+import { useProviders } from "@components/ProvidersProvider"
 import { Select } from "@components/Select"
 import { Input } from "@components/ui/input"
 import { Label } from "@components/ui/label"
 import { Separator } from "@components/ui/separator"
 import { toHTMLInputFormat } from "@lib/dates"
-import { Loan, Provider, UserProvider } from "@prisma/client"
+import { Loan } from "@prisma/client"
 import { FormEventHandler } from "react"
 import { FieldSet, FormField, Root, SubmitButton } from "../Form"
 
@@ -13,15 +14,14 @@ type Props = {
   loan?: Loan
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean
-  userProviders: (UserProvider & {
-    provider: Provider
-  })[]
 }
 
-export const LoanForm = ({ loan, onSubmit, disabled = false, userProviders }: Props) => {
-  const brandOptions = userProviders.map((userProvider) => ({
-    value: userProvider.id,
-    label: userProvider.provider.name
+export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
+  const { providers } = useProviders()
+
+  const brandOptions = providers.map((provider) => ({
+    value: provider.id,
+    label: provider.provider.name
   }))
 
 

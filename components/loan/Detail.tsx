@@ -113,8 +113,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           <Separator className="col-span-2" />
 
           <menu className="col-span-2 flex gap-2 justify-end">
-            {/* add a provider to save user providers typed */}
-            <LoanEdit userProviders={[]} loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
             <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
           </menu>
         </section>

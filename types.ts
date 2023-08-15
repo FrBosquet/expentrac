@@ -79,3 +79,7 @@ export type LoanComplete = Loan & {
   platform?: UserProvider & { provider: Provider };
   lender?: UserProvider & { provider: Provider };
 }
+
+export type UserProviderComplete = UserProvider & {
+  provider: Provider
+}
