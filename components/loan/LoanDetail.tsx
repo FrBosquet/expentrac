@@ -5,25 +5,36 @@ import { Progress } from "@components/ui/progress"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
 import { getLoanExtendedInformation } from "@lib/loan"
-import { Loan } from "@prisma/client"
+import { LoanComplete } from "@types"
 import { Edit, Trash } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LoanDelete } from "./LoanDelete"
 import { LoanEdit } from "./LoanEdit"
 
 type Props = {
-  loan: Loan;
+  loan: LoanComplete;
   triggerContent?: React.ReactNode;
 };
 
 export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   const [open, setOpen] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name } = loan
   const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan)
 
   const alreadyPaid = paymentsDone * fee
   const total = fee * payments
+
+  useEffect(() => {
+    if (!open) {
+      setProgress(0)
+    } else {
+      setTimeout(() => {
+        setProgress((paymentsDone / payments) * 100)
+      }, 175)
+    }
+  }, [open, payments, paymentsDone])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -53,7 +64,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           </article>
 
           <article className="flex flex-col gap-2 col-span-2">
-            <Progress value={paymentsDone} max={payments} />
+            <Progress value={progress} />
           </article>
 
           <Separator className="col-span-2" />
@@ -79,7 +90,8 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           <Separator className="col-span-2" />
 
           <menu className="col-span-2 flex gap-2 justify-end">
-            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+            {/* add a provider to save user providers typed */}
+            <LoanEdit userProviders={[]} loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
             <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
           </menu>
         </section>

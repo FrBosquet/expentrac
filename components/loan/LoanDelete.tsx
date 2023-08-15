@@ -5,13 +5,13 @@ import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
-import { Loan } from "@prisma/client"
+import { LoanComplete } from "@types"
 import { Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 type Props = {
-  loan: Loan
+  loan: LoanComplete
   className?: string
   variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
   triggerDecorator?: React.ReactNode

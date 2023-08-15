@@ -1,4 +1,4 @@
-import { Provider } from "@prisma/client";
+import { Loan, Provider, UserProvider } from "@prisma/client"
 
 export type LoanExtendedInfo = {
   totalAmount: number;
@@ -8,6 +8,8 @@ export type LoanExtendedInfo = {
   payments: number;
   paymentsDone: number;
   paymentsLeft: number;
+
+  vendor?: Provider;
 }
 
 export type BrandExtendedInfo = {
@@ -71,3 +73,9 @@ export type Logo = {
 
 export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
 export type ProviderUnfetched = { isFetched: false } & Pick<Provider, 'id' | 'name'>
+
+export type LoanComplete = Loan & {
+  vendor?: UserProvider & { provider: Provider };
+  platform?: UserProvider & { provider: Provider };
+  lender?: UserProvider & { provider: Provider };
+}

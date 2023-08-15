@@ -24,8 +24,8 @@ export const FieldSet = ({ children, disabled }: { children: React.ReactNode, di
   </fieldset>
 }
 
-export const FormField = ({ label, name, ...props }: { label: string } & InputProps) => <>
-  <Label htmlFor={name} className="text-right">
+export const FormField = ({ label, name, ...props }: { label: string, labelClassName?: string } & InputProps) => <>
+  <Label htmlFor={name} className='text-right'>
     {label}
   </Label>
   <Input id={name} name={name} {...props} />
