@@ -1,14 +1,18 @@
 'use client'
 
+import { useUser } from "@components/Provider"
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
+import { revalidatUserLoans } from "@services/api"
 import { LoanComplete } from "@types"
 import { FormEventHandler, useState } from "react"
 import { useLoans } from "./Context"
 import { LoanForm } from "./Form"
 
 export const LoanAdd = () => {
+  const { user } = useUser()
+
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { addLoan } = useLoans()
@@ -26,6 +30,7 @@ export const LoanAdd = () => {
     const { data } = await result.json() as { data: LoanComplete }
 
     if (result.ok) {
+      revalidatUserLoans(user.id).then(r => r.json()).then(console.log)
       setOpen(false)
       addLoan(data)
     }

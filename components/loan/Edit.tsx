@@ -4,6 +4,7 @@ import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
+import { revalidatUserLoans } from "@services/api"
 import { LoanComplete } from "@types"
 import { Edit, EditIcon } from "lucide-react"
 import { FormEventHandler, useState } from "react"
@@ -41,6 +42,7 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
     setLoading(false)
 
     if (result.ok) {
+      revalidatUserLoans(loan.userId)
       setOpen(false)
       updateLoan(data)
     }
