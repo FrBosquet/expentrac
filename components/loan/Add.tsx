@@ -25,10 +25,10 @@ export const LoanAdd = () => {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
     })
-    setLoading(false)
 
     const { data } = await result.json() as { data: LoanComplete }
 
+    setLoading(false)
     if (result.ok) {
       revalidatUserLoans(user.id)
       setOpen(false)

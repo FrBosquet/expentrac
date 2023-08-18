@@ -1,16 +1,13 @@
 'use client'
 
-import { ProviderLogo } from "@components/provider/ProviderLogo"
+import { ProviderDetail } from "@components/ProviderDetail"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Progress } from "@components/ui/progress"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
 import { getLoanExtendedInformation } from "@lib/loan"
-import { getProviderLink } from "@lib/provider"
-import { cn } from "@lib/utils"
-import { Provider } from "@prisma/client"
 import { LoanComplete } from "@types"
-import { CircleOff, Edit, Trash } from "lucide-react"
+import { Edit, Trash } from "lucide-react"
 import { useEffect, useState } from "react"
 import { LoanDelete } from "./Delete"
 import { LoanEdit } from "./Edit"
@@ -19,19 +16,6 @@ type Props = {
   loan: LoanComplete;
   triggerContent?: React.ReactNode;
 };
-
-const ProviderDetail = ({ provider, label, className }: { provider?: Provider, label: string, className: string }) => {
-  const exist = provider != undefined
-
-  return (
-    <article className={cn("flex items-center justify-center flex-col gap-2", className)}>
-      <h4 className={cn("text-xs font-semibold text-center", exist ? 'text-slate-800' : 'text-slate-400')}>{label}</h4>
-      {exist ?
-        <a href={getProviderLink(provider)} target="_blank" ><ProviderLogo className="h-12 w-12" provider={provider} /></a> :
-        <CircleOff className="text-slate-400 flex-1" />}
-    </article>
-  )
-}
 
 export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   const [open, setOpen] = useState(false)

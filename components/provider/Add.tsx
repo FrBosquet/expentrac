@@ -20,7 +20,7 @@ export const ProviderAdd = () => {
       body: JSON.stringify(brand)
     })
 
-    const body = await result.json()
+    const { data } = await result.json() as { data: Brand }
 
     setLoading(false)
 

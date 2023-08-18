@@ -10,7 +10,7 @@ import {
   CardTitle
 } from "@components/ui/card"
 import { useLoans } from "./loan/Context"
-import { useSubs } from "./subscription/Context"
+import { useSubs } from "./subscription/context"
 
 export const Summary = () => {
   const { loans } = useLoans()

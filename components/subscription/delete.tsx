@@ -1,5 +1,6 @@
 'use client'
 
+import { SubmitButton } from "@components/Form"
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
@@ -8,6 +9,7 @@ import { Subscription } from "@prisma/client"
 import { Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useSubs } from "./context"
 
 type Props = {
   sub: Subscription
@@ -21,6 +23,7 @@ const TRIGGER_DECORATOR = <Trash size={12} />
 
 export const SubscriptionDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
   const { id, name } = sub
+  const { removeSub } = useSubs()
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -34,9 +37,9 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
 
     setLoading(false)
     if (result.ok) {
-      setOpen(false)
+      removeSub(sub)
       sideEffect?.()
-      router.refresh()
+      setOpen(false)
     }
   }
 
@@ -49,12 +52,12 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
         <DialogHeader>
           <DialogTitle>Delete subscription</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete <strong>{name}</strong>?
+            Are you sure you want to delete <strong className="font-semibold">{name}</strong>?
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
-          <button disabled={loading} onClick={() => setOpen(false)}>Cancel</button>
-          <button disabled={loading} onClick={handleDelete}>Delete</button>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <SubmitButton submitting={loading} onClick={handleDelete} variant='destructive'>Delete</SubmitButton>
         </div>
       </DialogContent>
     </Dialog>

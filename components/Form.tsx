@@ -31,11 +31,18 @@ export const FormField = ({ label, name, ...props }: { label: string, labelClass
   <Input id={name} name={name} {...props} />
 </>
 
-export const SubmitButton = ({ submitting, onClick }: { submitting: boolean, onClick?: () => void }) => {
-  return <Button variant="ghost" type={onClick ? 'button' : "submit"} onClick={onClick}>
+export const SubmitButton = ({
+  submitting, onClick, children, variant
+}: {
+  submitting: boolean,
+  onClick?: () => void,
+  children?: React.ReactNode,
+  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+}) => {
+  return <Button variant={variant || 'ghost'} type={onClick ? 'button' : "submit"} onClick={onClick}>
     {submitting ?
       <Loader2 size={16} className="animate animate-spin" />
-      : 'Submit'
+      : children || 'Submit'
     }
   </Button>
 }

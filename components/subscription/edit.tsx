@@ -6,9 +6,9 @@ import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
 import { Subscription } from "@prisma/client"
 import { Edit } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { useSubs } from "./context"
+import { SubscriptionForm } from "./form"
 
 type Props = {
   sub: Subscription
@@ -20,9 +20,9 @@ type Props = {
 const TRIGGER_DECORATOR = <Edit size={12} />
 
 export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { updateSub } = useSubs()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -35,11 +35,13 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
         ...Object.fromEntries(new FormData(e.currentTarget))
       })
     })
-    setLoading(false)
 
+    const { data } = await result.json() as { data: Subscription }
+
+    setLoading(false)
     if (result.ok) {
       setOpen(false)
-      router.refresh()
+      updateSub(data)
     }
   }
 
@@ -52,19 +54,10 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
         <DialogHeader>
           <DialogTitle>Edit subscription</DialogTitle>
           <DialogDescription>
-            Edit subscription <strong>{sub.name}</strong>.
+            Edit subscription <strong className="font-semibold">{sub.name}</strong>.
           </DialogDescription>
         </DialogHeader>
-        <Root onSubmit={handleSubmit}>
-          <FieldSet disabled={loading}>
-            <FormField required defaultValue={sub.name} name="name" label="Name" />
-            <FormField required defaultValue={sub.fee} name="fee" label="Fee" type="number" step="0.01" />
-
-            <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton submitting={loading} />
-            </div>
-          </FieldSet>
-        </Root>
+        <SubscriptionForm sub={sub} onSubmit={handleSubmit} disabled={loading} />
       </DialogContent>
     </Dialog>
   )

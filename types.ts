@@ -1,4 +1,4 @@
-import { Loan, Provider, UserProvider } from "@prisma/client"
+import { Loan, Provider, Subscription, UserProvider } from "@prisma/client"
 
 export type LoanExtendedInfo = {
   totalAmount: number;
@@ -82,4 +82,9 @@ export type LoanComplete = Loan & {
 
 export type UserProviderComplete = UserProvider & {
   provider: Provider
+}
+
+export type SubscriptionComplete = Subscription & {
+  vendor?: UserProvider & { provider: Provider };
+  platform?: UserProvider & { provider: Provider };
 }

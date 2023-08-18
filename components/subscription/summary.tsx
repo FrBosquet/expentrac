@@ -1,5 +1,6 @@
 'use client'
 
+import { ProviderLogo } from "@components/provider/ProviderLogo"
 import {
   Table,
   TableBody,
@@ -8,11 +9,12 @@ import {
   TableHeader,
   TableRow
 } from "@components/ui/table"
-import { useSubs } from "./Context"
-import { SubscriptionAdd } from "./SubscriptionAdd"
-import { SubscriptionDelete } from "./SubscriptionDelete"
-import { SubscriptionDetail } from "./SubscriptionDetail"
-import { SubscriptionEdit } from "./SubscriptionEdit"
+import { getAccentColor } from "@lib/provider"
+import { SubscriptionAdd } from "./add"
+import { useSubs } from "./context"
+import { SubscriptionDelete } from "./delete"
+import { SubscriptionDetail } from "./detail"
+import { SubscriptionEdit } from "./edit"
 
 export const SubscriptionSummary = () => {
   const { subs } = useSubs()
@@ -26,6 +28,7 @@ export const SubscriptionSummary = () => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-14" />
             <TableHead className="flex-1">Subscription</TableHead>
             <TableHead className="text-right">Monthly fee</TableHead>
             <TableHead className="w-4" />
@@ -36,6 +39,9 @@ export const SubscriptionSummary = () => {
 
             return (
               <TableRow key={sub.id}>
+                <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(sub.vendor?.provider) }}>{
+                  <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
+                }</TableCell>
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>

@@ -82,8 +82,6 @@ model Subscription {
   vendor     UserProvider? @relation(name: "SubscriptionVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
   platformId String?
   platform   UserProvider? @relation(name: "SubscriptionPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
-  lenderId   String?
-  lender     UserProvider? @relation(name: "SubscriptionLenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
 }
 
 model Provider {
@@ -109,5 +107,4 @@ model UserProvider {
   loansAsLender           Loan[]         @relation(name: "LoanLenderRelation")
   subscriptionsAsVendor   Subscription[] @relation(name: "SubscriptionVendorRelation")
   subscriptionsAsPlatform Subscription[] @relation(name: "SubscriptionPlatformRelation")
-  subscriptionsAsLender   Subscription[] @relation(name: "SubscriptionLenderRelation")
 }

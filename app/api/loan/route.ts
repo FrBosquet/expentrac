@@ -149,6 +149,11 @@ export const PATCH = async (req: Request) => {
     data: parseBody<Loan>(body),
     where: {
       id: body.id
+    },
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
     }
   }
 

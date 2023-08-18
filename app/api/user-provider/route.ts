@@ -20,6 +20,13 @@ export const GET = async (req: Request) => {
 
   const providers = await prisma.userProvider.findMany({
     where: { userId },
+    orderBy: [
+      {
+        provider: {
+          name: 'asc',
+        },
+      }
+    ],
     include: {
       provider: true
     }

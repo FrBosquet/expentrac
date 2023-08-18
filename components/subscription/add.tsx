@@ -3,14 +3,15 @@
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
-import { useRouter } from "next/navigation"
+import { Subscription } from "@prisma/client"
 import { FormEventHandler, useState } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { useSubs } from "./context"
+import { SubscriptionForm } from "./form"
 
 export const SubscriptionAdd = () => {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { addSub } = useSubs()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -20,11 +21,13 @@ export const SubscriptionAdd = () => {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
     })
-    setLoading(false)
 
+    const { data } = await result.json() as { data: Subscription }
+
+    setLoading(false)
     if (result.ok) {
       setOpen(false)
-      router.refresh()
+      addSub(data)
     }
   }
 
@@ -40,15 +43,7 @@ export const SubscriptionAdd = () => {
             Track a new subscription
           </DialogDescription>
         </DialogHeader>
-        <Root onSubmit={handleSubmit}>
-          <FieldSet disabled={loading}>
-            <FormField name="name" label="Name" />
-            <FormField name="fee" label="Fee" type="number" step="0.01" />
-            <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton submitting={loading} />
-            </div>
-          </FieldSet>
-        </Root>
+        <SubscriptionForm onSubmit={handleSubmit} disabled={loading} />
       </DialogContent>
     </Dialog>
   )

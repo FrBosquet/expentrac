@@ -1,8 +1,8 @@
 'use client'
 
+import { ProviderAdd } from "@components/provider/Add"
 import { useProviders } from "@components/provider/Context"
 import { FetchedProvider } from "@components/provider/FetchedProvider"
-import { ProviderAdd } from "@components/provider/ProviderAdd"
 import { UnfetchedProvider } from "@components/provider/UnfetchedProvider"
 import { isFetchedProvider } from "@lib/provider"
 import { ProviderUnfetched } from "@types"

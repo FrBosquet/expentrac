@@ -2,7 +2,7 @@ import { Logo } from "@components/Logo"
 import { Navigation } from "@components/NavigationMenu"
 import { LoansProvider } from "@components/loan/Context"
 import { ProvidersProvider } from "@components/provider/Context"
-import { SubsProvider } from "@components/subscription/Context"
+import { SubsProvider } from "@components/subscription/context"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
 import { getUserLoans, getUserProviders, getUserSubscriptions } from "@services/api"
