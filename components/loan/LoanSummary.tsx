@@ -1,3 +1,5 @@
+'use client'
+
 import { ProviderLogo } from "@components/provider/ProviderLogo"
 import {
   Table,
@@ -9,17 +11,15 @@ import {
 } from "@components/ui/table"
 import { getLoanExtendedInformation } from "@lib/loan"
 import { getAccentColor } from "@lib/provider"
-import { LoanComplete } from "@types"
 import { LoanAdd } from "./Add"
+import { useLoans } from "./Context"
 import { LoanDelete } from "./Delete"
 import { LoanDetail } from "./Detail"
 import { LoanEdit } from "./Edit"
 
-type Props = {
-  loans: LoanComplete[]
-}
+export const LoanSummary = () => {
+  const { loans } = useLoans()
 
-export const LoanSummary = ({ loans }: Props) => {
   return (
     <section className="flex flex-col gap-2 pt-8">
       <div className="flex justify-between">

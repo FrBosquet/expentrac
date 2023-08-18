@@ -1,9 +1,11 @@
 import { Logo } from "@components/Logo"
 import { Navigation } from "@components/NavigationMenu"
+import { LoansProvider } from "@components/loan/Context"
 import { ProvidersProvider } from "@components/provider/Context"
+import { SubsProvider } from "@components/subscription/Context"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
-import { getUserProviders } from "@services/api"
+import { getUserLoans, getUserProviders, getUserSubscriptions } from "@services/api"
 import { authOptions } from "@services/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
@@ -21,7 +23,15 @@ export default async function Layout({ children }: Props) {
 
   const { user } = data
 
-  const providers = await getUserProviders(user.id)
+  const [
+    providers,
+    loans,
+    subs
+  ] = await Promise.all([
+    getUserProviders(user.id),
+    getUserLoans(user.id),
+    getUserSubscriptions(user.id),
+  ])
 
   return <main className="flex flex-col min-h-screen">
     <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
@@ -31,7 +41,11 @@ export default async function Layout({ children }: Props) {
     <Navigation />
 
     <ProvidersProvider serverValue={providers} >
-      {children}
+      <LoansProvider serverValue={loans}>
+        <SubsProvider serverValue={subs}>
+          {children}
+        </SubsProvider>
+      </LoansProvider>
     </ProvidersProvider>
 
     <footer className="flex gap-4 bg-white p-2 justify-between items-center border-t border-gray-300">

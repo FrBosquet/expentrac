@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Table,
   TableBody,
@@ -6,17 +8,15 @@ import {
   TableHeader,
   TableRow
 } from "@components/ui/table"
-import { Subscription } from "@prisma/client"
+import { useSubs } from "./Context"
 import { SubscriptionAdd } from "./SubscriptionAdd"
 import { SubscriptionDelete } from "./SubscriptionDelete"
 import { SubscriptionDetail } from "./SubscriptionDetail"
 import { SubscriptionEdit } from "./SubscriptionEdit"
 
-type Props = {
-  subscriptions: Subscription[]
-}
+export const SubscriptionSummary = () => {
+  const { subs } = useSubs()
 
-export const SubscriptionSummary = ({ subscriptions }: Props) => {
   return (
     <section className="flex flex-col gap-2 pt-8">
       <div className="flex justify-between">
@@ -32,7 +32,7 @@ export const SubscriptionSummary = ({ subscriptions }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {subscriptions.map((sub) => {
+          {subs.map((sub) => {
 
             return (
               <TableRow key={sub.id}>

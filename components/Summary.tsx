@@ -1,5 +1,6 @@
+'use client'
+
 import { getLoanExtendedInformation } from "@lib/loan"
-import { Loan, Subscription } from "@prisma/client"
 
 import {
   Card,
@@ -8,13 +9,13 @@ import {
   CardHeader,
   CardTitle
 } from "@components/ui/card"
+import { useLoans } from "./loan/Context"
+import { useSubs } from "./subscription/Context"
 
-type Props = {
-  loans: Loan[],
-  subs: Subscription[]
-}
+export const Summary = () => {
+  const { loans } = useLoans()
+  const { subs } = useSubs()
 
-export const Summary = ({ loans, subs }: Props) => {
   const totalLoans = loans.reduce((acc, cur) => acc + cur.fee, 0)
   const totalSubs = subs.reduce((acc, cur) => acc + cur.fee, 0)
   const total = totalLoans + totalSubs
