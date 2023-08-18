@@ -1,32 +1,14 @@
+'use client'
+
+import { useProviders } from "@components/provider/Context"
 import { FetchedProvider } from "@components/provider/FetchedProvider"
 import { ProviderAdd } from "@components/provider/ProviderAdd"
 import { UnfetchedProvider } from "@components/provider/UnfetchedProvider"
-import { getUrl } from "@lib/api"
 import { isFetchedProvider } from "@lib/provider"
-import { getUser } from "@lib/session"
-import { UserProvider } from "@prisma/client"
-import { authOptions } from "@services/auth"
-import { ProviderFetched, ProviderUnfetched } from "@types"
-import { getServerSession } from "next-auth"
+import { ProviderUnfetched } from "@types"
 
-type SafeUserProvider = UserProvider & { provider: ProviderFetched | ProviderUnfetched }
-
-const getUserProviders = async (userId: string) => {
-  const url = getUrl(`user-provider?userId=${userId}`)
-
-  const response = await fetch(url, { credentials: 'include' })
-  const providers = await response.json()
-
-  return providers as SafeUserProvider[]
-}
-
-export default async function Page() {
-  const data = await getServerSession(authOptions)
-
-  const user = getUser(data)
-  const userId = user.id as string
-
-  const userProviders = await getUserProviders(userId)
+export default function Page() {
+  const { providers: userProviders } = useProviders()
 
   return (
     <section className="flex-1 w-screen max-w-3xl p-12 m-auto flex flex-col gap-4">
@@ -40,7 +22,7 @@ export default async function Page() {
           if (isFetchedProvider(provider)) {
             return <FetchedProvider key={provider.id} provider={provider} />
           } else {
-            return <UnfetchedProvider key={provider.id} provider={provider} />
+            return <UnfetchedProvider key={provider.id} provider={provider as ProviderUnfetched} />
           }
         })}
       </section>
