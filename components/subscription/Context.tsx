@@ -30,7 +30,10 @@ export const SubsProvider = ({ children, serverValue }: Props) => {
     add: addSub,
     remove: removeSub,
     update: updateSub
-  } = useResourceContext<SubscriptionComplete>(serverValue)
+  } = useResourceContext<SubscriptionComplete>(
+    serverValue,
+    (a, b) => a.name.localeCompare(b.name)
+  )
 
   return (
     <SubContext.Provider value={{ subs, setSubs, addSub, removeSub, updateSub }}>
