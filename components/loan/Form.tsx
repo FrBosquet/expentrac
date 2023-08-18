@@ -1,6 +1,6 @@
 'use client'
 
-import { Select } from "@components/Select"
+import { ProviderSelect } from "@components/ProviderSelect"
 import { useProviders } from "@components/provider/context"
 import { Input } from "@components/ui/input"
 import { Label } from "@components/ui/label"
@@ -35,21 +35,21 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
           <Label htmlFor='vendorId' className="text-xs text-center">
             Vendor
           </Label>
-          <Select required name="vendorId" items={brandOptions} defaultValue={loan?.vendorId} />
+          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={loan?.vendorId} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='platformId' className="text-xs text-center">
             Platform
           </Label>
-          <Select required name="platformId" items={brandOptions} defaultValue={loan?.platformId} />
+          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={loan?.platformId} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='lenderId' className="text-xs text-center">
             Lender
           </Label>
-          <Select required name="lenderId" items={brandOptions} defaultValue={loan?.lenderId} />
+          <ProviderSelect required name="lenderId" items={brandOptions} defaultValue={loan?.lenderId} />
         </span>
 
       </div>
