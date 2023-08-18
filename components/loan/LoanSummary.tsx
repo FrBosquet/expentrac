@@ -51,7 +51,7 @@ export const LoanSummary = () => {
                 </TableCell>
                 <TableCell>{paymentsDone}/{payments}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
-                <TableCell className="font-semibold text-right">{loan.fee.toFixed(2)}€/m</TableCell>
+                <TableCell className="font-semibold text-right">{loan.fee?.toFixed(2)}€/m</TableCell>
                 <TableCell className="flex gap-1">
                   <LoanEdit loan={loan} />
                   <LoanDelete loan={loan} />

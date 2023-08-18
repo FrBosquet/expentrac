@@ -35,7 +35,7 @@ export const GET = async (req: Request) => {
   return NextResponse.json(loans)
 }
 
-const parseBody = <T>(body: Record<string, string>) => {
+const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   return Object.entries(body).reduce((acc, [key, value]) => {
     let parsedValue: any = value
     let parsedKey = key
@@ -52,6 +52,8 @@ const parseBody = <T>(body: Record<string, string>) => {
       case 'platformId':
       case 'lenderId':
         if (value === SELECT_OPTIONS.CREATE) return acc
+        if (isCreate && value === SELECT_OPTIONS.NONE) return acc
+
         parsedKey = key.slice(0, -2)
 
         if (value === SELECT_OPTIONS.NONE) {
@@ -92,12 +94,17 @@ export const POST = async (req: Request) => {
   const body = await req.json()
   const args: Prisma.LoanCreateArgs = {
     data: {
-      ...parseBody<Omit<Loan, 'userId' | 'lenderId' | 'vendorId' | 'platformId'>>(body),
+      ...parseBody<Omit<Loan, 'userId' | 'lenderId' | 'vendorId' | 'platformId'>>(body, true),
       user: {
         connect: {
           id: userId
         }
       }
+    },
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
     }
   }
 

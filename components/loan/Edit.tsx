@@ -6,8 +6,8 @@ import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
 import { LoanComplete } from "@types"
 import { Edit, EditIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { FormEventHandler, useState } from "react"
+import { useLoans } from "./Context"
 import { LoanForm } from "./Form"
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 const TRIGGER_DECORATOR = <Edit size={12} />
 
 export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
-  const router = useRouter()
+  const { updateLoan } = useLoans()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -35,11 +35,14 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
         ...Object.fromEntries(new FormData(e.currentTarget))
       })
     })
+
+    const { data } = await result.json() as { data: LoanComplete }
+
     setLoading(false)
 
     if (result.ok) {
       setOpen(false)
-      router.refresh()
+      updateLoan(data)
     }
   }
 

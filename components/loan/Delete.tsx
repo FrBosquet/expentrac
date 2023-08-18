@@ -7,8 +7,8 @@ import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
 import { LoanComplete } from "@types"
 import { Trash } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useLoans } from "./Context"
 
 type Props = {
   loan: LoanComplete
@@ -22,9 +22,9 @@ const TRIGGER_DECORATOR = <Trash size={12} />
 
 export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
   const { id, name } = loan
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { removeLoan } = useLoans()
 
   const handleDelete = async () => {
     setLoading(true)
@@ -35,10 +35,11 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
 
     if (result.ok) {
       sideEffect?.()
+      removeLoan(loan)
       setOpen(false)
-      router.refresh()
     } else {
       setLoading(false)
+      // TODO: error toast
     }
   }
 
