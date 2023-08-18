@@ -1,6 +1,6 @@
 import { Logo } from "@components/Logo"
 import { Navigation } from "@components/NavigationMenu"
-import { ProvidersProvider } from "@components/ProvidersProvider"
+import { ProvidersProvider } from "@components/provider/Context"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
 import { getUserProviders } from "@services/api"
