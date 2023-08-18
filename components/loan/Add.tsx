@@ -30,7 +30,7 @@ export const LoanAdd = () => {
     const { data } = await result.json() as { data: LoanComplete }
 
     if (result.ok) {
-      revalidatUserLoans(user.id).then(r => r.json()).then(console.log)
+      revalidatUserLoans(user.id)
       setOpen(false)
       addLoan(data)
     }

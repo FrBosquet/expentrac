@@ -152,9 +152,6 @@ export const PATCH = async (req: Request) => {
     }
   }
 
-  console.log({ args })
-
-
   const updatedLoan = await prisma.loan.update(args)
 
   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
