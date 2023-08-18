@@ -9,8 +9,8 @@ import { getLoanExtendedInformation } from "@lib/loan"
 import { LoanComplete } from "@types"
 import { Edit, Trash } from "lucide-react"
 import { useEffect, useState } from "react"
-import { LoanDelete } from "./Delete"
-import { LoanEdit } from "./Edit"
+import { LoanDelete } from "./delete"
+import { LoanEdit } from "./edit"
 
 type Props = {
   loan: LoanComplete;

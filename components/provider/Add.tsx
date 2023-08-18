@@ -3,47 +3,62 @@
 import { Brand, BrandAutocomplete } from "@components/BrandAutocomplete"
 import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { useRouter } from "next/navigation"
+import { addUserProvider } from "@services/sdk"
+import { UserProviderComplete } from "@types"
 import { useState } from "react"
+import { useProviders } from "./context"
 
-export const ProviderAdd = () => {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
+export const ProviderDialog = ({
+  children,
+  open,
+  setOpen,
+  sideEffect
+}: {
+  children?: React.ReactNode
+  open: boolean
+  setOpen: (open: boolean) => void
+  sideEffect?: (userProvider: UserProviderComplete) => void
+}) => {
+  const { addProvider } = useProviders()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (brand: Brand) => {
-    setLoading(true)
+    try {
+      setLoading(true)
 
-    const result = await fetch(getUrl(`/user-provider`), {
-      method: 'POST',
-      body: JSON.stringify(brand)
-    })
+      const userProvider = await addUserProvider(brand)
 
-    const { data } = await result.json() as { data: Brand }
+      addProvider(userProvider)
 
-    setLoading(false)
-
-    if (result.ok) {
+      sideEffect?.(userProvider)
       setOpen(false)
-      router.refresh()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="text-xs h-auto" onClick={() => setOpen(true)}>New provider</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add a provider</DialogTitle>
-          <DialogDescription>
-            Add a new provider to yout list
-          </DialogDescription>
-        </DialogHeader>
-        <BrandAutocomplete loading={loading} onSelect={handleSubmit} />
-      </DialogContent>
-    </Dialog>
-  )
+  return <Dialog open={open} onOpenChange={setOpen}>
+    {children}
+    <DialogContent className="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Add a provider</DialogTitle>
+        <DialogDescription>
+          Add a new provider to yout list
+        </DialogDescription>
+      </DialogHeader>
+      <BrandAutocomplete loading={loading} onSelect={handleSubmit} />
+    </DialogContent>
+  </Dialog>
+}
+
+export const ProviderAdd = () => {
+  const [open, setOpen] = useState(false)
+
+  return <ProviderDialog open={open} setOpen={setOpen}>
+    <DialogTrigger asChild>
+      <Button variant="outline" className="text-xs h-auto" onClick={() => setOpen(true)}>New provider</Button>
+    </DialogTrigger>
+  </ProviderDialog>
 }

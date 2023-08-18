@@ -74,7 +74,7 @@ export const POST = async (req: Request) => {
     extendedData = existingProviderInfo.rawContent as BrandExtendedInfo
   }
 
-  const newLoan = await prisma.userProvider.create({
+  const data = await prisma.userProvider.create({
     data: {
       provider: {
         connectOrCreate: {
@@ -100,7 +100,7 @@ export const POST = async (req: Request) => {
     }
   })
 
-  return NextResponse.json({ message: 'success', newLoan }, { status: 201 })
+  return NextResponse.json({ message: 'success', data }, { status: 201 })
 }
 
 // export const PATCH = async (req: Request) => {

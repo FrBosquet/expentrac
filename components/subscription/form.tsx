@@ -1,7 +1,7 @@
 'use client'
 
-import { Select } from "@components/Select"
-import { useProviders } from "@components/provider/Context"
+import { ProviderSelect } from "@components/ProviderSelect"
+import { useProviders } from "@components/provider/context"
 import { Label } from "@components/ui/label"
 import { Separator } from "@components/ui/separator"
 import { Subscription } from "@prisma/client"
@@ -32,14 +32,14 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
           <Label htmlFor='vendorId' className="text-xs text-center">
             Vendor
           </Label>
-          <Select required name="vendorId" items={brandOptions} defaultValue={sub?.vendorId} />
+          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={sub?.vendorId} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='platformId' className="text-xs text-center">
             Platform
           </Label>
-          <Select required name="platformId" items={brandOptions} defaultValue={sub?.platformId} />
+          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={sub?.platformId} />
         </span>
       </div>
 

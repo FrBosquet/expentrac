@@ -1,7 +1,7 @@
 'use client'
 
 import { Select } from "@components/Select"
-import { useProviders } from "@components/provider/Context"
+import { useProviders } from "@components/provider/context"
 import { Input } from "@components/ui/input"
 import { Label } from "@components/ui/label"
 import { Separator } from "@components/ui/separator"

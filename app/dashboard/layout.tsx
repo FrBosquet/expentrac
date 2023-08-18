@@ -1,12 +1,12 @@
 import { Logo } from "@components/Logo"
 import { Navigation } from "@components/NavigationMenu"
 import { LoansProvider } from "@components/loan/Context"
-import { ProvidersProvider } from "@components/provider/Context"
+import { ProvidersProvider } from "@components/provider/context"
 import { SubsProvider } from "@components/subscription/context"
 import { Menu } from "@components/user/Menu"
 import { hasUser } from '@lib/session'
-import { getUserLoans, getUserProviders, getUserSubscriptions } from "@services/api"
 import { authOptions } from "@services/auth"
+import { getUserLoans, getUserProviders, getUserSubscriptions } from "@services/sdk"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 

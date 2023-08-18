@@ -1,5 +1,5 @@
 import { Summary } from "@components/Summary"
-import { LoanSummary } from "@components/loan/LoanSummary"
+import { LoanSummary } from "@components/loan/summary"
 import { SubscriptionSummary } from "@components/subscription/summary"
 
 export default async function Page() {

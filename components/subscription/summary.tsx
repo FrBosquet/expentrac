@@ -37,11 +37,15 @@ export const SubscriptionSummary = () => {
         <TableBody>
           {subs.map((sub) => {
 
+            const accentColor = getAccentColor(sub.vendor?.provider)
+
             return (
               <TableRow key={sub.id}>
-                <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(sub.vendor?.provider) }}>{
-                  <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
-                }</TableCell>
+                <TableCell className="border-l-4" style={{
+                  borderLeftColor: accentColor
+                }}>{
+                    <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
+                  }</TableCell>
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>

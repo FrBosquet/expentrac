@@ -11,11 +11,11 @@ import {
 } from "@components/ui/table"
 import { getLoanExtendedInformation } from "@lib/loan"
 import { getAccentColor } from "@lib/provider"
-import { LoanAdd } from "./Add"
 import { useLoans } from "./Context"
-import { LoanDelete } from "./Delete"
-import { LoanDetail } from "./Detail"
-import { LoanEdit } from "./Edit"
+import { LoanAdd } from "./add"
+import { LoanDelete } from "./delete"
+import { LoanDetail } from "./detail"
+import { LoanEdit } from "./edit"
 
 export const LoanSummary = () => {
   const { loans } = useLoans()

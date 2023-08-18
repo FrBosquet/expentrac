@@ -44,5 +44,5 @@ export const ProviderLogo = ({ provider, className }: Props) => {
 
   const logoSrc = getLogoUrl(provider.rawContent as BrandExtendedInfo)
 
-  return <img src={logoSrc} alt={provider.name} className={cn("w-16 h-16 fill-black", className)} />
+  return <img src={logoSrc} alt={provider.name} className={cn("w-16 h-16 fill-black object-contain", className)} />
 }

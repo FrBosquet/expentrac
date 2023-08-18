@@ -8,10 +8,10 @@ type ResourceContext<T> = {
   update: (resource: T) => void;
 }
 
-export const useResourceContext = <T extends { id: string, name: string }>
+export const useResourceContext = <T extends { id: string }>
   (
     initialValue: T[],
-    sortFunction: (a: T, b: T) => number = (a, b) => a.name.localeCompare(b.name)
+    sortFunction: (a: T, b: T) => number
   ): ResourceContext<T> => {
   const [resource, setResource] = useState(initialValue)
 
