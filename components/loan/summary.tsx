@@ -1,6 +1,6 @@
 'use client'
 
-import { ProviderLogo } from "@components/provider/ProviderLogo"
+import { ProviderLogo } from "@components/provider/logo"
 import {
   Table,
   TableBody,

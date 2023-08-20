@@ -1,3 +1,4 @@
+import { ProviderDialog } from "@/components/provider/add"
 import {
   SelectContent,
   SelectItem,
@@ -6,8 +7,7 @@ import {
   Select as UiSelect,
 } from "@/components/ui/select"
 import { useState } from "react"
-import { ProviderDialog } from "./provider/add"
-import { Separator } from "./ui/separator"
+import { Separator } from "../ui/separator"
 
 type Props = {
   items: {

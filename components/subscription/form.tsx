@@ -1,7 +1,7 @@
 'use client'
 
-import { ProviderSelect } from "@components/ProviderSelect"
 import { useProviders } from "@components/provider/context"
+import { ProviderSelect } from "@components/provider/select"
 import { Label } from "@components/ui/label"
 import { Separator } from "@components/ui/separator"
 import { Subscription } from "@prisma/client"
