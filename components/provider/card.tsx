@@ -3,8 +3,8 @@
 import { getAccentColor } from "@lib/provider"
 import { BrandExtendedInfo, UserProviderComplete } from "@types"
 import { HelpCircle } from "lucide-react"
+import { ProviderLogo } from "./ProviderLogo"
 import { ProviderDetail } from "./detail"
-import { ProviderLogo } from "./logo"
 
 type Props = {
   userProvider: UserProviderComplete

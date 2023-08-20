@@ -2,7 +2,7 @@ import { getProviderLink } from "@lib/provider"
 import { cn } from "@lib/utils"
 import { Provider } from "@prisma/client"
 import { CircleOff } from "lucide-react"
-import { ProviderLogo } from "./provider/logo"
+import { ProviderLogo } from "./provider/ProviderLogo"
 
 export const ProviderDetail = ({ provider, label, className }: { provider?: Provider, label: string, className: string }) => {
   const exist = provider != undefined
