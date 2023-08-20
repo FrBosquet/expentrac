@@ -1,15 +1,7 @@
-'use client'
-
 import { ProviderAdd } from "@components/provider/add"
-import { useProviders } from "@components/provider/context"
-import { FetchedProvider } from "@components/provider/FetchedProvider"
-import { UnfetchedProvider } from "@components/provider/UnfetchedProvider"
-import { isFetchedProvider } from "@lib/provider"
-import { ProviderUnfetched } from "@types"
+import { UserProviderSummary } from "@components/provider/summary"
 
 export default function Page() {
-  const { providers: userProviders } = useProviders()
-
   return (
     <section className="flex-1 w-screen max-w-3xl p-12 m-auto flex flex-col gap-4">
       <h1 className="text-3xl">Your providers</h1>
@@ -17,15 +9,7 @@ export default function Page() {
       <div className="flex flex-col gap-2 justify-end">
         <ProviderAdd />
       </div>
-      <section className="grid grid-cols-3 gap-4">
-        {userProviders.map(({ provider }) => {
-          if (isFetchedProvider(provider)) {
-            return <FetchedProvider key={provider.id} provider={provider} />
-          } else {
-            return <UnfetchedProvider key={provider.id} provider={provider as ProviderUnfetched} />
-          }
-        })}
-      </section>
+      <UserProviderSummary />
     </section>
   )
 }

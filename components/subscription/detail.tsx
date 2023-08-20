@@ -13,9 +13,10 @@ import { SubscriptionEdit } from "./edit"
 type Props = {
   sub: SubscriptionComplete;
   triggerContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-export const SubscriptionDetail = ({ sub, triggerContent = sub.name }: Props) => {
+export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children }: Props) => {
   const [open, setOpen] = useState(false)
 
   const { fee, name } = sub
@@ -23,7 +24,7 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name }: Props) =>
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{triggerContent}</button>
+        <button className="hover:text-primary">{children || triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

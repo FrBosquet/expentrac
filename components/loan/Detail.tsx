@@ -15,9 +15,10 @@ import { LoanEdit } from "./edit"
 type Props = {
   loan: LoanComplete;
   triggerContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
+export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
@@ -40,7 +41,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{triggerContent}</button>
+        <button className="hover:text-primary">{children || triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
