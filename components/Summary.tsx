@@ -2,8 +2,6 @@
 
 import { getLoanExtendedInformation } from "@lib/loan"
 
-import { useLoans } from "@components/loan/Context"
-import { useSubs } from "@components/subscription/context"
 import {
   Card,
   CardContent,
@@ -11,6 +9,8 @@ import {
   CardHeader,
   CardTitle
 } from "@components/ui/card"
+import { useLoans } from "./loan/Context"
+import { useSubs } from "./subscription/context"
 
 export const Summary = () => {
   const { loans } = useLoans()

@@ -1,10 +1,5 @@
 'use client'
 
-import { useLoans } from "@components/loan/Context"
-import { LoanAdd } from "@components/loan/add"
-import { LoanDelete } from "@components/loan/delete"
-import { LoanDetail } from "@components/loan/detail"
-import { LoanEdit } from "@components/loan/edit"
 import { ProviderLogo } from "@components/provider/logo"
 import {
   Table,
@@ -16,6 +11,11 @@ import {
 } from "@components/ui/table"
 import { getLoanExtendedInformation } from "@lib/loan"
 import { getAccentColor } from "@lib/provider"
+import { useLoans } from "./Context"
+import { LoanAdd } from "./add"
+import { LoanDelete } from "./delete"
+import { LoanDetail } from "./detail"
+import { LoanEdit } from "./edit"
 
 export const LoanSummary = () => {
   const { loans } = useLoans()
