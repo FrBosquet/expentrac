@@ -1,4 +1,5 @@
-import { Loan } from "@prisma/client"
+import { SELECT_OPTIONS } from "@components/Select"
+import { Loan, Prisma } from "@prisma/client"
 import { authOptions } from "@services/auth"
 import { prisma } from "@services/prisma"
 import { getServerSession } from "next-auth/next"
@@ -23,15 +24,21 @@ export const GET = async (req: Request) => {
       {
         name: 'asc',
       }
-    ]
+    ],
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
+    }
   })
 
   return NextResponse.json(loans)
 }
 
-const parseBody = <T>(body: Record<string, string>) => {
+const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   return Object.entries(body).reduce((acc, [key, value]) => {
     let parsedValue: any = value
+    let parsedKey = key
 
     switch (key) {
       case 'fee':
@@ -41,11 +48,32 @@ const parseBody = <T>(body: Record<string, string>) => {
       case 'endDate':
         parsedValue = new Date(value).toISOString()
         break
+      case 'vendorId':
+      case 'platformId':
+      case 'lenderId':
+        if (value === SELECT_OPTIONS.CREATE) return acc
+        if (isCreate && value === SELECT_OPTIONS.NONE) return acc
+
+        parsedKey = key.slice(0, -2)
+
+        if (value === SELECT_OPTIONS.NONE) {
+          parsedValue = {
+            disconnect: true
+          }
+        } else {
+          parsedValue = {
+            connect: {
+              id: value
+            }
+          }
+        }
+
+        break
     }
 
     return {
       ...acc,
-      [key]: parsedValue
+      [parsedKey]: parsedValue
     }
   }, {}) as T
 }
@@ -64,17 +92,23 @@ export const POST = async (req: Request) => {
   const userId = session.user.id
 
   const body = await req.json()
-
-  const newLoan = await prisma.loan.create({
+  const args: Prisma.LoanCreateArgs = {
     data: {
-      ...parseBody<Omit<Loan, 'userId'>>(body),
+      ...parseBody<Omit<Loan, 'userId' | 'lenderId' | 'vendorId' | 'platformId'>>(body, true),
       user: {
         connect: {
           id: userId
         }
       }
+    },
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
     }
-  })
+  }
+
+  const newLoan = await prisma.loan.create(args)
 
   return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
 }
@@ -111,12 +145,19 @@ export const PATCH = async (req: Request) => {
     })
   }
 
-  const updatedLoan = await prisma.loan.update({
+  const args: Prisma.LoanUpdateArgs = {
     data: parseBody<Loan>(body),
     where: {
       id: body.id
+    },
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
     }
-  })
+  }
+
+  const updatedLoan = await prisma.loan.update(args)
 
   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
 }

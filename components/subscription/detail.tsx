@@ -1,20 +1,22 @@
 'use client'
 
+import { ProviderDetail } from "@components/ProviderDetail"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
-import { Subscription } from "@prisma/client"
+import { SubscriptionComplete } from "@types"
 import { Edit, Trash } from "lucide-react"
 import { useState } from "react"
-import { SubscriptionDelete } from "./SubscriptionDelete"
-import { SubscriptionEdit } from "./SubscriptionEdit"
+import { SubscriptionDelete } from "./delete"
+import { SubscriptionEdit } from "./edit"
 
 type Props = {
-  sub: Subscription;
+  sub: SubscriptionComplete;
   triggerContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-export const SubscriptionDetail = ({ sub, triggerContent = sub.name }: Props) => {
+export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children }: Props) => {
   const [open, setOpen] = useState(false)
 
   const { fee, name } = sub
@@ -22,7 +24,7 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name }: Props) =>
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{triggerContent}</button>
+        <button className="hover:text-primary">{children || triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -32,6 +34,10 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name }: Props) =>
           </DialogDescription>
         </DialogHeader>
         <section className="grid grid-cols-2 gap-4">
+          <article className="grid grid-cols-2 gap-2 col-span-2">
+            <ProviderDetail provider={sub.vendor?.provider} label="Vendor" className="col-start-1" />
+            <ProviderDetail provider={sub.platform?.provider} label="Platform" className="col-start-2" />
+          </article>
           <article className="flex flex-col gap-2 col-span-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
             <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>

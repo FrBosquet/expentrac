@@ -45,6 +45,7 @@ model User {
   sessions      Session[]
   loans         Loan[]
   subscriptions Subscription[]
+  providers     UserProvider[]
 }
 
 model VerificationToken {
@@ -56,19 +57,54 @@ model VerificationToken {
 }
 
 model Loan {
-  id        String   @id @default(cuid())
-  name      String
-  fee       Float
-  startDate DateTime
-  endDate   DateTime
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String        @id @default(cuid())
+  name       String
+  fee        Float
+  startDate  DateTime
+  endDate    DateTime
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorId   String?
+  vendor     UserProvider? @relation(name: "LoanVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
+  platformId String?
+  platform   UserProvider? @relation(name: "LoanPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
+  lenderId   String?
+  lender     UserProvider? @relation(name: "LoanLenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
-  id     String @id @default(cuid())
-  name   String
-  fee    Float
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String        @id @default(cuid())
+  name       String
+  fee        Float
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorId   String?
+  vendor     UserProvider? @relation(name: "SubscriptionVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
+  platformId String?
+  platform   UserProvider? @relation(name: "SubscriptionPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
+}
+
+model Provider {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  users          UserProvider[]
+  isFetched      Boolean        @default(false)
+  url            String?
+  logo           String?
+  mainColor      String?
+  secondaryColor String?
+  rawContent     Json?
+}
+
+model UserProvider {
+  id                      String         @id @default(cuid())
+  userId                  String
+  user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId              String
+  provider                Provider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  loansAsVendor           Loan[]         @relation(name: "LoanVendorRelation")
+  loansAsPlatform         Loan[]         @relation(name: "LoanPlatformRelation")
+  loansAsLender           Loan[]         @relation(name: "LoanLenderRelation")
+  subscriptionsAsVendor   Subscription[] @relation(name: "SubscriptionVendorRelation")
+  subscriptionsAsPlatform Subscription[] @relation(name: "SubscriptionPlatformRelation")
 }

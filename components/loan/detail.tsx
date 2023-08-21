@@ -1,23 +1,26 @@
 'use client'
 
+import { ProviderDetail } from "@components/ProviderDetail"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Progress } from "@components/ui/progress"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
 import { getLoanExtendedInformation } from "@lib/loan"
-import { Loan } from "@prisma/client"
+import { LoanComplete } from "@types"
 import { Edit, Trash } from "lucide-react"
-import { useState } from "react"
-import { LoanDelete } from "./LoanDelete"
-import { LoanEdit } from "./LoanEdit"
+import { useEffect, useState } from "react"
+import { LoanDelete } from "./delete"
+import { LoanEdit } from "./edit"
 
 type Props = {
-  loan: Loan;
+  loan: LoanComplete;
   triggerContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
+export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
   const [open, setOpen] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name } = loan
   const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan)
@@ -25,10 +28,20 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
   const alreadyPaid = paymentsDone * fee
   const total = fee * payments
 
+  useEffect(() => {
+    if (!open) {
+      setProgress(0)
+    } else {
+      setTimeout(() => {
+        setProgress((paymentsDone / payments) * 100)
+      }, 175)
+    }
+  }, [open, payments, paymentsDone])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{triggerContent}</button>
+        <button className="hover:text-primary">{children || triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -38,6 +51,12 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           </DialogDescription>
         </DialogHeader>
         <section className="grid grid-cols-2 gap-4">
+          <article className="grid grid-cols-3 gap-2 col-span-2">
+            <ProviderDetail provider={loan.vendor?.provider} label="Vendor" className="col-start-1" />
+            <ProviderDetail provider={loan.platform?.provider} label="Platform" className="col-start-2" />
+            <ProviderDetail provider={loan.lender?.provider} label="Lender" className="col-start-3" />
+          </article>
+
           <article className="flex flex-col gap-2 col-span-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
             <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
@@ -53,7 +72,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name }: Props) => {
           </article>
 
           <article className="flex flex-col gap-2 col-span-2">
-            <Progress value={paymentsDone} max={payments} />
+            <Progress value={progress} />
           </article>
 
           <Separator className="col-span-2" />

@@ -4,14 +4,15 @@ import { Button } from "@components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { getUrl } from "@lib/api"
 import { cn } from "@lib/utils"
-import { Subscription } from "@prisma/client"
-import { Edit } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { revalidatUserLoans } from "@services/sdk"
+import { LoanComplete } from "@types"
+import { Edit, EditIcon } from "lucide-react"
 import { FormEventHandler, useState } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { useLoans } from "./Context"
+import { LoanForm } from "./Form"
 
 type Props = {
-  sub: Subscription
+  loan: LoanComplete
   className?: string
   variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
   triggerDecorator?: React.ReactNode
@@ -19,8 +20,8 @@ type Props = {
 
 const TRIGGER_DECORATOR = <Edit size={12} />
 
-export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
-  const router = useRouter()
+export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
+  const { updateLoan } = useLoans()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -28,18 +29,22 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription`), {
+    const result = await fetch(getUrl(`/loan`), {
       method: 'PATCH',
       body: JSON.stringify({
-        id: sub.id,
+        id: loan.id,
         ...Object.fromEntries(new FormData(e.currentTarget))
       })
     })
+
+    const { data } = await result.json() as { data: LoanComplete }
+
     setLoading(false)
 
     if (result.ok) {
+      revalidatUserLoans(loan.userId)
       setOpen(false)
-      router.refresh()
+      updateLoan(data)
     }
   }
 
@@ -50,21 +55,15 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit subscription</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <EditIcon size={12} />
+            <span>Edit loan</span>
+          </DialogTitle>
           <DialogDescription>
-            Edit subscription <strong>{sub.name}</strong>.
+            Edit <strong className="font-semibold">{loan.name}</strong>.
           </DialogDescription>
         </DialogHeader>
-        <Root onSubmit={handleSubmit}>
-          <FieldSet disabled={loading}>
-            <FormField required defaultValue={sub.name} name="name" label="Name" />
-            <FormField required defaultValue={sub.fee} name="fee" label="Fee" type="number" step="0.01" />
-
-            <div className="flex justify-end gap-2 pt-4 col-span-2">
-              <SubmitButton submitting={loading} />
-            </div>
-          </FieldSet>
-        </Root>
+        <LoanForm loan={loan} onSubmit={handleSubmit} disabled={loading} />
       </DialogContent>
     </Dialog>
   )
