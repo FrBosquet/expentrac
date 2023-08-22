@@ -1,15 +1,16 @@
 'use client'
 
-import { useLoans } from "@components/loan/Context"
 import { LoanDetail } from "@components/loan/detail"
-import { useSubs } from "@components/subscription/context"
 import { SubscriptionDetail } from "@components/subscription/detail"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
 import { Separator } from "@components/ui/separator"
 import { euroFormatter } from "@lib/currency"
 import { cn } from "@lib/utils"
-import { BrandExtendedInfo, UserProviderComplete } from "@types"
+import { UserProviderComplete } from "@types"
+import { Trash } from "lucide-react"
 import { useState } from "react"
+import { ProviderDelete } from "./delete"
+import { useProviderExtendedInfo } from "./hooks"
 
 type Props = {
   userProvider: UserProviderComplete;
@@ -20,38 +21,18 @@ const Item = ({ children }: { children: React.ReactNode }) => <span className="b
 
 export const ProviderDetail = ({ userProvider, children }: Props) => {
   const [open, setOpen] = useState(false)
-  const { loans } = useLoans()
-  const { subs } = useSubs()
 
-  if (!userProvider.provider.isFetched) return null
+  const {
+    provider,
+    url,
+    fromLoans,
+    fromSubs,
+    lengths,
+    totals,
+    hasAnyItem
+  } = useProviderExtendedInfo(userProvider)
 
-  const { provider } = userProvider
-  const extendedData = provider.rawContent as BrandExtendedInfo
-
-  const url = `https://${extendedData.domain}`
-
-  const fromLoans = {
-    asVendor: loans.filter((item) => item.vendorId === userProvider.id),
-    asPlatform: loans.filter((item) => item.platformId === userProvider.id),
-    asLender: loans.filter((item) => item.lenderId === userProvider.id),
-  }
-
-  const fromSubs = {
-    asVendor: subs.filter((item) => item.vendorId === userProvider.id),
-    asPlatform: subs.filter((item) => item.platformId === userProvider.id),
-  }
-
-  const lengths = {
-    asVendor: fromLoans.asVendor.length + fromSubs.asVendor.length,
-    asPlatform: fromLoans.asPlatform.length + fromSubs.asPlatform.length,
-    asLender: fromLoans.asLender.length,
-  }
-
-  const totals = {
-    asVendor: fromLoans.asVendor.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asVendor.reduce((acc, item) => acc + item.fee, 0),
-    asPlatform: fromLoans.asPlatform.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asPlatform.reduce((acc, item) => acc + item.fee, 0),
-    asLender: fromLoans.asLender.reduce((acc, item) => acc + item.fee, 0),
-  }
+  if (!provider.isFetched) return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -126,9 +107,8 @@ export const ProviderDetail = ({ userProvider, children }: Props) => {
 
           <Separator className="col-span-3" />
 
-          <menu className="col-span-2 flex gap-2 justify-end">
-            {/* <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-            <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} /> */}
+          <menu className="col-span-3 flex gap-2 justify-end">
+            <ProviderDelete disabled={hasAnyItem} userProvider={userProvider} triggerDecorator={<span className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</span>} />
           </menu>
         </section>
       </DialogContent>

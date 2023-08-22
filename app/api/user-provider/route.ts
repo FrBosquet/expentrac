@@ -145,47 +145,47 @@ export const POST = async (req: Request) => {
 //   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
 // }
 
-// export const DELETE = async (req: Request) => {
-//   const session = await getServerSession(authOptions)
+export const DELETE = async (req: Request) => {
+  const session = await getServerSession(authOptions)
 
-//   if (!session) {
-//     return NextResponse.json({
-//       message: 'forbidden'
-//     }, {
-//       status: 403
-//     })
-//   }
+  if (!session) {
+    return NextResponse.json({
+      message: 'forbidden'
+    }, {
+      status: 403
+    })
+  }
 
-//   const { searchParams } = new URL(req.url)
-//   const id = searchParams.get('id')
+  const { searchParams } = new URL(req.url)
+  const id = searchParams.get('id')
 
-//   if (!id) {
-//     return NextResponse.json({
-//       message: 'id is required'
-//     }, {
-//       status: 400
-//     })
-//   }
+  if (!id) {
+    return NextResponse.json({
+      message: 'id is required'
+    }, {
+      status: 400
+    })
+  }
 
-//   const loan = await prisma.userProvider.findUnique({ where: { id } })
+  const userProvider = await prisma.userProvider.findUnique({ where: { id } })
 
-//   if (!loan) {
-//     return NextResponse.json({
-//       message: 'loan not found'
-//     }, {
-//       status: 404
-//     })
-//   }
+  if (!userProvider) {
+    return NextResponse.json({
+      message: 'user provider not found'
+    }, {
+      status: 404
+    })
+  }
 
-//   if (session.user.id !== loan?.userId) {
-//     return NextResponse.json({
-//       message: 'user does not own this resource'
-//     }, {
-//       status: 403
-//     })
-//   }
+  if (session.user.id !== userProvider?.userId) {
+    return NextResponse.json({
+      message: 'user does not own this resource'
+    }, {
+      status: 403
+    })
+  }
 
-//   await prisma.userProvider.delete({ where: { id } })
+  await prisma.userProvider.delete({ where: { id } })
 
-//   return NextResponse.json({ message: 'DELETED' }, { status: 200 })
-// }
+  return NextResponse.json({ message: 'DELETED' }, { status: 200 })
+}
