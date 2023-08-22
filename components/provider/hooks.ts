@@ -28,6 +28,12 @@ export const useProviderExtendedInfo = (userProvider: UserProviderComplete) => {
     asLender: fromLoans.asLender.length
   }
 
+  const roles = [
+    lengths.asLender && 'lender',
+    lengths.asVendor && 'vendor',
+    lengths.asPlatform && 'platform'
+  ].filter(Boolean)
+
   const totals = {
     asVendor: fromLoans.asVendor.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asVendor.reduce((acc, item) => acc + item.fee, 0),
     asPlatform: fromLoans.asPlatform.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asPlatform.reduce((acc, item) => acc + item.fee, 0),
@@ -37,12 +43,14 @@ export const useProviderExtendedInfo = (userProvider: UserProviderComplete) => {
   const hasAnyItem = lengths.asVendor > 0 || lengths.asPlatform > 0 || lengths.asLender > 0
 
   return {
+    ...userProvider,
     provider,
     url,
     fromLoans,
     fromSubs,
     lengths,
     totals,
-    hasAnyItem
+    hasAnyItem,
+    roles
   }
 }
