@@ -1,14 +1,14 @@
 'use client'
 
-import { useUser } from "@components/Provider"
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { revalidatUserLoans } from "@services/sdk"
-import { LoanComplete } from "@types"
-import { FormEventHandler, useState } from "react"
-import { useLoans } from "./Context"
-import { LoanForm } from "./Form"
+import { useUser } from '@components/Provider'
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { getUrl } from '@lib/api'
+import { revalidatUserLoans } from '@services/sdk'
+import { type LoanComplete } from '@types'
+import { useState, type FormEventHandler } from 'react'
+import { useLoans } from './Context'
+import { LoanForm } from './Form'
 
 export const LoanAdd = () => {
   const { user } = useUser()
@@ -21,16 +21,15 @@ export const LoanAdd = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl(`/loan`), {
+    const result = await fetch(getUrl('/loan'), {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
     })
 
     const { data } = await result.json() as { data: LoanComplete }
 
-    setLoading(false)
     if (result.ok) {
-      revalidatUserLoans(user.id)
+      void revalidatUserLoans(user.id)
       setOpen(false)
       addLoan(data)
     }
@@ -39,7 +38,7 @@ export const LoanAdd = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="text-xs h-auto" onClick={() => setOpen(true)}>New loan</Button>
+        <Button variant="outline" className="text-xs h-auto" onClick={() => { setOpen(true) }}>New loan</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -1,7 +1,7 @@
-import { ProviderAdd } from "@components/provider/add"
-import { UserProviderSummary } from "@components/provider/summary"
+import { ProviderAdd } from '@components/provider/add'
+import { UserProviderSummary } from '@components/provider/summary'
 
-export default function Page() {
+export default function Page () {
   return (
     <section className="flex-1 w-screen max-w-3xl p-12 m-auto flex flex-col gap-4">
       <h1 className="text-3xl">Your providers</h1>

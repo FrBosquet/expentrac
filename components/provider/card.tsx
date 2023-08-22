@@ -1,14 +1,14 @@
 'use client'
 
-import { getAccentColor } from "@lib/provider"
-import { cn } from "@lib/utils"
-import { BrandExtendedInfo, UserProviderComplete } from "@types"
-import { HelpCircle } from "lucide-react"
-import { ProviderLogo } from "./ProviderLogo"
-import { ProviderDetail } from "./detail"
-import { useProviderExtendedInfo } from "./hooks"
+import { getAccentColor } from '@lib/provider'
+import { cn } from '@lib/utils'
+import { type BrandExtendedInfo, type UserProviderComplete } from '@types'
+import { HelpCircle } from 'lucide-react'
+import { ProviderLogo } from './ProviderLogo'
+import { ProviderDetail } from './detail'
+import { useProviderExtendedInfo } from './hooks'
 
-type Props = {
+interface Props {
   userProvider: UserProviderComplete
 }
 
@@ -29,10 +29,10 @@ export const UserProviderCard = ({ userProvider }: Props) => {
   // fetched
   return <ProviderDetail userProvider={userProvider}>
     {
-      <article className={cn('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8', !hasAnyItem && "opacity-40")} style={{ borderBottomColor: accentColor }}>
+      <article className={cn('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8', !hasAnyItem && 'opacity-40')} style={{ borderBottomColor: accentColor }}>
         <ProviderLogo provider={provider} />
         <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-slate-600">
-          <a target="_blank" href={`https://${extendedData.domain}`}>{extendedData.name}</a>
+          <a target="_blank" href={`https://${extendedData.domain}`} rel="noreferrer">{extendedData.name}</a>
         </h3>
       </article>
     }

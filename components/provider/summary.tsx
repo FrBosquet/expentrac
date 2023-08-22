@@ -1,7 +1,7 @@
 'use client'
 
-import { UserProviderCard } from "./card"
-import { useProviders } from "./context"
+import { UserProviderCard } from './card'
+import { useProviders } from './context'
 
 export const UserProviderSummary = () => {
   const { providers } = useProviders()
@@ -11,5 +11,4 @@ export const UserProviderSummary = () => {
       return <UserProviderCard key={userProvider.id} userProvider={userProvider} />
     })}
   </section>
-
 }

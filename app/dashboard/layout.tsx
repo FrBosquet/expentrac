@@ -1,20 +1,20 @@
-import { Logo } from "@components/Logo"
-import { Navigation } from "@components/NavigationMenu"
-import { LoansProvider } from "@components/loan/Context"
-import { ProvidersProvider } from "@components/provider/context"
-import { SubsProvider } from "@components/subscription/context"
-import { Menu } from "@components/user/Menu"
+import { Logo } from '@components/Logo'
+import { Navigation } from '@components/NavigationMenu'
+import { LoansProvider } from '@components/loan/Context'
+import { ProvidersProvider } from '@components/provider/context'
+import { SubsProvider } from '@components/subscription/context'
+import { Menu } from '@components/user/Menu'
 import { hasUser } from '@lib/session'
-import { authOptions } from "@services/auth"
-import { getUserLoans, getUserProviders, getUserSubscriptions } from "@services/sdk"
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
+import { authOptions } from '@services/auth'
+import { getUserLoans, getUserProviders, getUserSubscriptions } from '@services/sdk'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
 
-type Props = {
+interface Props {
   children: React.ReactNode
 }
 
-export default async function Layout({ children }: Props) {
+export default async function Layout ({ children }: Props) {
   const data = await getServerSession(authOptions)
 
   if (!hasUser(data)) {
@@ -30,7 +30,7 @@ export default async function Layout({ children }: Props) {
   ] = await Promise.all([
     getUserProviders(user.id),
     getUserLoans(user.id),
-    getUserSubscriptions(user.id),
+    getUserSubscriptions(user.id)
   ])
 
   return <main className="flex flex-col min-h-screen">

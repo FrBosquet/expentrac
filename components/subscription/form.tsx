@@ -1,14 +1,14 @@
 'use client'
 
-import { ProviderSelect } from "@components/ProviderSelect"
-import { useProviders } from "@components/provider/context"
-import { Label } from "@components/ui/label"
-import { Separator } from "@components/ui/separator"
-import { Subscription } from "@prisma/client"
-import { FormEventHandler } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { ProviderSelect } from '@components/ProviderSelect'
+import { useProviders } from '@components/provider/context'
+import { Label } from '@components/ui/label'
+import { Separator } from '@components/ui/separator'
+import { type Subscription } from '@prisma/client'
+import { type FormEventHandler } from 'react'
+import { FieldSet, FormField, Root, SubmitButton } from '../Form'
 
-type Props = {
+interface Props {
   sub?: Subscription
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean

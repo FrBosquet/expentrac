@@ -1,22 +1,22 @@
 'use client'
 
-import { SubmitButton } from "@components/Form"
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { cn } from "@lib/utils"
-import { revalidateUserProviders } from "@services/sdk"
-import { UserProviderComplete } from "@types"
-import { Trash } from "lucide-react"
-import { useState } from "react"
-import { useProviders } from "./context"
+import { SubmitButton } from '@components/Form'
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { getUrl } from '@lib/api'
+import { cn } from '@lib/utils'
+import { revalidateUserProviders } from '@services/sdk'
+import { type UserProviderComplete } from '@types'
+import { Trash } from 'lucide-react'
+import { useState } from 'react'
+import { useProviders } from './context'
 
-type Props = {
+interface Props {
   userProvider: UserProviderComplete
   className?: string
-  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
-  sideEffect?: () => void,
+  sideEffect?: () => void
   disabled?: boolean
 }
 
@@ -37,7 +37,7 @@ export const ProviderDelete = ({ userProvider, className, variant = 'destructive
 
     if (result.ok) {
       sideEffect?.()
-      revalidateUserProviders(userProvider.userId)
+      void revalidateUserProviders(userProvider.userId)
       removeProvider(userProvider)
       setOpen(false)
     } else {
@@ -49,7 +49,7 @@ export const ProviderDelete = ({ userProvider, className, variant = 'destructive
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={disabled} variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
+        <Button disabled={disabled} variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -1,7 +1,6 @@
 'use client'
 
-
-type Props = {
+interface Props {
   className?: string
   children: React.ReactNode
 }

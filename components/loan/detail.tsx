@@ -1,22 +1,22 @@
 'use client'
 
-import { ProviderDetail } from "@components/ProviderDetail"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { Progress } from "@components/ui/progress"
-import { Separator } from "@components/ui/separator"
-import { euroFormatter } from "@lib/currency"
-import { getLoanExtendedInformation } from "@lib/loan"
-import { LoanComplete } from "@types"
-import { Edit, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
-import { LoanDelete } from "./delete"
-import { LoanEdit } from "./edit"
+import { ProviderDetail } from '@components/ProviderDetail'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { Progress } from '@components/ui/progress'
+import { Separator } from '@components/ui/separator'
+import { euroFormatter } from '@lib/currency'
+import { getLoanExtendedInformation } from '@lib/loan'
+import { type LoanComplete } from '@types'
+import { Edit, Trash } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { LoanDelete } from './delete'
+import { LoanEdit } from './edit'
 
-type Props = {
-  loan: LoanComplete;
-  triggerContent?: React.ReactNode;
-  children?: React.ReactNode;
-};
+interface Props {
+  loan: LoanComplete
+  triggerContent?: React.ReactNode
+  children?: React.ReactNode
+}
 
 export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
   const [open, setOpen] = useState(false)
@@ -41,7 +41,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{children || triggerContent}</button>
+        <button className="hover:text-primary">{children ?? triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

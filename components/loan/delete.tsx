@@ -1,20 +1,20 @@
 'use client'
 
-import { SubmitButton } from "@components/Form"
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { cn } from "@lib/utils"
-import { revalidatUserLoans } from "@services/sdk"
-import { LoanComplete } from "@types"
-import { Trash } from "lucide-react"
-import { useState } from "react"
-import { useLoans } from "./Context"
+import { SubmitButton } from '@components/Form'
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { getUrl } from '@lib/api'
+import { cn } from '@lib/utils'
+import { revalidatUserLoans } from '@services/sdk'
+import { type LoanComplete } from '@types'
+import { Trash } from 'lucide-react'
+import { useState } from 'react'
+import { useLoans } from './Context'
 
-type Props = {
+interface Props {
   loan: LoanComplete
   className?: string
-  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
   sideEffect?: () => void
 }
@@ -36,7 +36,7 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
 
     if (result.ok) {
       sideEffect?.()
-      revalidatUserLoans(loan.userId)
+      void revalidatUserLoans(loan.userId)
       removeLoan(loan)
       setOpen(false)
     } else {
@@ -48,7 +48,7 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
+        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

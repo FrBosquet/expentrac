@@ -1,6 +1,6 @@
 'use client'
 
-import { ProviderLogo } from "@components/provider/ProviderLogo"
+import { ProviderLogo } from '@components/provider/ProviderLogo'
 import {
   Table,
   TableBody,
@@ -8,14 +8,14 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@components/ui/table"
-import { getLoanExtendedInformation } from "@lib/loan"
-import { getAccentColor } from "@lib/provider"
-import { useLoans } from "./Context"
-import { LoanAdd } from "./add"
-import { LoanDelete } from "./delete"
-import { LoanDetail } from "./detail"
-import { LoanEdit } from "./edit"
+} from '@components/ui/table'
+import { getLoanExtendedInformation } from '@lib/loan'
+import { getAccentColor } from '@lib/provider'
+import { useLoans } from './Context'
+import { LoanAdd } from './add'
+import { LoanDelete } from './delete'
+import { LoanDetail } from './detail'
+import { LoanEdit } from './edit'
 
 export const LoanSummary = () => {
   const { loans } = useLoans()

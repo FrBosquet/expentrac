@@ -1,27 +1,27 @@
 'use client'
 
 import { useResourceContext } from '@lib/resourceContext'
-import { UserProviderComplete } from '@types'
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext } from 'react'
+import { type UserProviderComplete } from '@types'
+import { type Dispatch, type ReactNode, type SetStateAction, createContext, useContext } from 'react'
 
 interface Props {
-  children: ReactNode;
-  serverValue: UserProviderComplete[];
+  children: ReactNode
+  serverValue: UserProviderComplete[]
 }
 
 export const ProviderContext = createContext<{
-  providers: UserProviderComplete[];
-  setProviders: Dispatch<SetStateAction<UserProviderComplete[]>>;
-  addProvider: (provider: UserProviderComplete) => void;
-  removeProvider: (provider: UserProviderComplete) => void;
-  updateProvider: (provider: UserProviderComplete) => void;
+  providers: UserProviderComplete[]
+  setProviders: Dispatch<SetStateAction<UserProviderComplete[]>>
+  addProvider: (provider: UserProviderComplete) => void
+  removeProvider: (provider: UserProviderComplete) => void
+  updateProvider: (provider: UserProviderComplete) => void
 }>({
-  providers: [],
-  setProviders: () => null,
-  addProvider: () => null,
-  removeProvider: () => null,
-  updateProvider: () => null,
-})
+      providers: [],
+      setProviders: () => null,
+      addProvider: () => null,
+      removeProvider: () => null,
+      updateProvider: () => null
+    })
 
 export const ProvidersProvider = ({ children, serverValue }: Props) => {
   const {
@@ -32,7 +32,7 @@ export const ProvidersProvider = ({ children, serverValue }: Props) => {
     update: updateProvider
   } = useResourceContext<UserProviderComplete>(
     serverValue,
-    (a, b) => a.provider.name.localeCompare(b.provider.name),
+    (a, b) => a.provider.name.localeCompare(b.provider.name)
   )
 
   return (

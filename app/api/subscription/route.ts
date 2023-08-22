@@ -1,9 +1,9 @@
-import { SELECT_OPTIONS } from "@components/Select"
-import { Prisma, Subscription } from "@prisma/client"
-import { authOptions } from "@services/auth"
-import { prisma } from "@services/prisma"
-import { getServerSession } from "next-auth/next"
-import { NextResponse } from "next/server"
+import { SELECT_OPTIONS } from '@components/Select'
+import { type Prisma, type Subscription } from '@prisma/client'
+import { authOptions } from '@services/auth'
+import { prisma } from '@services/prisma'
+import { getServerSession } from 'next-auth/next'
+import { NextResponse } from 'next/server'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -21,12 +21,12 @@ export const GET = async (req: Request) => {
     where: { userId },
     orderBy: [
       {
-        name: 'asc',
+        name: 'asc'
       }
     ],
     include: {
       vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
+      platform: { include: { provider: true } }
     }
   })
 
@@ -98,7 +98,7 @@ export const POST = async (req: Request) => {
     },
     include: {
       vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
+      platform: { include: { provider: true } }
     }
   })
 
@@ -144,7 +144,7 @@ export const PATCH = async (req: Request) => {
     },
     include: {
       vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
+      platform: { include: { provider: true } }
     }
   }
 

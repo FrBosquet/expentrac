@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { type Dispatch, type SetStateAction, useState } from 'react'
 
-type ResourceContext<T> = {
-  resource: T[];
-  setResource: Dispatch<SetStateAction<T[]>>;
-  add: (resource: T) => void;
-  remove: (resource: T) => void;
-  update: (resource: T) => void;
+interface ResourceContext<T> {
+  resource: T[]
+  setResource: Dispatch<SetStateAction<T[]>>
+  add: (resource: T) => void
+  remove: (resource: T) => void
+  update: (resource: T) => void
 }
 
 export const useResourceContext = <T extends { id: string }>

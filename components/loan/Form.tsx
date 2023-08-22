@@ -1,16 +1,16 @@
 'use client'
 
-import { ProviderSelect } from "@components/ProviderSelect"
-import { useProviders } from "@components/provider/context"
-import { Input } from "@components/ui/input"
-import { Label } from "@components/ui/label"
-import { Separator } from "@components/ui/separator"
-import { toHTMLInputFormat } from "@lib/dates"
-import { Loan } from "@prisma/client"
-import { FormEventHandler } from "react"
-import { FieldSet, FormField, Root, SubmitButton } from "../Form"
+import { ProviderSelect } from '@components/ProviderSelect'
+import { useProviders } from '@components/provider/context'
+import { Input } from '@components/ui/input'
+import { Label } from '@components/ui/label'
+import { Separator } from '@components/ui/separator'
+import { toHTMLInputFormat } from '@lib/dates'
+import { type Loan } from '@prisma/client'
+import { type FormEventHandler } from 'react'
+import { FieldSet, FormField, Root, SubmitButton } from '../Form'
 
-type Props = {
+interface Props {
   loan?: Loan
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean
@@ -23,7 +23,6 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
     value: provider.id,
     label: provider.provider.name
   }))
-
 
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>

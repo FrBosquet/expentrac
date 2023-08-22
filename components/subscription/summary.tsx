@@ -1,6 +1,6 @@
 'use client'
 
-import { ProviderLogo } from "@components/provider/ProviderLogo"
+import { ProviderLogo } from '@components/provider/ProviderLogo'
 import {
   Table,
   TableBody,
@@ -8,13 +8,13 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@components/ui/table"
-import { getAccentColor } from "@lib/provider"
-import { SubscriptionAdd } from "./add"
-import { useSubs } from "./context"
-import { SubscriptionDelete } from "./delete"
-import { SubscriptionDetail } from "./detail"
-import { SubscriptionEdit } from "./edit"
+} from '@components/ui/table'
+import { getAccentColor } from '@lib/provider'
+import { SubscriptionAdd } from './add'
+import { useSubs } from './context'
+import { SubscriptionDelete } from './delete'
+import { SubscriptionDetail } from './detail'
+import { SubscriptionEdit } from './edit'
 
 export const SubscriptionSummary = () => {
   const { subs } = useSubs()
@@ -36,7 +36,6 @@ export const SubscriptionSummary = () => {
         </TableHeader>
         <TableBody>
           {subs.map((sub) => {
-
             const accentColor = getAccentColor(sub.vendor?.provider)
 
             return (

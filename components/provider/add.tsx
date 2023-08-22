@@ -1,12 +1,12 @@
 'use client'
 
-import { Brand, BrandAutocomplete } from "@components/BrandAutocomplete"
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { addUserProvider } from "@services/sdk"
-import { UserProviderComplete } from "@types"
-import { useState } from "react"
-import { useProviders } from "./context"
+import { type Brand, BrandAutocomplete } from '@components/BrandAutocomplete'
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { addUserProvider } from '@services/sdk'
+import { type UserProviderComplete } from '@types'
+import { useState } from 'react'
+import { useProviders } from './context'
 
 export const ProviderDialog = ({
   children,
@@ -58,7 +58,7 @@ export const ProviderAdd = () => {
 
   return <ProviderDialog open={open} setOpen={setOpen}>
     <DialogTrigger asChild>
-      <Button variant="outline" className="text-xs h-auto" onClick={() => setOpen(true)}>New provider</Button>
+      <Button variant="outline" className="text-xs h-auto" onClick={() => { setOpen(true) }}>New provider</Button>
     </DialogTrigger>
   </ProviderDialog>
 }

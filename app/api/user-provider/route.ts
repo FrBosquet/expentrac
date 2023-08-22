@@ -1,10 +1,10 @@
-import { Brand } from "@components/BrandAutocomplete"
-import { authOptions } from "@services/auth"
-import { fetchBrandInfo } from "@services/brandfetch"
-import { prisma } from "@services/prisma"
-import { BrandExtendedInfo } from "@types"
-import { getServerSession } from "next-auth/next"
-import { NextResponse } from "next/server"
+import { type Brand } from '@components/BrandAutocomplete'
+import { authOptions } from '@services/auth'
+import { fetchBrandInfo } from '@services/brandfetch'
+import { prisma } from '@services/prisma'
+import { type BrandExtendedInfo } from '@types'
+import { getServerSession } from 'next-auth/next'
+import { NextResponse } from 'next/server'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -23,8 +23,8 @@ export const GET = async (req: Request) => {
     orderBy: [
       {
         provider: {
-          name: 'asc',
-        },
+          name: 'asc'
+        }
       }
     ],
     include: {
@@ -33,17 +33,6 @@ export const GET = async (req: Request) => {
   })
 
   return NextResponse.json(providers)
-}
-
-const parseBody = <T>(body: Record<string, string>) => {
-  return Object.entries(body).reduce((acc, [key, value]) => {
-    let parsedValue: any = value
-
-    return {
-      ...acc,
-      [key]: parsedValue
-    }
-  }, {}) as T
 }
 
 export const POST = async (req: Request) => {
@@ -87,7 +76,7 @@ export const POST = async (req: Request) => {
             isFetched: true,
             rawContent: extendedData
           }
-        },
+        }
       },
       user: {
         connect: {
@@ -102,48 +91,6 @@ export const POST = async (req: Request) => {
 
   return NextResponse.json({ message: 'success', data }, { status: 201 })
 }
-
-// export const PATCH = async (req: Request) => {
-//   const session = await getServerSession(authOptions)
-
-//   if (!session) {
-//     return NextResponse.json({
-//       message: 'userId is required'
-//     }, {
-//       status: 400
-//     })
-//   }
-
-//   const userId = session.user.id
-
-//   const body = await req.json()
-//   const loan = await prisma.userProvider.findUnique({ where: { id: body.id } })
-
-//   if (!loan) {
-//     return NextResponse.json({
-//       message: 'loan not found'
-//     }, {
-//       status: 404
-//     })
-//   }
-
-//   if (userId !== loan?.userId) {
-//     return NextResponse.json({
-//       message: 'user does not own this resource'
-//     }, {
-//       status: 403
-//     })
-//   }
-
-//   const updatedLoan = await prisma.userProvider.update({
-//     data: parseBody<UserProvider>(body),
-//     where: {
-//       id: body.id
-//     }
-//   })
-
-//   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
-// }
 
 export const DELETE = async (req: Request) => {
   const session = await getServerSession(authOptions)
@@ -169,7 +116,7 @@ export const DELETE = async (req: Request) => {
 
   const userProvider = await prisma.userProvider.findUnique({ where: { id } })
 
-  if (!userProvider) {
+  if (userProvider == null) {
     return NextResponse.json({
       message: 'user provider not found'
     }, {

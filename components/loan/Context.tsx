@@ -1,27 +1,27 @@
 'use client'
 
 import { useResourceContext } from '@lib/resourceContext'
-import { LoanComplete } from '@types'
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext } from 'react'
+import { type LoanComplete } from '@types'
+import { type Dispatch, type ReactNode, type SetStateAction, createContext, useContext } from 'react'
 
 interface Props {
-  children: ReactNode;
-  serverValue: LoanComplete[];
+  children: ReactNode
+  serverValue: LoanComplete[]
 }
 
 export const LoanContext = createContext<{
-  loans: LoanComplete[];
-  setLoans: Dispatch<SetStateAction<LoanComplete[]>>;
-  addLoan: (loan: LoanComplete) => void;
-  removeLoan: (loan: LoanComplete) => void;
-  updateLoan: (loan: LoanComplete) => void;
+  loans: LoanComplete[]
+  setLoans: Dispatch<SetStateAction<LoanComplete[]>>
+  addLoan: (loan: LoanComplete) => void
+  removeLoan: (loan: LoanComplete) => void
+  updateLoan: (loan: LoanComplete) => void
 }>({
-  loans: [],
-  setLoans: () => null,
-  addLoan: () => null,
-  removeLoan: () => null,
-  updateLoan: () => null,
-})
+      loans: [],
+      setLoans: () => null,
+      addLoan: () => null,
+      removeLoan: () => null,
+      updateLoan: () => null
+    })
 
 export const LoansProvider = ({ children, serverValue }: Props) => {
   const {

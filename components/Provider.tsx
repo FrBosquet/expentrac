@@ -1,10 +1,10 @@
 'use client'
 
-import { User } from '@prisma/client'
+import { type User } from '@prisma/client'
 import { SessionProvider, useSession } from 'next-auth/react'
 
 interface Props {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const Provider = ({ children }: Props) => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { getLoanExtendedInformation } from "@lib/loan"
+import { getLoanExtendedInformation } from '@lib/loan'
 
 import {
   Card,
@@ -8,9 +8,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle
-} from "@components/ui/card"
-import { useLoans } from "./loan/Context"
-import { useSubs } from "./subscription/context"
+} from '@components/ui/card'
+import { useLoans } from './loan/Context'
+import { useSubs } from './subscription/context'
 
 export const Summary = () => {
   const { loans } = useLoans()

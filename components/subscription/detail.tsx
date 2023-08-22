@@ -1,20 +1,20 @@
 'use client'
 
-import { ProviderDetail } from "@components/ProviderDetail"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { Separator } from "@components/ui/separator"
-import { euroFormatter } from "@lib/currency"
-import { SubscriptionComplete } from "@types"
-import { Edit, Trash } from "lucide-react"
-import { useState } from "react"
-import { SubscriptionDelete } from "./delete"
-import { SubscriptionEdit } from "./edit"
+import { ProviderDetail } from '@components/ProviderDetail'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { Separator } from '@components/ui/separator'
+import { euroFormatter } from '@lib/currency'
+import { type SubscriptionComplete } from '@types'
+import { Edit, Trash } from 'lucide-react'
+import { useState } from 'react'
+import { SubscriptionDelete } from './delete'
+import { SubscriptionEdit } from './edit'
 
-type Props = {
-  sub: SubscriptionComplete;
-  triggerContent?: React.ReactNode;
-  children?: React.ReactNode;
-};
+interface Props {
+  sub: SubscriptionComplete
+  triggerContent?: React.ReactNode
+  children?: React.ReactNode
+}
 
 export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children }: Props) => {
   const [open, setOpen] = useState(false)
@@ -24,7 +24,7 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children }:
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{children || triggerContent}</button>
+        <button className="hover:text-primary">{children ?? triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
