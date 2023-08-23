@@ -1,9 +1,9 @@
-import { SELECT_OPTIONS } from "@components/Select"
-import { Loan, Prisma } from "@prisma/client"
-import { authOptions } from "@services/auth"
-import { prisma } from "@services/prisma"
-import { getServerSession } from "next-auth/next"
-import { NextResponse } from "next/server"
+import { SELECT_OPTIONS } from '@components/Select'
+import { type Loan, type Prisma } from '@prisma/client'
+import { authOptions } from '@services/auth'
+import { prisma } from '@services/prisma'
+import { getServerSession } from 'next-auth/next'
+import { NextResponse } from 'next/server'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -22,7 +22,7 @@ export const GET = async (req: Request) => {
     orderBy: [
       { startDate: 'desc' },
       {
-        name: 'asc',
+        name: 'asc'
       }
     ],
     include: {

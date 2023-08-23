@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { Subscription } from "@prisma/client"
-import { FormEventHandler, useState } from "react"
-import { useSubs } from "./context"
-import { SubscriptionForm } from "./form"
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { getUrl } from '@lib/api'
+import { type Subscription } from '@prisma/client'
+import { type FormEventHandler, useState } from 'react'
+import { useSubs } from './context'
+import { SubscriptionForm } from './form'
 
 export const SubscriptionAdd = () => {
   const [open, setOpen] = useState(false)
@@ -17,7 +17,7 @@ export const SubscriptionAdd = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription`), {
+    const result = await fetch(getUrl('/subscription'), {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
     })
@@ -34,7 +34,7 @@ export const SubscriptionAdd = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='outline' className="text-xs h-auto" onClick={() => setOpen(true)}>New subscription</Button>
+        <Button variant='outline' className="text-xs h-auto" onClick={() => { setOpen(true) }}>New subscription</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

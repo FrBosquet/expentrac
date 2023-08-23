@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,19 +8,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@components/ui/dropdown-menu"
-import { User } from "@prisma/client"
+} from '@components/ui/dropdown-menu'
+import { type User } from '@prisma/client'
 import {
   LogOut
-} from "lucide-react"
-import { signOut } from "next-auth/react"
+} from 'lucide-react'
+import { signOut } from 'next-auth/react'
 
-type Props = {
+interface Props {
   user: User
 }
 
 export const Menu = ({ user }: Props) => {
   const fallback = user.name?.split(' ').map((n) => n.charAt(0)).join('')
+
+  const handleSignOut = () => {
+    void signOut()
+  }
 
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
@@ -32,7 +36,7 @@ export const Menu = ({ user }: Props) => {
     <DropdownMenuContent className="w-56">
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="cursor-pointer" onClick={() => signOut()}>
+      <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
         <LogOut className="mr-2 h-4 w-4" />
         <span>Log out</span>
         {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
@@ -40,5 +44,3 @@ export const Menu = ({ user }: Props) => {
     </DropdownMenuContent>
   </DropdownMenu>
 }
-
-

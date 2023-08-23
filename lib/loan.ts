@@ -1,4 +1,4 @@
-import { LoanComplete, LoanExtendedInfo } from "@types"
+import { type LoanComplete, type LoanExtendedInfo } from '@types'
 
 const now = new Date()
 
@@ -15,7 +15,6 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const paymentsDone = payments - paymentsLeft
 
   const vendor = loan.vendor?.provider
-
 
   return {
     payments,

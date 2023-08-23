@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import Link from "next/link"
+import Link from 'next/link'
 
 import {
   NavigationMenu,
@@ -9,31 +9,31 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+  navigationMenuTriggerStyle
+} from '@/components/ui/navigation-menu'
 
-const components: { title: string; href: string; description: string }[] = [
+const components: Array<{ title: string, href: string, description: string }> = [
   {
-    title: "Loans",
-    href: "/dashboard/loans",
+    title: 'Loans',
+    href: '/dashboard/loans',
     description:
-      "All the loans you ask for to buy cool things.",
+      'All the loans you ask for to buy cool things.'
   },
   {
-    title: "Subscriptions",
-    href: "/dashboard/subscriptions",
+    title: 'Subscriptions',
+    href: '/dashboard/subscriptions',
     description:
-      "All those cool services you are subscribed to.",
+      'All those cool services you are subscribed to.'
   },
   {
-    title: "Providers",
-    href: "/dashboard/providers",
+    title: 'Providers',
+    href: '/dashboard/providers',
     description:
-      "The companies and services that you use to buy, to pay or to get money from.",
-  },
+      'The companies and services that you use to buy, to pay or to get money from.'
+  }
 ]
 
-export function Navigation() {
+export function Navigation () {
   return (
     <NavigationMenu className="p-2 flex-grow-0">
       <NavigationMenuList>
@@ -65,7 +65,6 @@ export function Navigation() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-
 
       </NavigationMenuList>
     </NavigationMenu>

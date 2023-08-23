@@ -1,12 +1,13 @@
 'use client'
 
-import { Brand, BrandAutocomplete } from "@components/BrandAutocomplete"
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { addUserProvider } from "@services/sdk"
-import { UserProviderComplete } from "@types"
-import { useState } from "react"
-import { useProviders } from "./context"
+import { BrandAutocomplete, type Brand } from '@components/BrandAutocomplete'
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { cn } from '@lib/utils'
+import { addUserProvider } from '@services/sdk'
+import { type UserProviderComplete } from '@types'
+import { useState } from 'react'
+import { useProviders } from './context'
 
 export const ProviderDialog = ({
   children,
@@ -53,12 +54,17 @@ export const ProviderDialog = ({
   </Dialog>
 }
 
-export const ProviderAdd = () => {
+interface Props {
+  children?: React.ReactNode
+  className?: string
+}
+
+export const ProviderAdd = ({ children = 'New provider', className }: Props) => {
   const [open, setOpen] = useState(false)
 
   return <ProviderDialog open={open} setOpen={setOpen}>
     <DialogTrigger asChild>
-      <Button variant="outline" className="text-xs h-auto" onClick={() => setOpen(true)}>New provider</Button>
+      <Button variant="outline" className={cn('text-xs h-auto', className)} onClick={() => { setOpen(true) }}>{children}</Button>
     </DialogTrigger>
   </ProviderDialog>
 }

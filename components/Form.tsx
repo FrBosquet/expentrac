@@ -1,11 +1,11 @@
 import * as Form from '@radix-ui/react-form'
 import { Loader2 } from 'lucide-react'
-import { FormEventHandler } from 'react'
+import { type FormEventHandler } from 'react'
 import { Button } from './ui/button'
-import { Input, InputProps } from './ui/input'
+import { Input, type InputProps } from './ui/input'
 import { Label } from './ui/label'
 
-type Props = {
+interface Props {
   children: React.ReactNode
   onSubmit: FormEventHandler<HTMLFormElement>
 }
@@ -34,15 +34,15 @@ export const FormField = ({ label, name, ...props }: { label: string, labelClass
 export const SubmitButton = ({
   submitting, onClick, children, variant
 }: {
-  submitting: boolean,
-  onClick?: () => void,
-  children?: React.ReactNode,
-  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  submitting: boolean
+  onClick?: () => void
+  children?: React.ReactNode
+  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
 }) => {
-  return <Button variant={variant || 'ghost'} type={onClick ? 'button' : "submit"} onClick={onClick}>
-    {submitting ?
-      <Loader2 size={16} className="animate animate-spin" />
-      : children || 'Submit'
+  return <Button variant={variant ?? 'ghost'} type={onClick ? 'button' : 'submit'} onClick={onClick}>
+    {submitting
+      ? <Loader2 size={16} className="animate animate-spin" />
+      : children ?? 'Submit'
     }
   </Button>
 }

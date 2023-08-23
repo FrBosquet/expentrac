@@ -1,27 +1,27 @@
 'use client'
 
 import { useResourceContext } from '@lib/resourceContext'
-import { SubscriptionComplete } from '@types'
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext } from 'react'
+import { type SubscriptionComplete } from '@types'
+import { type Dispatch, type ReactNode, type SetStateAction, createContext, useContext } from 'react'
 
 interface Props {
-  children: ReactNode;
-  serverValue: SubscriptionComplete[];
+  children: ReactNode
+  serverValue: SubscriptionComplete[]
 }
 
 export const SubContext = createContext<{
-  subs: SubscriptionComplete[];
-  setSubs: Dispatch<SetStateAction<SubscriptionComplete[]>>;
-  addSub: (sub: SubscriptionComplete) => void;
-  removeSub: (sub: SubscriptionComplete) => void;
-  updateSub: (sub: SubscriptionComplete) => void;
+  subs: SubscriptionComplete[]
+  setSubs: Dispatch<SetStateAction<SubscriptionComplete[]>>
+  addSub: (sub: SubscriptionComplete) => void
+  removeSub: (sub: SubscriptionComplete) => void
+  updateSub: (sub: SubscriptionComplete) => void
 }>({
-  subs: [],
-  setSubs: () => null,
-  addSub: () => null,
-  removeSub: () => null,
-  updateSub: () => null,
-})
+      subs: [],
+      setSubs: () => null,
+      addSub: () => null,
+      removeSub: () => null,
+      updateSub: () => null
+    })
 
 export const SubsProvider = ({ children, serverValue }: Props) => {
   const {

@@ -1,19 +1,19 @@
 'use client'
 
-import { Button } from "@components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog"
-import { getUrl } from "@lib/api"
-import { cn } from "@lib/utils"
-import { Subscription } from "@prisma/client"
-import { Edit } from "lucide-react"
-import { FormEventHandler, useState } from "react"
-import { useSubs } from "./context"
-import { SubscriptionForm } from "./form"
+import { Button } from '@components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { getUrl } from '@lib/api'
+import { cn } from '@lib/utils'
+import { type Subscription } from '@prisma/client'
+import { Edit } from 'lucide-react'
+import { type FormEventHandler, useState } from 'react'
+import { useSubs } from './context'
+import { SubscriptionForm } from './form'
 
-type Props = {
+interface Props {
   sub: Subscription
   className?: string
-  variant?: "outline" | "destructive" | "link" | "default" | "secondary" | "ghost" | null | undefined
+  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
 }
 
@@ -28,7 +28,7 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription`), {
+    const result = await fetch(getUrl('/subscription'), {
       method: 'PATCH',
       body: JSON.stringify({
         id: sub.id,
@@ -48,7 +48,7 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn("p-2 h-auto", className)} onClick={() => setOpen(true)}>{triggerDecorator}</Button>
+        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

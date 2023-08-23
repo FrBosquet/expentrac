@@ -5,57 +5,61 @@ import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
 import { cn } from '@lib/utils'
-import { type Subscription } from '@prisma/client'
+import { revalidateUserProviders } from '@services/sdk'
+import { type UserProviderComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
-import { useSubs } from './context'
+import { useProviders } from './context'
 
 interface Props {
-  sub: Subscription
+  userProvider: UserProviderComplete
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
   sideEffect?: () => void
+  disabled?: boolean
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
 
-export const SubscriptionDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
-  const { id, name } = sub
-  const { removeSub } = useSubs()
+export const ProviderDelete = ({ userProvider, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect, disabled }: Props) => {
+  const { id, provider: { name } } = userProvider
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { removeProvider } = useProviders()
 
   const handleDelete = async () => {
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription?id=${id}`), {
+    const result = await fetch(getUrl(`/user-provider?id=${id}`), {
       method: 'DELETE'
     })
 
-    setLoading(false)
     if (result.ok) {
-      removeSub(sub)
       sideEffect?.()
+      void revalidateUserProviders(userProvider.userId)
+      removeProvider(userProvider)
       setOpen(false)
+    } else {
+      setLoading(false)
+      // TODO: error toast
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
+        <Button disabled={disabled} variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete subscription</DialogTitle>
+          <DialogTitle>Delete provider</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete <strong className="font-semibold">{name}</strong>?
+            Are you sure you want to delete your connection to <strong>{name}</strong>? You can always reconnect later.
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => { setOpen(false) }}>Cancel</Button>
-          <SubmitButton submitting={loading} onClick={handleDelete} variant='destructive'>Delete</SubmitButton>
+          <SubmitButton submitting={loading} onClick={handleDelete} />
         </div>
       </DialogContent>
     </Dialog>
