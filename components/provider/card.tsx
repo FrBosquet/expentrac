@@ -23,7 +23,7 @@ export const UserProviderCard = ({ userProvider }: Props) => {
     </article>
   }
 
-  const extendedData = provider.rawContent as BrandExtendedInfo
+  const extendedData = provider.rawContent as unknown as BrandExtendedInfo
   const accentColor = getAccentColor(provider)
 
   // fetched

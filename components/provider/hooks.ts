@@ -7,7 +7,7 @@ export const useProviderExtendedInfo = (userProvider: UserProviderComplete) => {
   const { subs } = useSubs()
 
   const { provider } = userProvider
-  const extendedData = provider.rawContent as BrandExtendedInfo
+  const extendedData = provider.rawContent as unknown as BrandExtendedInfo
 
   const url = `https://${extendedData.domain}`
 
