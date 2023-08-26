@@ -1,6 +1,5 @@
 import { Provider } from '@components/Provider'
 import type { Metadata } from 'next'
-import { type Session } from 'next-auth'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
@@ -19,11 +18,10 @@ export const metadata: Metadata = {
   icons: '/favicon.ico'
 }
 
-export default function RootLayout ({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode
-  session: Session
 }) {
   return (
     <html lang="en">

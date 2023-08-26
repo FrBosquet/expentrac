@@ -1,83 +1,85 @@
-import { Loan, Provider, Subscription, UserProvider } from "@prisma/client"
+import { type Loan, type Provider, type Subscription, type UserProvider } from '@prisma/client'
 
-export type LoanExtendedInfo = {
-  totalAmount: number;
-  paidAmount: number;
-  owedAmount: number;
+export interface LoanExtendedInfo {
+  totalAmount: number
+  paidAmount: number
+  owedAmount: number
 
-  payments: number;
-  paymentsDone: number;
-  paymentsLeft: number;
+  payments: number
+  paymentsDone: number
+  paymentsLeft: number
 
-  vendor?: Provider;
+  vendor?: Provider
+  platform?: Provider
+  lender?: Provider
 }
 
-export type BrandExtendedInfo = {
-  name: string;
-  domain: string;
-  claimed: boolean;
-  description: string;
-  links: Link[];
-  logos: Logo[];
-  colors: Color[];
-  fonts: Font[];
-  images: Image[];
+export interface BrandExtendedInfo {
+  name: string
+  domain: string
+  claimed: boolean
+  description: string
+  links: Link[]
+  logos: Logo[]
+  colors: Color[]
+  fonts: Font[]
+  images: Image[]
 }
 
-export type Color = {
-  hex: string;
-  type: string;
-  brightness: number;
+export interface Color {
+  hex: string
+  type: string
+  brightness: number
 }
 
-export type Font = {
-  name: string;
-  type: string;
-  origin: string;
-  originId: null;
-  weights: any[];
+export interface Font {
+  name: string
+  type: string
+  origin: string
+  originId: null
+  weights: any[]
 }
 
-export type Image = {
-  formats: FormatElement[];
-  tags: any[];
-  type: string;
+export interface Image {
+  formats: FormatElement[]
+  tags: any[]
+  type: string
 }
 
-export type FormatElement = {
-  src: string;
-  background: null | string;
-  format: FormatEnum;
-  height?: number;
-  width?: number;
-  size: number;
+export interface FormatElement {
+  src: string
+  background: null | string
+  format: FormatEnum
+  height?: number
+  width?: number
+  size: number
 }
 
 export enum FormatEnum {
-  JPEG = "jpeg",
-  PNG = "png",
-  SVG = "svg",
+  JPEG = 'jpeg',
+  PNG = 'png',
+  SVG = 'svg',
 }
 
-export type Link = {
-  name: string;
-  url: string;
+export interface Link {
+  name: string
+  url: string
 }
 
-export type Logo = {
-  theme: string;
-  formats: FormatElement[];
-  tags: any[];
-  type: string;
+export interface Logo {
+  theme: string
+  formats: FormatElement[]
+  tags: any[]
+  type: string
 }
 
 export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
 export type ProviderUnfetched = { isFetched: false } & Pick<Provider, 'id' | 'name'>
 
 export type LoanComplete = Loan & {
-  vendor?: UserProvider & { provider: Provider };
-  platform?: UserProvider & { provider: Provider };
-  lender?: UserProvider & { provider: Provider };
+  vendor?: UserProvider & { provider: Provider }
+  platform?: UserProvider & { provider: Provider }
+  lender?: UserProvider & { provider: Provider }
 }
 
 export type UserProviderComplete = UserProvider & {
@@ -85,6 +87,6 @@ export type UserProviderComplete = UserProvider & {
 }
 
 export type SubscriptionComplete = Subscription & {
-  vendor?: UserProvider & { provider: Provider };
-  platform?: UserProvider & { provider: Provider };
+  vendor?: UserProvider & { provider: Provider }
+  platform?: UserProvider & { provider: Provider }
 }

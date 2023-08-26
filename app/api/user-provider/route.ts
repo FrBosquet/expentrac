@@ -2,7 +2,6 @@ import { type Brand } from '@components/BrandAutocomplete'
 import { authOptions } from '@services/auth'
 import { fetchBrandInfo } from '@services/brandfetch'
 import { prisma } from '@services/prisma'
-import { type BrandExtendedInfo } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -49,7 +48,7 @@ export const POST = async (req: Request) => {
   const userId = session.user.id
   const body = await req.json() as Brand
 
-  let extendedData: BrandExtendedInfo
+  let extendedData
 
   const existingProviderInfo = await prisma.provider.findUnique({
     where: {
@@ -60,7 +59,7 @@ export const POST = async (req: Request) => {
   if (!existingProviderInfo) {
     extendedData = await fetchBrandInfo(body.domain)
   } else {
-    extendedData = existingProviderInfo.rawContent as BrandExtendedInfo
+    extendedData = existingProviderInfo.rawContent
   }
 
   const data = await prisma.userProvider.create({
@@ -74,7 +73,7 @@ export const POST = async (req: Request) => {
             id: body.brandId,
             name: body.name,
             isFetched: true,
-            rawContent: extendedData
+            rawContent: extendedData as any
           }
         }
       },

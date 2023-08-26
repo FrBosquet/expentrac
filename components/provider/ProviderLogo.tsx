@@ -1,6 +1,6 @@
 import { cn } from '@lib/utils'
 import { type Provider } from '@prisma/client'
-import { type BrandExtendedInfo, FormatEnum } from '@types'
+import { FormatEnum, type BrandExtendedInfo } from '@types'
 
 interface Props {
   provider?: Provider
@@ -42,7 +42,7 @@ export const ProviderLogo = ({ provider, className }: Props) => {
     return undefined
   }
 
-  const logoSrc = getLogoUrl(provider.rawContent as BrandExtendedInfo)
+  const logoSrc = getLogoUrl(provider.rawContent as unknown as BrandExtendedInfo)
 
   return <img src={logoSrc} alt={provider.name} className={cn('w-16 h-16 fill-black object-contain', className)} />
 }

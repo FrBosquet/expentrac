@@ -24,11 +24,14 @@ export const FieldSet = ({ children, disabled }: { children: React.ReactNode, di
   </fieldset>
 }
 
-export const FormField = ({ label, name, ...props }: { label: string, labelClassName?: string } & InputProps) => <>
+export const FormField = ({ label, name, children, ...props }: { label: string, labelClassName?: string } & InputProps) => <>
   <Label htmlFor={name} className='text-right'>
     {label}
   </Label>
-  <Input id={name} name={name} {...props} />
+  <div className='flex items-center gap-2'>
+    <Input id={name} name={name} {...props} />
+    {children}
+  </div>
 </>
 
 export const SubmitButton = ({

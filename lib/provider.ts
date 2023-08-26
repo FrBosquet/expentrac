@@ -8,7 +8,7 @@ export const isFetchedProvider = (provider: ProviderFetched | ProviderUnfetched)
 export const getAccentColor = (provider?: Provider) => {
   if (!provider || !provider?.isFetched || !provider.rawContent) return ''
 
-  const data = provider.rawContent as BrandExtendedInfo
+  const data = provider.rawContent as unknown as BrandExtendedInfo
   const colors = data.colors
 
   const accent = colors.find(color => color.type === 'accent')
@@ -19,7 +19,7 @@ export const getAccentColor = (provider?: Provider) => {
 export const getProviderLink = (provider?: Provider) => {
   if (!provider || !provider?.isFetched || !provider.rawContent) return ''
 
-  const data = provider.rawContent as BrandExtendedInfo
+  const data = provider.rawContent as unknown as BrandExtendedInfo
 
   return `https://${data.domain}`
 }

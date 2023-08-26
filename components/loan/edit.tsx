@@ -9,7 +9,7 @@ import { type LoanComplete } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
 import { useLoans } from './Context'
-import { LoanForm } from './Form'
+import { LoanForm } from './form'
 
 interface Props {
   loan: LoanComplete

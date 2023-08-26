@@ -22,11 +22,8 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  const { startDate, endDate, fee, name } = loan
-  const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan)
-
-  const alreadyPaid = paymentsDone * fee
-  const total = fee * payments
+  const { startDate, endDate, fee, name, initial } = loan
+  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount } = getLoanExtendedInformation(loan)
 
   useEffect(() => {
     if (!open) {
@@ -57,18 +54,25 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
             <ProviderDetail provider={loan.lender?.provider} label="Lender" className="col-start-3" />
           </article>
 
-          <article className="flex flex-col gap-2 col-span-2">
+          <article className="flex flex-col gap-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
             <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
           </article>
 
-          <article className="flex flex-col gap-2">
+          {initial
+            ? <article className="flex flex-col gap-2">
+              <h4 className="text-sm font-semibold">Initial payment</h4>
+              <p className="text-lg text-slate-700">{euroFormatter.format(initial)}</p>
+            </article>
+            : null}
+
+          <article className="flex flex-col gap-2 col-start-1">
             <h4 className="text-xs font-semibold">Total amount</h4>
-            <p className="text-sm text-slate-500">{euroFormatter.format(total)}</p>
+            <p className="text-sm text-slate-500">{euroFormatter.format(totalAmount)}</p>
           </article>
           <article className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold">Already paid</h4>
-            <p className="text-sm text-slate-500">{euroFormatter.format(alreadyPaid)}</p>
+            <p className="text-sm text-slate-500">{euroFormatter.format(paidAmount)}</p>
           </article>
 
           <article className="flex flex-col gap-2 col-span-2">
@@ -93,6 +97,10 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
           <article className="flex flex-col gap-2">
             <h4 className="text-xs font-semibold">Payments left</h4>
             <p className="text-sm text-slate-500">{paymentsLeft}</p>
+          </article>
+          <article className="flex flex-col gap-2">
+            <h4 className="text-xs font-semibold">You still owe</h4>
+            <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
           </article>
 
           <Separator className="col-span-2" />
