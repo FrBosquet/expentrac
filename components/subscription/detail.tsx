@@ -26,21 +26,33 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children }:
       <DialogTrigger asChild>
         <button className="hover:text-primary">{children ?? triggerContent}</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
+        e.preventDefault()
+      }}>
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>
             Loan details
           </DialogDescription>
         </DialogHeader>
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-2 gap-6">
           <article className="grid grid-cols-2 gap-2 col-span-2">
             <ProviderDetail provider={sub.vendor?.provider} label="Vendor" className="col-start-1" />
             <ProviderDetail provider={sub.platform?.provider} label="Platform" className="col-start-2" />
           </article>
-          <article className="flex flex-col gap-2 col-span-2">
+
+          {
+            sub.yearly && (
+              <article className="flex flex-col gap-2">
+                <h4 className="text-sm font-semibold">Yearly fee</h4>
+                <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
+              </article>
+            )
+          }
+
+          <article className="flex flex-col gap-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
-            <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
+            <p className="text-lg text-slate-700">{euroFormatter.format(sub.yearly ? fee / 12 : fee)}</p>
           </article>
 
           <Separator className="col-span-2" />

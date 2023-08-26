@@ -9,12 +9,26 @@ import {
   TableHeader,
   TableRow
 } from '@components/ui/table'
+import { euroFormatter } from '@lib/currency'
 import { getAccentColor } from '@lib/provider'
+import { type SubscriptionComplete } from '@types'
 import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
 import { SubscriptionDelete } from './delete'
 import { SubscriptionDetail } from './detail'
 import { SubscriptionEdit } from './edit'
+
+const getFee = (sub: SubscriptionComplete) => {
+  const feeString = euroFormatter.format(sub.fee)
+
+  if (sub.yearly) {
+    const monthlyFeeString = euroFormatter.format(sub.fee / 12)
+
+    return <p>{feeString}/y <span className='font-light'>({monthlyFeeString}/m)</span> </p>
+  } else {
+    return `${feeString}/m`
+  }
+}
 
 export const SubscriptionSummary = () => {
   const { subs } = useSubs()
@@ -48,7 +62,7 @@ export const SubscriptionSummary = () => {
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>
-                <TableCell className="font-semibold text-right">{sub.fee.toFixed(2)}€/m</TableCell>
+                <TableCell className="font-semibold text-right">{getFee(sub)}</TableCell>
                 <TableCell className="flex gap-1">
                   <SubscriptionEdit sub={sub} />
                   <SubscriptionDelete sub={sub} />

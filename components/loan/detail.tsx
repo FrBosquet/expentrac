@@ -40,7 +40,9 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
       <DialogTrigger asChild>
         <button className="hover:text-primary">{children ?? triggerContent}</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
+        e.preventDefault()
+      }}>
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>

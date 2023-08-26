@@ -78,6 +78,7 @@ model Subscription {
   name       String
   fee        Float
   userId     String
+  yearly     Boolean       @default(false)
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   vendorId   String?
   vendor     UserProvider? @relation(name: "SubscriptionVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)

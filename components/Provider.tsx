@@ -2,15 +2,18 @@
 
 import { type User } from '@prisma/client'
 import { SessionProvider, useSession } from 'next-auth/react'
+import { TooltipProvider } from './ui/tooltip'
 
 interface Props {
   children: React.ReactNode
 }
 
-export const Provider = ({ children }: Props) => {
+export const RootProvider = ({ children }: Props) => {
   return (
     <SessionProvider>
-      {children}
+      <TooltipProvider delayDuration={75}>
+        {children}
+      </TooltipProvider>
     </SessionProvider>
   )
 }

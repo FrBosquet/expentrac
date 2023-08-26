@@ -17,7 +17,7 @@ export const Summary = () => {
   const { subs } = useSubs()
 
   const totalLoans = loans.reduce((acc, cur) => acc + cur.fee, 0)
-  const totalSubs = subs.reduce((acc, cur) => acc + cur.fee, 0)
+  const totalSubs = subs.reduce((acc, cur) => acc + (cur.yearly ? (cur.fee / 12) : cur.fee), 0)
   const total = totalLoans + totalSubs
 
   const owedMoney = loans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).owedAmount, 0)

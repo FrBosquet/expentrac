@@ -1,4 +1,4 @@
-import { Provider } from '@components/Provider'
+import { RootProvider } from '@components/Provider'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
@@ -26,9 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${montserrat.className} text-black`}>
-        <Provider >
+        <RootProvider >
           {children}
-        </Provider>
+        </RootProvider>
       </body>
     </html>
   )

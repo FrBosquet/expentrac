@@ -4,7 +4,7 @@ import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
 import { type Subscription } from '@prisma/client'
-import { type FormEventHandler, useState } from 'react'
+import { useState, type FormEventHandler } from 'react'
 import { useSubs } from './context'
 import { SubscriptionForm } from './form'
 
@@ -17,17 +17,24 @@ export const SubscriptionAdd = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl('/subscription'), {
-      method: 'POST',
-      body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
-    })
+    try {
+      const result = await fetch(getUrl('/subscription'), {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
+      })
 
-    const { data } = await result.json() as { data: Subscription }
+      const { data } = await result.json() as { data: Subscription }
 
-    setLoading(false)
-    if (result.ok) {
-      setOpen(false)
-      addSub(data)
+      setLoading(false)
+      if (result.ok) {
+        setOpen(false)
+        addSub(data)
+      }
+    } catch (e) {
+      alert('Failed to add subscription') // TODO: THIS SHOULD BE A TOAST
+      console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 
