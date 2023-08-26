@@ -12,21 +12,24 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const startDate = new Date(loan.startDate)
   const endDate = new Date(loan.endDate)
 
-  const payments = monthBeetween(startDate, endDate)
+  const hasInitialPayment = initial > 0
+
+  const months = monthBeetween(startDate, endDate)
+  const payments = months + (hasInitialPayment ? 1 : 0)
   const paymentsLeft = monthBeetween(now, endDate)
-  const paymentsDone = payments - paymentsLeft
+  const paymentsDone = months - paymentsLeft
 
   const vendor = loan.vendor?.provider
   const platform = loan.platform?.provider
   const lender = loan.lender?.provider
 
-  const totalAmount = fee * payments + initial
+  const totalAmount = fee * months + initial
   const paidAmount = paymentsDone * fee + initial
   const owedAmount = totalAmount - paidAmount
 
   return {
     payments,
-    paymentsDone,
+    paymentsDone: paymentsDone + (hasInitialPayment ? 1 : 0),
     paymentsLeft,
 
     totalAmount,

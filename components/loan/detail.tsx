@@ -30,7 +30,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
       setProgress(0)
     } else {
       setTimeout(() => {
-        setProgress((paymentsDone / payments) * 100)
+        setProgress((paidAmount / totalAmount) * 100)
       }, 175)
     }
   }, [open, payments, paymentsDone])
