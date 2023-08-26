@@ -7,6 +7,8 @@ const monthBeetween = (startDate: Date, endDate: Date) => {
 }
 
 export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = now): LoanExtendedInfo => {
+  const { fee, initial } = loan
+
   const startDate = new Date(loan.startDate)
   const endDate = new Date(loan.endDate)
 
@@ -15,16 +17,24 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const paymentsDone = payments - paymentsLeft
 
   const vendor = loan.vendor?.provider
+  const platform = loan.platform?.provider
+  const lender = loan.lender?.provider
+
+  const totalAmount = fee * payments + initial
+  const paidAmount = paymentsDone * fee + initial
+  const owedAmount = totalAmount - paidAmount
 
   return {
     payments,
     paymentsDone,
     paymentsLeft,
 
-    totalAmount: loan.fee * payments,
-    paidAmount: loan.fee * paymentsDone,
-    owedAmount: loan.fee * paymentsLeft,
+    totalAmount,
+    paidAmount,
+    owedAmount,
 
-    vendor
+    vendor,
+    platform,
+    lender
   }
 }

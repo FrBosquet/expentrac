@@ -27,7 +27,8 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={loan?.name} name="name" label="Name" />
-      <FormField required defaultValue={loan?.fee} name="fee" label="Fee" type="number" step="0.01" />
+      <FormField required defaultValue={loan?.fee} name="fee" label="Fee" type="number" step="0.01" className='text-right' >€</FormField>
+      <FormField required defaultValue={loan?.initial} name="initial" label="Initial" type="number" step="0.01" className='text-right' >€</FormField>
 
       <div className="col-span-2 grid grid-cols-3 gap-2">
         <span className="flex flex-col gap-2">

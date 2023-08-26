@@ -8,7 +8,7 @@ import { revalidatUserLoans } from '@services/sdk'
 import { type LoanComplete } from '@types'
 import { useState, type FormEventHandler } from 'react'
 import { useLoans } from './Context'
-import { LoanForm } from './Form'
+import { LoanForm } from './form'
 
 export const LoanAdd = () => {
   const { user } = useUser()

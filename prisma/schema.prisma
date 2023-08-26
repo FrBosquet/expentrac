@@ -60,6 +60,7 @@ model Loan {
   id         String        @id @default(cuid())
   name       String
   fee        Float
+  initial    Float         @default(0)
   startDate  DateTime
   endDate    DateTime
   userId     String

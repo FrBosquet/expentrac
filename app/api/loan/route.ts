@@ -42,6 +42,7 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
 
     switch (key) {
       case 'fee':
+      case 'initial':
         parsedValue = Number(value)
         break
       case 'startDate':
