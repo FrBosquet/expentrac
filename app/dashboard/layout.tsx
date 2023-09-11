@@ -1,5 +1,6 @@
 import { Logo } from '@components/Logo'
 import { Navigation } from '@components/NavigationMenu'
+import { DateProvider } from '@components/date/context'
 import { LoansProvider } from '@components/loan/Context'
 import { ProvidersProvider } from '@components/provider/context'
 import { SubsProvider } from '@components/subscription/context'
@@ -14,7 +15,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export default async function Layout ({ children }: Props) {
+export default async function Layout({ children }: Props) {
   const data = await getServerSession(authOptions)
 
   if (!hasUser(data)) {
@@ -43,7 +44,9 @@ export default async function Layout ({ children }: Props) {
     <ProvidersProvider serverValue={providers} >
       <LoansProvider serverValue={loans}>
         <SubsProvider serverValue={subs}>
-          {children}
+          <DateProvider>
+            {children}
+          </DateProvider>
         </SubsProvider>
       </LoansProvider>
     </ProvidersProvider>

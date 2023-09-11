@@ -28,7 +28,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={loan?.name} name="name" label="Name" />
       <FormField required defaultValue={loan?.fee} name="fee" label="Fee" type="number" step="0.01" className='text-right' >€</FormField>
-      <FormField required defaultValue={loan?.initial} name="initial" label="Initial" type="number" step="0.01" className='text-right' >€</FormField>
+      <FormField required defaultValue={loan?.initial ?? 0} name="initial" label="Initial" type="number" step="0.01" className='text-right' >€</FormField>
 
       <div className="col-span-2 grid grid-cols-3 gap-2">
         <span className="flex flex-col gap-2">
@@ -60,7 +60,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
           <Label htmlFor='startDate' className="text-xs">
             Start date
           </Label>
-          <Input id="startDate" name="startDate" required defaultValue={loan ? toHTMLInputFormat(loan.startDate) : undefined} type="date" />
+          <Input id="startDate" name="startDate" required defaultValue={toHTMLInputFormat(loan ? loan.startDate : new Date())} type="date" />
         </div>
         <div className="flex flex-col gap-2 items-center">
           <Label htmlFor='endDate' className="text-xs">

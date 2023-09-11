@@ -11,6 +11,7 @@ import {
 } from '@components/ui/table'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
+import { twMerge } from 'tailwind-merge'
 import { useLoans } from './Context'
 import { LoanAdd } from './add'
 import { LoanDelete } from './delete'
@@ -39,10 +40,10 @@ export const LoanSummary = () => {
         </TableHeader>
         <TableBody>
           {loans.map((loan) => {
-            const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan)
+            const { paymentsDone, payments, paymentsLeft, isOver } = getLoanExtendedInformation(loan)
 
             return (
-              <TableRow key={loan.id}>
+              <TableRow key={loan.id} className={twMerge(isOver && 'opacity-30')}>
                 <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>{
                   <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
                 }</TableCell>
