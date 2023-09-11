@@ -3,6 +3,13 @@ import { type LoanComplete, type LoanExtendedInfo } from '@types'
 const now = new Date()
 
 const monthBeetween = (startDate: Date, endDate: Date) => {
+  const sameYear = startDate.getFullYear() === endDate.getFullYear()
+  const sameMonth = startDate.getMonth() === endDate.getMonth()
+
+  if (sameYear && sameMonth) {
+    return startDate.getDate() > endDate.getDate() ? 0 : 1
+  }
+
   return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
 }
 
