@@ -24,7 +24,7 @@ const getFee = (sub: SubscriptionComplete) => {
   if (sub.yearly) {
     const monthlyFeeString = euroFormatter.format(sub.fee / 12)
 
-    return <p>{feeString}/y <span className='font-light'>({monthlyFeeString}/m)</span> </p>
+    return <p><span className='font-light'>({feeString}/y)</span> {monthlyFeeString}/m</p>
   } else {
     return `${feeString}/m`
   }
