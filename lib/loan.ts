@@ -1,28 +1,39 @@
 import { type LoanComplete, type LoanExtendedInfo } from '@types'
+import { monthBeetween } from './dates'
 
 const now = new Date()
 
-const monthBeetween = (startDate: Date, endDate: Date) => {
-  const sameYear = startDate.getFullYear() === endDate.getFullYear()
-  const sameMonth = startDate.getMonth() === endDate.getMonth()
+export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: number) => {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  const months = monthBeetween(startDate, endDate)
 
-  if (sameYear && sameMonth) {
-    return startDate.getDate() > endDate.getDate() ? 0 : 1
+  const hasInitialPayment = initial && initial > 0
+
+  const payments = months + (hasInitialPayment ? 1 : 0)
+
+  const totalAmount = Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
+
+  return {
+    endDate,
+    startDate,
+    months,
+    hasInitialPayment,
+    payments,
+    totalAmount
   }
-
-  return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
 }
 
 export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = now): LoanExtendedInfo => {
   const { fee, initial } = loan
 
-  const startDate = new Date(loan.startDate)
-  const endDate = new Date(loan.endDate)
-
-  const hasInitialPayment = initial > 0
-
-  const months = monthBeetween(startDate, endDate)
-  const payments = months + (hasInitialPayment ? 1 : 0)
+  const {
+    endDate,
+    months,
+    hasInitialPayment,
+    payments,
+    totalAmount
+  } = getPaymentPlan(loan.startDate, loan.endDate, fee, initial)
 
   const monthBeetweenRefDate = monthBeetween(refDate, endDate)
   const paymentsLeft = monthBeetweenRefDate < 0 ? 0 : monthBeetweenRefDate
@@ -32,7 +43,6 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const platform = loan.platform?.provider
   const lender = loan.lender?.provider
 
-  const totalAmount = fee * months + initial
   const paidAmount = paymentsDone * fee + initial
   const owedAmount = totalAmount - paidAmount
 

@@ -6,3 +6,14 @@ export const toHTMLInputFormat = (d: Date) => {
   const formattedDate = `${year}-${month}-${day}`
   return formattedDate
 }
+
+export const monthBeetween = (startDate: Date, endDate: Date) => {
+  const sameYear = startDate.getFullYear() === endDate.getFullYear()
+  const sameMonth = startDate.getMonth() === endDate.getMonth()
+
+  if (sameYear && sameMonth) {
+    return startDate.getDate() > endDate.getDate() ? 0 : 1
+  }
+
+  return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
+}
