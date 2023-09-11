@@ -10,15 +10,22 @@ import {
   CardTitle
 } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
+import { useDate } from './date/context'
 import { useLoans } from './loan/Context'
 import { useSubs } from './subscription/context'
 
 export const Summary = () => {
+  const { date } = useDate()
+
   const { loans } = useLoans()
   const { subs } = useSubs()
 
   const totalLoans = loans.reduce((acc, cur) => {
-    if (new Date(cur.endDate) < new Date()) return acc
+    const curStartDate = new Date(cur.startDate)
+    const curEndDate = new Date(cur.endDate)
+
+    if (curStartDate > date) return acc
+    if (curEndDate < date) return acc
 
     return acc + cur.fee
   }, 0)

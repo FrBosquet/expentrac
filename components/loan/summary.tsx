@@ -1,5 +1,6 @@
 'use client'
 
+import { useDate } from '@components/date/context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
 import {
   Table,
@@ -11,7 +12,6 @@ import {
 } from '@components/ui/table'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
-import { twMerge } from 'tailwind-merge'
 import { useLoans } from './Context'
 import { LoanAdd } from './add'
 import { LoanDelete } from './delete'
@@ -19,7 +19,15 @@ import { LoanDetail } from './detail'
 import { LoanEdit } from './edit'
 
 export const LoanSummary = () => {
+  const { date } = useDate()
   const { loans } = useLoans()
+
+  const activeLoans = loans.filter((loan) => {
+    const startDate = new Date(loan.startDate)
+    const endDate = new Date(loan.endDate)
+
+    return startDate <= date && endDate >= date
+  })
 
   return (
     <section className="flex flex-col gap-2 pt-8">
@@ -39,11 +47,11 @@ export const LoanSummary = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loans.map((loan) => {
-            const { paymentsDone, payments, paymentsLeft, isOver } = getLoanExtendedInformation(loan)
+          {activeLoans.map((loan) => {
+            const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan, date)
 
             return (
-              <TableRow key={loan.id} className={twMerge(isOver && 'opacity-30')}>
+              <TableRow key={loan.id}>
                 <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>{
                   <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
                 }</TableCell>
