@@ -44,6 +44,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   loans         Loan[]
+  loanShares    LoanShare[]
   subscriptions Subscription[]
   providers     UserProvider[]
 }
@@ -71,6 +72,15 @@ model Loan {
   platform   UserProvider? @relation(name: "LoanPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
   lenderId   String?
   lender     UserProvider? @relation(name: "LoanLenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
+  shares     LoanShare[]
+}
+
+model LoanShare {
+  id     String @id @default(cuid())
+  loanId String
+  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
