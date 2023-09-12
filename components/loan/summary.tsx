@@ -41,6 +41,7 @@ export const LoanSummary = () => {
             <TableHead className="w-14" />
             <TableHead className="flex-1">Loan</TableHead>
             <TableHead>Payments</TableHead>
+            <TableHead>Payment day</TableHead>
             <TableHead>Pending</TableHead>
             <TableHead className="text-right">Monthly fee</TableHead>
             <TableHead className="w-4" />
@@ -59,6 +60,7 @@ export const LoanSummary = () => {
                   <LoanDetail key={loan.id} loan={loan} />
                 </TableCell>
                 <TableCell>{paymentsDone}/{payments}</TableCell>
+                <TableCell>{new Date(loan.startDate).getDate()}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
                 <TableCell className="font-semibold text-right">{loan.fee?.toFixed(2)}€/m</TableCell>
                 <TableCell className="flex gap-1">
