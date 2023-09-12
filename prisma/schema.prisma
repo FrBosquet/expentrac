@@ -76,11 +76,12 @@ model Loan {
 }
 
 model LoanShare {
-  id     String @id @default(cuid())
-  loanId String
-  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String   @id @default(cuid())
+  loanId   String
+  loan     Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accepted Boolean?
 }
 
 model Subscription {
