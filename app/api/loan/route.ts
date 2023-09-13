@@ -40,6 +40,8 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
     let parsedValue: any = value
     let parsedKey = key
 
+    if (key.startsWith('sharedWith')) return acc
+
     switch (key) {
       case 'fee':
       case 'initial':
@@ -79,6 +81,27 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   }, {}) as T
 }
 
+const addShares = async (loanId: string, body: Record<string, string>) => {
+  for (const key in body) {
+    if (key.startsWith('sharedWith')) {
+      await prisma.loanShare.create({
+        data: {
+          user: {
+            connect: {
+              id: body[key]
+            }
+          },
+          loan: {
+            connect: {
+              id: loanId
+            }
+          }
+        }
+      })
+    }
+  }
+}
+
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
@@ -93,6 +116,7 @@ export const POST = async (req: Request) => {
   const userId = session.user.id
 
   const body = await req.json()
+
   const args: Prisma.LoanCreateArgs = {
     data: {
       ...parseBody<Omit<Loan, 'userId' | 'lenderId' | 'vendorId' | 'platformId'>>(body, true),
@@ -101,17 +125,26 @@ export const POST = async (req: Request) => {
           id: userId
         }
       }
-    },
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
-      lender: { include: { provider: true } }
     }
   }
 
   const newLoan = await prisma.loan.create(args)
 
-  return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
+  console.log('newLoan', newLoan)
+
+  await addShares(newLoan.id, body)
+
+  const data = await prisma.loan.findFirst({
+    where: { id: newLoan.id },
+    include: {
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } },
+      shares: { include: { user: true } }
+    }
+  })
+
+  return NextResponse.json({ message: 'success', data }, { status: 201 })
 }
 
 export const PATCH = async (req: Request) => {
@@ -154,9 +187,12 @@ export const PATCH = async (req: Request) => {
     include: {
       vendor: { include: { provider: true } },
       platform: { include: { provider: true } },
-      lender: { include: { provider: true } }
+      lender: { include: { provider: true } },
+      shares: { include: { user: true } }
     }
   }
+
+  await addShares(body.id, body)
 
   const updatedLoan = await prisma.loan.update(args)
 

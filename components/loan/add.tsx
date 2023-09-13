@@ -21,17 +21,22 @@ export const LoanAdd = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl('/loan'), {
-      method: 'POST',
-      body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
-    })
+    try {
+      const result = await fetch(getUrl('/loan'), {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
+      })
 
-    const { data } = await result.json() as { data: LoanComplete }
+      const { data } = await result.json() as { data: LoanComplete }
 
-    if (result.ok) {
-      void revalidatUserLoans(user.id)
-      setOpen(false)
-      addLoan(data)
+      if (result.ok) {
+        void revalidatUserLoans(user.id)
+        setOpen(false)
+        addLoan(data)
+      }
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
     }
   }
 

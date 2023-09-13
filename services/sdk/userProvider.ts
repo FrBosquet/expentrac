@@ -1,6 +1,6 @@
-import { Brand } from "@components/BrandAutocomplete"
-import { getTag, getUrl } from "@lib/api"
-import { UserProviderComplete } from "@types"
+import { type Brand } from '@components/BrandAutocomplete'
+import { getTag, getUrl } from '@lib/api'
+import { type UserProviderComplete } from '@types'
 
 export const getUserProviders = async (userId: string) => {
   const url = getUrl(`user-provider?userId=${userId}`)
@@ -20,7 +20,7 @@ export const revalidateUserProviders = async (userId: string) => {
 }
 
 export const addUserProvider = async (brand: Brand) => {
-  const result = await fetch(getUrl(`/user-provider`), {
+  const result = await fetch(getUrl('/user-provider'), {
     method: 'POST',
     body: JSON.stringify(brand)
   })
