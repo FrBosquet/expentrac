@@ -5,6 +5,15 @@ import { prisma } from '@services/prisma'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
+const include = {
+  vendor: { include: { provider: true } },
+  platform: { include: { provider: true } },
+  lender: { include: { provider: true } },
+  shares: {
+    include: { user: true }
+  }
+}
+
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get('userId')
@@ -25,12 +34,7 @@ export const GET = async (req: Request) => {
         name: 'asc'
       }
     ],
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
-      lender: { include: { provider: true } },
-      shares: { include: { user: true } }
-    }
+    include
   })
 
   return NextResponse.json(loans)
@@ -135,12 +139,7 @@ export const POST = async (req: Request) => {
 
   const data = await prisma.loan.findFirst({
     where: { id: newLoan.id },
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
-      lender: { include: { provider: true } },
-      shares: { include: { user: true } }
-    }
+    include
   })
 
   return NextResponse.json({ message: 'success', data }, { status: 201 })
@@ -183,12 +182,7 @@ export const PATCH = async (req: Request) => {
     where: {
       id: body.id
     },
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } },
-      lender: { include: { provider: true } },
-      shares: { include: { user: true } }
-    }
+    include
   }
 
   await addShares(body.id, body)
