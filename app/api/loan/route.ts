@@ -28,7 +28,8 @@ export const GET = async (req: Request) => {
     include: {
       vendor: { include: { provider: true } },
       platform: { include: { provider: true } },
-      lender: { include: { provider: true } }
+      lender: { include: { provider: true } },
+      shares: { include: { user: true } }
     }
   })
 
@@ -129,8 +130,6 @@ export const POST = async (req: Request) => {
   }
 
   const newLoan = await prisma.loan.create(args)
-
-  console.log('newLoan', newLoan)
 
   await addShares(newLoan.id, body)
 

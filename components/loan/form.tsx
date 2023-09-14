@@ -11,12 +11,13 @@ import { euroFormatter } from '@lib/currency'
 import { toHTMLInputFormat } from '@lib/dates'
 import { getPaymentPlan } from '@lib/loan'
 import { type Loan, type User } from '@prisma/client'
+import { type LoanComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useMemo, useState, type ChangeEvent, type FormEventHandler } from 'react'
 import { FieldSet, FormField, Root, SubmitButton } from '../Form'
 
 interface Props {
-  loan?: Loan
+  loan?: LoanComplete
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean
 }
@@ -26,7 +27,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
     startDate: new Date()
   })
 
-  const [sharedWith, setSharedWith] = useState<User[]>([])
+  const [sharedWith, setSharedWith] = useState<User[]>(loan?.shares?.map(({ user }) => user) ?? [])
 
   const { providers } = useProviders()
 

@@ -1,6 +1,5 @@
-import { getTag, getUrl } from "@lib/api"
-import { Subscription } from "@prisma/client"
-
+import { getTag, getUrl } from '@lib/api'
+import { type Subscription } from '@prisma/client'
 
 export const getUserSubscriptions = async (userId: string) => {
   const url = getUrl(`subscription?userId=${userId}`)

@@ -14,8 +14,6 @@ export const UserProviderSummary = () => {
 
   const { providers } = useProvidersComplete()
 
-  console.log(providers)
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNameFilter(e.target.value)
   }

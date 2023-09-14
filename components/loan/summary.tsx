@@ -10,14 +10,22 @@ import {
   TableHeader,
   TableRow
 } from '@components/ui/table'
+import { euroFormatter } from '@lib/currency'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
-import { Banknote } from 'lucide-react'
+import { type LoanComplete } from '@types'
+import { Banknote, User } from 'lucide-react'
 import { useLoans } from './Context'
 import { LoanAdd } from './add'
 import { LoanDelete } from './delete'
 import { LoanDetail } from './detail'
 import { LoanEdit } from './edit'
+
+const FeeContent = ({ loan }: { loan: LoanComplete }) => {
+  return <div className="flex items-center justify-end gap-2">
+    {loan.shares.length > 0 ? <User size={12} /> : null} {euroFormatter.format(loan.fee)}/m
+  </div>
+}
 
 export const LoanSummary = () => {
   const { date } = useDate()
@@ -60,13 +68,15 @@ export const LoanSummary = () => {
                     : <Banknote className='h-8 w-8 m-auto' />
                   }
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                   <LoanDetail key={loan.id} loan={loan} />
                 </TableCell>
                 <TableCell>{paymentsDone}/{payments}</TableCell>
                 <TableCell>{new Date(loan.startDate).getDate()}</TableCell>
                 <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
-                <TableCell className="font-semibold text-right">{loan.fee?.toFixed(2)}€/m</TableCell>
+                <TableCell className="font-semibold text-right">
+                  <FeeContent loan={loan} />
+                </TableCell>
                 <TableCell className="flex gap-1">
                   <LoanEdit loan={loan} />
                   <LoanDelete loan={loan} />
