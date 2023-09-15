@@ -1,6 +1,7 @@
 import { Logo } from '@components/Logo'
 import { Navigation } from '@components/NavigationMenu'
 import { DateProvider } from '@components/date/context'
+import { LoanSharesProvider } from '@components/loan-share/Context'
 import { LoansProvider } from '@components/loan/Context'
 import { ProvidersProvider } from '@components/provider/context'
 import { SubsProvider } from '@components/subscription/context'
@@ -8,6 +9,7 @@ import { Menu } from '@components/user/Menu'
 import { hasUser } from '@lib/session'
 import { authOptions } from '@services/auth'
 import { getUserLoans, getUserProviders, getUserSubscriptions } from '@services/sdk'
+import { getUserLoanShares } from '@services/sdk/loanShare'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 
@@ -27,32 +29,34 @@ export default async function Layout({ children }: Props) {
   const [
     providers,
     loans,
-    subs
+    subs,
+    loanShares
   ] = await Promise.all([
     getUserProviders(user.id),
     getUserLoans(user.id),
-    getUserSubscriptions(user.id)
+    getUserSubscriptions(user.id),
+    getUserLoanShares(user.id)
   ])
 
-  return <main className="flex flex-col min-h-screen">
-    <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
-      <Logo className="text-4xl -tracking-widest px-2">et</Logo>
-      <Menu user={user} />
-    </header>
-    <Navigation />
-
-    <ProvidersProvider serverValue={providers} >
-      <LoansProvider serverValue={loans}>
-        <SubsProvider serverValue={subs}>
+  return <ProvidersProvider serverValue={providers} >
+    <LoansProvider serverValue={loans}>
+      <SubsProvider serverValue={subs}>
+        <LoanSharesProvider serverValue={loanShares}>
           <DateProvider>
-            {children}
+            <main className="flex flex-col min-h-screen">
+              <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
+                <Logo className="text-4xl -tracking-widest px-2">et</Logo>
+                <Menu user={user} />
+              </header>
+              <Navigation />
+              {children}
+              <footer className="flex gap-4 bg-white p-2 justify-between items-center border-t border-gray-300">
+                footer
+              </footer>
+            </main >
           </DateProvider>
-        </SubsProvider>
-      </LoansProvider>
-    </ProvidersProvider>
-
-    <footer className="flex gap-4 bg-white p-2 justify-between items-center border-t border-gray-300">
-      footer
-    </footer>
-  </main>
+        </LoanSharesProvider>
+      </SubsProvider>
+    </LoansProvider>
+  </ProvidersProvider>
 };

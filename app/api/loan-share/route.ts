@@ -3,6 +3,35 @@ import { prisma } from '@services/prisma'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
+export const GET = async (req: Request) => {
+  const { searchParams } = new URL(req.url)
+  const userId = searchParams.get('userId')
+
+  if (!userId) {
+    return NextResponse.json({
+      message: 'userId is required'
+    }, {
+      status: 400
+    })
+  }
+
+  const loans = await prisma.loanShare.findMany({
+    where: { userId },
+    include: {
+      loan: {
+        include: {
+          user: true,
+          vendor: { include: { provider: true } },
+          platform: { include: { provider: true } },
+          lender: { include: { provider: true } }
+        }
+      }
+    }
+  })
+
+  return NextResponse.json(loans)
+}
+
 export const DELETE = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
