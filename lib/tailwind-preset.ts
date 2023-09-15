@@ -48,6 +48,9 @@ export const tailwindPreset = {
       blur: {
         xs: '2px'
       },
+      boxShadow: {
+        bloom: '2px 0 6px 2px #ffffffff, 2px 0 120px 15px #ffffff55'
+      },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
