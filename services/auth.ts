@@ -1,10 +1,10 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-import { AuthOptions } from "next-auth";
-import { Adapter } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from '@auth/prisma-adapter'
+import { PrismaClient } from '@prisma/client'
+import { type AuthOptions } from 'next-auth'
+import { type Adapter } from 'next-auth/adapters'
+import GoogleProvider from 'next-auth/providers/google'
 
-const adapter = PrismaAdapter(new PrismaClient()) as Adapter;
+const adapter = PrismaAdapter(new PrismaClient()) as Adapter
 
 export const authOptions: AuthOptions = {
   adapter,
@@ -17,7 +17,7 @@ export const authOptions: AuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
       if (session.user) {
-        session.user.id = user.id;
+        session.user.id = user.id
       }
 
       return session
@@ -26,5 +26,5 @@ export const authOptions: AuthOptions = {
   secret: process.env.AUTH_SECRET as string,
   pages: {
     signIn: '/'
-  },
-};
+  }
+}

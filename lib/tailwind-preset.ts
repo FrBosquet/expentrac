@@ -49,7 +49,9 @@ export const tailwindPreset = {
         xs: '2px'
       },
       boxShadow: {
-        bloom: '2px 0 6px 2px #ffffffff, 2px 0 120px 15px #ffffff55'
+        bloom: '2px 0 6px 2px #ffffffff, 2px 0 120px 15px #ffffff55',
+        'bloom-sm': '1px 0 3px 1px #ffffffff, 1px 0 60px 7.5px #ffffff55',
+        'bloom-green': '1px 0 1px 1px #7deead55, 3px 1px 200px 7.5px #ffffff55'
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',

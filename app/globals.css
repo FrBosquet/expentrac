@@ -5,3 +5,36 @@
 .hero-perspective {
   transform: rotateY(35deg) rotateX(-18deg);
 }
+
+.perspective-container {
+  --perspective: 700px;
+  --perspective-origin: 0% 0%;
+  perspective: var(--perspective);
+  perspective-origin: var(--perspective-origin);
+  -webkit-perspective: var(--perspective);
+  -webkit-perspective-origin: var(--perspective-origin);
+  -moz-perspective: var(--perspective);
+  -moz-perspective-origin: var(--perspective-origin);
+}
+
+
+.animate-scroll {
+  view-timeline-name: --image;
+  view-timeline-axis: block;
+  /* animation-range: entry 25% cover 50%; */
+
+  animation-timeline: --image;
+  animation-name: show-hero-image;
+  animation-fill-mode: both;
+}
+
+@keyframes show-hero-image {
+  0% {
+    opacity: .25;
+    transform: rotateY(35deg) rotateX(18deg) scale(1.1) translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(5deg) rotateX(5deg) scale(1) translate3d(0, 0, 100px);
+  }
+}
