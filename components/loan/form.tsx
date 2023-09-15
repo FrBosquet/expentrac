@@ -106,7 +106,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
       </div>
 
       <Separator className="col-span-2" />
-      <div className='col-span-2 flex flex-col gap-2'>
+      <div className='col-span-2 flex flex-col gap-4'>
         <section className='flex justify-between items-center'>
           <Label>Share this payment </Label>
           <UserSearch onSelect={(user) => {

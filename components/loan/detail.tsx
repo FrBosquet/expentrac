@@ -18,12 +18,56 @@ interface Props {
   children?: React.ReactNode
 }
 
+const SharesDetail = ({ loan: { shares, fee } }: { loan: LoanComplete }) => {
+  const parts = shares.filter(share => share.accepted === true).length + 1
+  const chargeByPart = fee / parts
+  const inEuros = `${euroFormatter.format(chargeByPart)}/m`
+
+  return <>
+    <section className='col-span-2 flex flex-col gap-2'>
+
+      <p className="text-sm">This loan fee is shared by:</p>
+      <article className="flex items-center gap-2">
+        <p className="text-sm font-semibold flex-1">You</p>
+        <p className="text-xs">{inEuros}</p>
+      </article>
+      {
+        shares.map((share) => {
+          const { user } = share
+          const { accepted } = share
+
+          return <article key={share.id} className="flex items-center gap-2">
+            <p className="text-sm font-semibold">{user.name}</p>
+            <p className="text-sm text-slate-500 flex-1">{user.email}</p>
+            {
+              accepted === true
+                ? <p className='text-xs'>{inEuros}</p>
+                : null
+            }
+            {
+              accepted === false
+                ? <p className='text-xs'>Rejected</p>
+                : null
+            }
+            {
+              accepted === null
+                ? <p className='text-xs'>Pending</p>
+                : null
+            }
+          </article>
+        })
+      }
+    </section>
+    <Separator className="col-span-2" />
+  </>
+}
+
 export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name, initial } = loan
-  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount } = getLoanExtendedInformation(loan)
+  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares } = getLoanExtendedInformation(loan)
 
   useEffect(() => {
     if (!open) {
@@ -106,6 +150,10 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
           </article>
 
           <Separator className="col-span-2" />
+
+          {
+            hasShares && <SharesDetail loan={loan} />
+          }
 
           <menu className="col-span-2 flex gap-2 justify-end">
             <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />

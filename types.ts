@@ -14,6 +14,7 @@ export interface LoanExtendedInfo {
   lender?: Provider
 
   isOver: boolean
+  hasShares: boolean
 }
 
 export interface BrandExtendedInfo {
