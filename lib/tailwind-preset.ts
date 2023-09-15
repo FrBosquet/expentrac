@@ -15,15 +15,19 @@ export const tailwindPreset = {
     },
     extend: {
       colors: {
-        primary: '#6985C0',
-        secondary: '#FFD37E',
+        primary: {
+          300: '#7deead',
+          600: '#2dff87',
+          800: '#2aa45e'
+        },
+        secondary: '#EDE2D3',
         gradient: {
-          start: '#799AE3',
+          start: '#2dff87',
           end: '#EDE2D3'
         }
       },
       fontFamily: {
-        sans: ['__Oswald_2880cd', '__Oswald_Fallback_2880cd'],
+        sans: ['__Inter_20951f', '__Inter_Fallback_20951f'],
         logo: ['__montserrat_d57222', '__montserrat_Fallback_d57222']
       },
       backgroundImage: {
@@ -41,9 +45,15 @@ export const tailwindPreset = {
           to: { height: '0' }
         }
       },
+      blur: {
+        xs: '2px'
+      },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'spin-slow': 'spin 700s linear infinite',
+        'spin-slower': 'spin 800s linear infinite',
+        'spin-slowest': 'spin 900s linear infinite'
       }
     }
   }
