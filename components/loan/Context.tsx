@@ -2,11 +2,20 @@
 
 import { useResourceContext } from '@lib/resourceContext'
 import { type LoanComplete } from '@types'
-import { type Dispatch, type ReactNode, type SetStateAction, createContext, useContext } from 'react'
+import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 
 interface Props {
   children: ReactNode
   serverValue: LoanComplete[]
+}
+
+const defaultContextValue = {
+  loans: [],
+  setLoans: () => null,
+  addLoan: () => null,
+  removeLoan: () => null,
+  updateLoan: () => null,
+  hasLoans: false
 }
 
 export const LoanContext = createContext<{
@@ -15,13 +24,8 @@ export const LoanContext = createContext<{
   addLoan: (loan: LoanComplete) => void
   removeLoan: (loan: LoanComplete) => void
   updateLoan: (loan: LoanComplete) => void
-}>({
-      loans: [],
-      setLoans: () => null,
-      addLoan: () => null,
-      removeLoan: () => null,
-      updateLoan: () => null
-    })
+  hasLoans: boolean
+}>(defaultContextValue)
 
 export const LoansProvider = ({ children, serverValue }: Props) => {
   const {
@@ -39,7 +43,7 @@ export const LoansProvider = ({ children, serverValue }: Props) => {
   )
 
   return (
-    <LoanContext.Provider value={{ loans, setLoans, addLoan, removeLoan, updateLoan }}>
+    <LoanContext.Provider value={{ loans, setLoans, addLoan, removeLoan, updateLoan, hasLoans: loans.length > 0 }}>
       {children}
     </LoanContext.Provider>
   )

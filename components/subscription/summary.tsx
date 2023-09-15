@@ -33,6 +33,8 @@ const getFee = (sub: SubscriptionComplete) => {
 export const SubscriptionSummary = () => {
   const { subs } = useSubs()
 
+  if (subs.length === 0) return null
+
   return (
     <section className="flex flex-col gap-2 pt-8">
       <div className="flex justify-between">

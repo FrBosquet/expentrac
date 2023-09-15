@@ -10,7 +10,13 @@ import { useState, type FormEventHandler } from 'react'
 import { useLoans } from './Context'
 import { LoanForm } from './form'
 
-export const LoanAdd = () => {
+const TRIGGER_DECORATOR = 'New loan'
+
+interface Props {
+  triggerDecorator?: React.ReactNode
+}
+
+export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const { user } = useUser()
 
   const [open, setOpen] = useState(false)
@@ -43,7 +49,7 @@ export const LoanAdd = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="text-xs h-auto" onClick={() => { setOpen(true) }}>New loan</Button>
+        <Button variant="outline" className="text-xs h-auto w-fit" onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -2,11 +2,20 @@
 
 import { useResourceContext } from '@lib/resourceContext'
 import { type SubscriptionComplete } from '@types'
-import { type Dispatch, type ReactNode, type SetStateAction, createContext, useContext } from 'react'
+import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 
 interface Props {
   children: ReactNode
   serverValue: SubscriptionComplete[]
+}
+
+const defaultContextValue = {
+  subs: [],
+  setSubs: () => null,
+  addSub: () => null,
+  removeSub: () => null,
+  updateSub: () => null,
+  hasSubs: false
 }
 
 export const SubContext = createContext<{
@@ -15,13 +24,8 @@ export const SubContext = createContext<{
   addSub: (sub: SubscriptionComplete) => void
   removeSub: (sub: SubscriptionComplete) => void
   updateSub: (sub: SubscriptionComplete) => void
-}>({
-      subs: [],
-      setSubs: () => null,
-      addSub: () => null,
-      removeSub: () => null,
-      updateSub: () => null
-    })
+  hasSubs: boolean
+}>(defaultContextValue)
 
 export const SubsProvider = ({ children, serverValue }: Props) => {
   const {
@@ -36,7 +40,7 @@ export const SubsProvider = ({ children, serverValue }: Props) => {
   )
 
   return (
-    <SubContext.Provider value={{ subs, setSubs, addSub, removeSub, updateSub }}>
+    <SubContext.Provider value={{ subs, setSubs, addSub, removeSub, updateSub, hasSubs: subs.length > 0 }}>
       {children}
     </SubContext.Provider>
   )

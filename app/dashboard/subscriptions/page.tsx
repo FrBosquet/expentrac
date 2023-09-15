@@ -1,9 +1,7 @@
-import { DateSelector } from '@components/date/selector'
-import { SubscriptionSummary } from '@components/subscription/summary'
+import { SubsDashboard } from '@components/subscription/dashboard'
 
 export default function page() {
   return <section className="flex-1 bg-white w-screen max-w-3xl p-12 mx-auto">
-    <DateSelector />
-    <SubscriptionSummary />
+    <SubsDashboard />
   </section>
 }

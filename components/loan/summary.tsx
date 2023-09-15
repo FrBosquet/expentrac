@@ -42,6 +42,8 @@ export const LoanSummary = () => {
     return startDate <= date && endDate >= date
   })
 
+  if (loans.length === 0) return null
+
   return (
     <section className="flex flex-col gap-2 pt-8">
       <div className="flex justify-between">
