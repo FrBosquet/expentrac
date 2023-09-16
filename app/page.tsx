@@ -9,7 +9,7 @@ import { HeaderSignin, RegularSignin } from '@components/hero/signin'
 
 export default function Home() {
   return (
-    <main className='relative h-screen bg-gradient-to-r from-slate-800 to-slate-500 overflow-x-hidden text-slate-200'>
+    <main className='relative h-screen bg-gradient-to-r from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 perspective-container'>
       <div className='absolute top-1/2 left-1/4 text-slate-200 opacity-5 text-8xl -translate-y-[50%] scale-[200%] font-semibold blur-xs'>
         <p>Your finances</p>
         <p>under your control</p>

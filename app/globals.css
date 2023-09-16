@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 .hero-perspective {
-  transform: rotateY(35deg) rotateX(-18deg);
+  transform: rotateY(300deg) rotateX(20deg);
 }
 
 .perspective-container {
-  --perspective: 700px;
-  --perspective-origin: 0% 0%;
+  --perspective: 750px;
+  --perspective-origin: 50% 50%;
   perspective: var(--perspective);
   perspective-origin: var(--perspective-origin);
   -webkit-perspective: var(--perspective);
@@ -46,7 +46,6 @@
   animation-timeline: --image;
   animation-name: from-above;
   animation-fill-mode: forwards;
-  animation-iteration-count: 1;
 }
 
 .animate-scroll-from-below {
@@ -57,7 +56,17 @@
   animation-timeline: --image;
   animation-name: from-below;
   animation-fill-mode: forwards;
-  animation-iteration-count: 1;
+}
+
+.animate-scroll-fade {
+  view-timeline-name: --fade;
+  view-timeline-axis: block;
+  animation-range-start: 50%;
+  animation-range-end: 90%;
+
+  animation-timeline: --fade;
+  animation-name: fade;
+  animation-fill-mode: both;
 }
 
 @keyframes show-hero-image {
@@ -90,5 +99,14 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade {
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
