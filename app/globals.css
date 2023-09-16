@@ -21,11 +21,43 @@
 .animate-scroll {
   view-timeline-name: --image;
   view-timeline-axis: block;
-  /* animation-range: entry 25% cover 50%; */
+  animation-range: entry 25% cover 75%;
 
   animation-timeline: --image;
   animation-name: show-hero-image;
   animation-fill-mode: both;
+}
+
+.animate-from-above {
+  animation-name: from-above;
+  animation-duration: 1000ms;
+}
+
+.timeline-features {
+  view-timeline-name: --features;
+  view-timeline-axis: block;
+}
+
+.animate-scroll-from-above {
+  view-timeline-name: --image;
+  view-timeline-axis: block;
+  animation-range: entry 0% cover 80%;
+
+  animation-timeline: --image;
+  animation-name: from-above;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+.animate-scroll-from-below {
+  view-timeline-name: --image;
+  view-timeline-axis: block;
+  animation-range: entry 0% cover 80%;
+
+  animation-timeline: --image;
+  animation-name: from-below;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
 }
 
 @keyframes show-hero-image {
@@ -36,5 +68,27 @@
   100% {
     opacity: 1;
     transform: rotateY(5deg) rotateX(5deg) scale(1) translate3d(0, 0, 100px);
+  }
+}
+
+@keyframes from-above {
+  0% {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes from-below {
+  0% {
+    opacity: 0;
+    transform: translateY(150px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
