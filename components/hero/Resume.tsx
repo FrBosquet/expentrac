@@ -2,7 +2,7 @@ import { Pen } from 'lucide-react'
 import Image from 'next/image'
 
 export const Resume = () => {
-  return <section className='h-[80vh] bg-slate-900 shadow-2xl'>
+  return <section className='h-[80vh] bg-slate-800 shadow-2xl'>
     <div className='
       h-full gap-6 max-w-screen-xl w-full items-start p-6 m-auto grid
       grid-cols-1 md:grid-cols-2
