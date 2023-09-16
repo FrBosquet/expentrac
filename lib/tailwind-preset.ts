@@ -15,7 +15,7 @@ export const tailwindPreset = {
       })
       addUtilities({
         '.perspective-container': {
-          '--perspective': '750px',
+          '--perspective': '1000px',
           '--perspective-origin': '50% 50%',
           perspective: 'var(--perspective)',
           'perspective-origin': 'var(--perspective-origin)',
@@ -35,7 +35,7 @@ export const tailwindPreset = {
         '.scroll-anim-fall': {
           'view-timeline-name': '--fall',
           'view-timeline-axis': 'block',
-          'animation-range': 'entry 0% cover 80%',
+          'animation-range': 'entry 0% cover 100%',
           'animation-timeline': '--fall',
           'animation-name': 'fall',
           'animation-fill-mode': 'both'

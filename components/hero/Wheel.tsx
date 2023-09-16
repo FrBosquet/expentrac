@@ -2,7 +2,7 @@ export const Wheel = () => {
   return <div className='
     absolute aspect-square
     h-screen md:h-[110vh] md:-top-[5vh]
-    left-[20vw] lg:[70vw] xl:[80vw]
+    left-[20vw] xl:left-[30vw]
     rounded-full border border-slate-200/40 justify-center items-center overflow-hidden perspective-wheel shadow-bloom bg-slate-600 hidden sm:flex scroll-anim-fade'>
     <img src='/coin.webp' alt='coins' className='absolute h-full w-full inset-0 bg-cover opacity-20 animate-spin-slowest saturate-0' />
 
