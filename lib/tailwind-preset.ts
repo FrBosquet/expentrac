@@ -99,7 +99,7 @@ export const tailwindPreset = {
           to: { height: '0' }
         },
         fall: {
-          from: { transform: 'translateY(-100%)', opacity: '0' },
+          from: { transform: 'translateY(-10vh)', opacity: '0' },
           to: { transform: 'translateY(0)', opacity: '1' }
         }
       },

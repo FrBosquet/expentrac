@@ -24,15 +24,21 @@ const features = [
 ]
 
 export const Features = () => {
-  return <section className='h-[80vh] flex flex-col justify-center'>
-    <div className='gap-x-8 gap-y-4 max-w-screen-xl w-full p-6 m-auto grid grid-cols-3 grid-rows-[auto_auto_auto_1fr] justify-center justify-items-center'>
-      <h1 className='text-6xl col-span-3 pb-10 w-full text-left scroll-anim-fall'><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
+  return <section className='py-24 md:py-[unset] md:h-[80vh] flex flex-col justify-center'>
+    <div className='
+      gap-x-8 gap-y-4 max-w-screen-xl w-full p-6 m-auto grid justify-center justify-items-center
+      grid-cols-1 md:grid-cols-3
+      grid-rows-[auto_auto_auto_1fr]
+    '>
+      <h1 className='text-6xl pb-10 w-full text-left scroll-anim-fall
+      col-span-1 md:col-span-3
+      '><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
       {
         features.map(({ title, description, image, alt }) => {
           return <>
-            <Image key={image} src={image} alt={alt} width={300} height={300} className='shadow-lg row-start-2 rounded-full scroll-anim-rise' />
-            <h3 key={alt} className='text-secondary row-start-3 text-4xl uppercase tracking-wider text-center scroll-anim-rise'>{title}</h3>
-            <p key={description} className='row-start-4 text-slate-300 text-center scroll-anim-rise'>{description}</p>
+            <Image key={image} src={image} alt={alt} width={300} height={300} className='hidden md:block shadow-lg row-start-2 rounded-full scroll-anim-rise' />
+            <h3 key={alt} className='text-secondary text-4xl uppercase tracking-wider text-center scroll-anim-rise md:row-start-3 '>{title}</h3>
+            <p key={description} className='text-slate-300 text-center scroll-anim-rise md:row-start-4'>{description}</p>
           </>
         })
       }

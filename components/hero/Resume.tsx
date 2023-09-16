@@ -3,8 +3,12 @@ import Image from 'next/image'
 
 export const Resume = () => {
   return <section className='h-[80vh] bg-slate-900 shadow-2xl'>
-    <div className='h-full gap-6 max-w-screen-xl w-full items-start p-6 m-auto grid grid-cols-2 grid-rows-2'>
-      <article className='perspective-container col-start-1 row-span-2 self-center'>
+    <div className='
+      h-full gap-6 max-w-screen-xl w-full items-start p-6 m-auto grid
+      grid-cols-1 md:grid-cols-2
+      grid-rows-2
+    '>
+      <article className='hidden md:block perspective-container col-start-1 row-span-2 self-center'>
         <Image src='/screenshots/dashboard.png' alt="" width={500} height={500} className='max-w-[50%] m-auto shadow-lg scroll-anim-snapshot' />
       </article>
 
