@@ -1,6 +1,6 @@
 import { Footer } from '@components/Footer'
 import { Logo } from '@components/Logo'
-import { NavMenu } from '@components/NavMenu'
+import { NavigationLinks } from '@components/NavigationLinks'
 import { Features } from '@components/hero/Features'
 import { Resume } from '@components/hero/Resume'
 import { StartNow } from '@components/hero/StartNow'
@@ -20,7 +20,7 @@ export default function Home() {
       <section className="relative flex flex-col h-screen w-screen items-center ">
         <header className='flex w-full p-6 justify-between gap-4'>
           <Logo className="text-4xl">expentrac</Logo>
-          <NavMenu className='flex-1' />
+          <NavigationLinks className='flex-1' />
           <HeaderSignin />
         </header>
 
