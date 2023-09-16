@@ -8,7 +8,7 @@ export const StartNow = () => {
       <Rocket className='m-auto text-primary-600 drop-shadow-lg' size={270} />
 
       <article className='flex flex-col gap-8 w-full justify-center items-start'>
-        <h1 className='text-6xl animate-scroll-from-above text-primary-600'>Start tracking today</h1>
+        <h1 className='text-6xl scroll-anim-fall text-primary-600'>Start tracking today</h1>
         <p className='text-slate-400'>Expentrac is free to use. You just need an email account.</p>
         <RegularSignin />
       </article>

@@ -1,10 +1,64 @@
 import { type Config } from 'tailwindcss'
 import animatePlugin from 'tailwindcss-animate'
+import plugin from 'tailwindcss/plugin'
 
 export const tailwindPreset = {
   darkMode: ['class'],
   content: [],
-  plugins: [animatePlugin],
+  plugins: [
+    animatePlugin,
+    plugin(function ({ addComponents, addUtilities }) {
+      addComponents({
+        '.perspective-wheel': {
+          transform: 'rotateY(300deg) rotateX(20deg)'
+        }
+      })
+      addUtilities({
+        '.perspective-container': {
+          '--perspective': '750px',
+          '--perspective-origin': '50% 50%',
+          perspective: 'var(--perspective)',
+          'perspective-origin': 'var(--perspective-origin)',
+          '-webkit-perspective': 'var(--perspective)',
+          '-webkit-perspective-origin': 'var(--perspective-origin)',
+          '-moz-perspective': 'var(--perspective)',
+          '-moz-perspective-origin': 'var(--perspective-origin)'
+        },
+        '.scroll-anim-snapshot': {
+          'view-timeline-name': '--snapshot',
+          'view-timeline-axis': 'block',
+          'animation-range': 'entry 25% cover 75%',
+          'animation-timeline': '--snapshot',
+          'animation-name': 'doc-snapshot',
+          'animation-fill-mode': 'both'
+        },
+        '.scroll-anim-fall': {
+          'view-timeline-name': '--fall',
+          'view-timeline-axis': 'block',
+          'animation-range': 'entry 0% cover 80%',
+          'animation-timeline': '--fall',
+          'animation-name': 'fall',
+          'animation-fill-mode': 'both'
+        },
+        '.scroll-anim-rise': {
+          'view-timeline-name': '--rise',
+          'view-timeline-axis': 'block',
+          'animation-range': 'entry 0% cover 80%',
+          'animation-timeline': '--rise',
+          'animation-name': 'rise',
+          'animation-fill-mode': 'both'
+        },
+        '.scroll-anim-fade': {
+          'view-timeline-name': '--fade',
+          'view-timeline-axis': 'block',
+          'animation-range': '50% 90%',
+          'animation-timeline': '--fade',
+          'animation-name': 'wheel-fade',
+          'animation-fill-mode': 'both'
+        }
+      })
+    })
+  ],
   theme: {
     container: {
       center: true,
@@ -43,6 +97,10 @@ export const tailwindPreset = {
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' }
+        },
+        fall: {
+          from: { transform: 'translateY(-100%)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' }
         }
       },
       blur: {
@@ -56,6 +114,7 @@ export const tailwindPreset = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        fall: 'fall 1s ease-out',
         'spin-slow': 'spin 700s linear infinite',
         'spin-slower': 'spin 800s linear infinite',
         'spin-slowest': 'spin 900s linear infinite'

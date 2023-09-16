@@ -26,13 +26,13 @@ const features = [
 export const Features = () => {
   return <section className='h-[80vh] flex flex-col justify-center'>
     <div className='gap-x-8 gap-y-4 max-w-screen-xl w-full p-6 m-auto grid grid-cols-3 grid-rows-[auto_auto_auto_1fr] justify-center justify-items-center'>
-      <h1 className='text-6xl col-span-3 pb-10 w-full text-left animate-scroll-from-above'><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
+      <h1 className='text-6xl col-span-3 pb-10 w-full text-left scroll-anim-fall'><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
       {
         features.map(({ title, description, image, alt }) => {
           return <>
-            <Image src={image} alt={alt} width={300} height={300} className='shadow-lg row-start-2 rounded-full animate-scroll-from-below' />
-            <h3 className='text-secondary row-start-3 text-4xl uppercase tracking-wider text-center animate-scroll-from-below'>{title}</h3>
-            <p className='row-start-4 text-slate-300 text-center animate-scroll-from-below'>{description}</p>
+            <Image key={image} src={image} alt={alt} width={300} height={300} className='shadow-lg row-start-2 rounded-full scroll-anim-rise' />
+            <h3 key={alt} className='text-secondary row-start-3 text-4xl uppercase tracking-wider text-center scroll-anim-rise'>{title}</h3>
+            <p key={description} className='row-start-4 text-slate-300 text-center scroll-anim-rise'>{description}</p>
           </>
         })
       }
