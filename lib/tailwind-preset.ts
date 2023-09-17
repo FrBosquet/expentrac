@@ -107,8 +107,8 @@ export const tailwindPreset = {
         xs: '2px'
       },
       boxShadow: {
-        bloom: '2px 0 6px 2px #ffffffff, 2px 0 120px 15px #ffffff55',
-        'bloom-sm': '1px 0 3px 1px #ffffffff, 1px 0 60px 7.5px #ffffff55',
+        'bloom-md': '0 0 6px 2px #ffffffff, 0 0 120px 15px #ffffff55',
+        'bloom-sm': '0 0 3px 1px #ffffffff, 0 0 60px 7.5px #ffffff55',
         'bloom-green': '1px 0 1px 1px #7deead, 3px 1px 200px 7.5px #ffffff55'
       },
       animation: {
