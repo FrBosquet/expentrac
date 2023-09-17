@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* For some reason, Im not able to move this to tailwind-preset. Try again in the future */
+@keyframes doc-snapshot {
+  from {
+    opacity: .25;
+    transform: rotateY(35deg) rotateX(18deg) scale(1.1) translateX(-100px);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateY(5deg) rotateX(5deg) scale(1) translate3d(0, 0, 100px);
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(150px);
+    opacity: 0
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1
+  }
+}
+
+@keyframes wheel-fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

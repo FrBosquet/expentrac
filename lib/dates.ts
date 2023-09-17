@@ -7,13 +7,19 @@ export const toHTMLInputFormat = (d: Date) => {
   return formattedDate
 }
 
+// Recheck this function, we should take into account what day of the month we are in
 export const monthBeetween = (startDate: Date, endDate: Date) => {
   const sameYear = startDate.getFullYear() === endDate.getFullYear()
   const sameMonth = startDate.getMonth() === endDate.getMonth()
 
+  const offset = startDate.getDate() > endDate.getDate() ? 0 : 1
+
   if (sameYear && sameMonth) {
-    return startDate.getDate() > endDate.getDate() ? 0 : 1
+    return offset
   }
 
   return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
 }
+
+export const dateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' })
+export const fullDateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', day: 'numeric' })

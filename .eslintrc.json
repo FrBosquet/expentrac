@@ -23,7 +23,8 @@
     }
   },
   "ignorePatterns": [
-    "components/ui/**"
+    "components/ui/**",
+    "next.config.js"
   ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
