@@ -28,7 +28,7 @@ export const tailwindPreset = {
           'view-timeline-name': '--snapshot',
           'view-timeline-axis': 'block',
           'animation-range': 'entry 25% cover 75%',
-          'animation-timeline': 'scroll(blook root)',
+          'animation-timeline': '--snapshot',
           'animation-name': 'doc-snapshot',
           'animation-fill-mode': 'both'
         },
