@@ -1,10 +1,9 @@
+import { getPosts } from '@lib/blog'
 import Link from 'next/link'
 
-const posts = [
-  { title: 'Bootstrap', slug: 'bootstrap', date: '2023/09/16' }
-]
+export default async function Blog() {
+  const posts = await getPosts()
 
-export default function Blog() {
   return <>
     <h1 className='text-6xl mb-6 border-b'>Blog</h1>
     {
