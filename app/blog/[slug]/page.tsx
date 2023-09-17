@@ -1,6 +1,7 @@
 import { MdxContent } from '@components/mdxComponents'
-import { getPost } from '@lib/blog'
+import { getPost, getPostSlugs } from '@lib/blog'
 import { MoveLeft } from 'lucide-react'
+import { type Metadata } from 'next'
 import Link from 'next/link'
 
 interface Props {
@@ -24,18 +25,18 @@ export default async function Page({ params: { slug } }: Props) {
   </section>
 }
 
-// export async function generateStaticParams() {
-//   const filenames = getPostSlugs()
+export async function generateStaticParams() {
+  const filenames = getPostSlugs()
 
-//   return filenames.map(slug => ({ slug }))
-// }
+  return filenames.map(slug => ({ slug }))
+}
 
-// export async function generateMetadata(
-//   { params }: Props
-// ): Promise<Metadata> {
-//   const post = await getPost(params.slug)
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+  const post = await getPost(params.slug)
 
-//   return {
-//     title: post.frontmatter.title
-//   }
-// }
+  return {
+    title: post.frontmatter.title
+  }
+}
