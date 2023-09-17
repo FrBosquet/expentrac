@@ -5,7 +5,7 @@ import { Button } from '@components/ui/button'
 import { signIn } from 'next-auth/react'
 import { twMerge } from 'tailwind-merge'
 
-const handleSignIn = () => {
+export const handleSignIn = () => {
   void signIn('google', { callbackUrl: '/dashboard' })
 }
 

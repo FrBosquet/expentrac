@@ -1,11 +1,10 @@
 import { Footer } from '@components/Footer'
-import { Logo } from '@components/Logo'
-import { NavigationLinks } from '@components/NavigationLinks'
 import { Features } from '@components/hero/Features'
 import { Resume } from '@components/hero/Resume'
 import { StartNow } from '@components/hero/StartNow'
 import { Wheel } from '@components/hero/Wheel'
-import { SignInHeader, SignInRegular } from '@components/hero/signin'
+import { SignInRegular } from '@components/hero/signin'
+import { Header } from '@components/web/Header'
 
 export default function Home() {
   return (
@@ -18,11 +17,7 @@ export default function Home() {
       <Wheel />
 
       <section className="relative flex flex-col h-screen w-screen items-center ">
-        <header className='flex w-full p-6 justify-between gap-4'>
-          <Logo className="text-4xl">expentrac</Logo>
-          <NavigationLinks className='flex-1' />
-          <SignInHeader />
-        </header>
+        <Header />
 
         <section className='flex-1 flex flex-col justify-center gap-6 max-w-screen-xl w-full items-start p-6'>
           <h1 className='text-slate-200 text-6xl sm:text-8xl leading-tight animate-fall'>Your finances <br /><span className='text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary font-semibold'>under your control</span></h1>
