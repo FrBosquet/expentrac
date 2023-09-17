@@ -5,7 +5,7 @@ import me from '@public/me.webp'
 import { GithubIcon } from 'lucide-react'
 
 export default function Team() {
-  return <section className='flex flex-col gap-6 justify-center items-center relative p-10'>
+  return <section className='flex flex-1 flex-col gap-6 justify-center items-center relative p-10 w-full max-w-5xl m-auto'>
     <SectionTitle>team</SectionTitle>
     <article className='flex flex-col items-center'>
       <Image src={me} alt="Fran Bosquet" width={200} height={200} className='rounded-full shadow-bloom-sm mb-4' />

@@ -3,7 +3,7 @@ import { type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import path from 'path'
 
-const POSTS_DIRECTORY = path.join(process.cwd(), 'app/blog/_posts')
+const POSTS_DIRECTORY = path.join(process.cwd(), 'app/(web)/blog/_posts')
 export interface Post {
   slug: string
   title: string

@@ -3,7 +3,7 @@ import { CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { SectionTitle } from '@components/web/SectionTitle'
 
 export default function Blog() {
-  return <section className='flex flex-col gap-12 justify-center items-center relative p-12 md:p-0'>
+  return <section className='flex flex-1 flex-col gap-12 justify-center items-center relative p-12 md:p-0 w-full max-w-5xl m-auto'>
     <SectionTitle>pricing</SectionTitle>
     <div className='bg-slate-900 rounded-3xl text-slate-300 w-[24rem] max-w-[80vw] border-2 border-slate-300 shadow-bloom-md relative'>
       <CardHeader>

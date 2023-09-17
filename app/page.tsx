@@ -6,9 +6,10 @@ import { Wheel } from '@components/hero/Wheel'
 import { SignInRegular } from '@components/hero/signin'
 import { Header } from '@components/web/Header'
 
+// TODO: If we put this page in the (web) group, the layout breaks, so for now we need to stick to leave it here and try to re work i in the future
 export default function Home() {
   return (
-    <main className='relative h-screen bg-gradient-to-r from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 perspective-container'>
+    <main className='relative bg-gradient-to-r h-screen from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 perspective-container'>
       <div className='absolute top-1/2 left-1/4 text-slate-200 opacity-5 text-8xl -translate-y-[50%] scale-[200%] font-semibold blur-xs'>
         <p>Your finances</p>
         <p>under your control</p>
@@ -17,7 +18,7 @@ export default function Home() {
       <Wheel />
 
       <section className="relative flex flex-col h-screen w-screen items-center ">
-        <Header />
+        <Header key="header" />
 
         <section className='flex-1 flex flex-col justify-center gap-6 max-w-screen-xl w-full items-start p-6'>
           <h1 className='text-slate-200 text-6xl sm:text-8xl leading-tight animate-fall'>Your finances <br /><span className='text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary font-semibold'>under your control</span></h1>
