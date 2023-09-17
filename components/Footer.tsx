@@ -6,10 +6,10 @@ import { NavigationLinks } from './NavigationLinks'
 export const Footer = () => {
   return <footer className="p-4 border-t border-slate-600 bg-slate-950">
     <section className='max-w-screen-md w-full m-auto flex flex-col gap-8'>
-      <div className="flex">
-        <Link href="/" className='flex-1 flex items-baseline'>
+      <div className="flex justify-center">
+        <Link href="/" className='md:flex-1 flex items-baseline'>
           <Logo className='text-2xl'>ET</Logo>
-          <p className='flex-1 text-sm text-slate-500'>alpha</p>
+          <p className='md:flex-1 text-sm text-slate-500'>alpha</p>
         </Link>
         <NavigationLinks />
       </div>
