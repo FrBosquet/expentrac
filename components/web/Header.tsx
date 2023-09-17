@@ -1,6 +1,6 @@
 import { Logo } from '@components/Logo'
 import { NavigationLinks } from '@components/NavigationLinks'
-import { HeaderSignin } from '@components/hero/signin'
+import { SignInHeader } from '@components/hero/signin'
 import Link from 'next/link'
 
 export const Header = () => {
@@ -9,6 +9,6 @@ export const Header = () => {
       <Logo className="text-4xl">expentrac</Logo>
     </Link>
     <NavigationLinks className='flex-1' />
-    <HeaderSignin />
+    <SignInHeader />
   </header>
 }
