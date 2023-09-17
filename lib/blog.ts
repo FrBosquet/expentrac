@@ -4,12 +4,19 @@ import { serialize } from 'next-mdx-remote/serialize'
 import path from 'path'
 
 const POSTS_DIRECTORY = path.join(process.cwd(), 'app/blog/_posts')
-
-interface Post {
-  title: string
+export interface Post {
   slug: string
+  title: string
   date: string
   published: boolean
+  image: {
+    src: string
+    author: string
+    authorUrl: string
+    source: string
+    sourceUrl: string
+    className?: string
+  }
 }
 
 export const getPostsFileNames = (): string[] => {

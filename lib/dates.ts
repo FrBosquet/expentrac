@@ -20,3 +20,6 @@ export const monthBeetween = (startDate: Date, endDate: Date) => {
 
   return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
 }
+
+export const dateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' })
+export const fullDateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', day: 'numeric' })
