@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { ProviderDetail } from '@components/ProviderDetail'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Progress } from '@components/ui/progress'
@@ -9,6 +10,7 @@ import { getLoanExtendedInformation } from '@lib/loan'
 import { type LoanComplete } from '@types'
 import { Edit, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { LoanDelete } from './delete'
 import { LoanEdit } from './edit'
 
@@ -16,19 +18,30 @@ interface Props {
   loan: LoanComplete
   triggerContent?: React.ReactNode
   children?: React.ReactNode
+  className?: string
 }
 
-const SharesDetail = ({ loan: { shares, fee } }: { loan: LoanComplete }) => {
+const SharesDetail = ({ loan: { shares, fee, user: loanUser } }: { loan: LoanComplete }) => {
+  const { user: currentUser } = useUser()
+
   const parts = shares.filter(share => share.accepted === true).length + 1
   const chargeByPart = fee / parts
   const inEuros = `${euroFormatter.format(chargeByPart)}/m`
 
+  const userOwnThis = currentUser.id === loanUser.id
+
   return <>
+    <Separator className="col-span-2" />
     <section className='col-span-2 flex flex-col gap-2'>
 
       <p className="text-sm">This loan fee is shared by:</p>
       <article className="flex items-center gap-2">
-        <p className="text-sm font-semibold flex-1">You</p>
+        <p className={twMerge('text-sm font-semibold', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${loanUser.name} (owner)`}</p>
+        {
+          userOwnThis
+            ? null
+            : <p className="text-sm text-slate-500 flex-1">{loanUser.email}</p>
+        }
         <p className="text-xs">{inEuros}</p>
       </article>
       {
@@ -36,9 +49,11 @@ const SharesDetail = ({ loan: { shares, fee } }: { loan: LoanComplete }) => {
           const { user } = share
           const { accepted } = share
 
+          const isCurrentUser = currentUser.id === user.id
+
           return <article key={share.id} className="flex items-center gap-2">
-            <p className="text-sm font-semibold">{user.name}</p>
-            <p className="text-sm text-slate-500 flex-1">{user.email}</p>
+            <p className={twMerge('text-sm font-semibold', isCurrentUser && 'flex-1')}>{isCurrentUser ? 'You' : user.name}</p>
+            {!isCurrentUser ? <p className="text-sm text-slate-500 flex-1">{user.email}{ }</p> : null}
             {
               accepted === true
                 ? <p className='text-xs'>{inEuros}</p>
@@ -58,16 +73,18 @@ const SharesDetail = ({ loan: { shares, fee } }: { loan: LoanComplete }) => {
         })
       }
     </section>
-    <Separator className="col-span-2" />
   </>
 }
 
-export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
+export const LoanDetail = ({ loan, triggerContent = loan.name, children, className }: Props) => {
+  const { user } = useUser()
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name, initial } = loan
   const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares } = getLoanExtendedInformation(loan)
+
+  const userOwnThis = user.id === loan.userId
 
   useEffect(() => {
     if (!open) {
@@ -82,7 +99,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{children ?? triggerContent}</button>
+        <button className={twMerge('hover:text-primary', className)}>{children ?? triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
         e.preventDefault()
@@ -149,18 +166,23 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
             <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
           </article>
 
-          <Separator className="col-span-2" />
-
           {
             hasShares && <SharesDetail loan={loan} />
           }
 
-          <menu className="col-span-2 flex gap-2 justify-end">
-            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-            <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
-          </menu>
+          {
+            userOwnThis
+              ? <>
+                <Separator className="col-span-2" />
+                <menu className="col-span-2 flex gap-2 justify-end" >
+                  <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+                  <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
+                </menu>
+              </>
+              : null
+          }
         </section>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }

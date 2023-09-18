@@ -10,7 +10,12 @@ const include = {
       user: true,
       vendor: { include: { provider: true } },
       platform: { include: { provider: true } },
-      lender: { include: { provider: true } }
+      lender: { include: { provider: true } },
+      shares: {
+        include: {
+          user: true
+        }
+      }
     }
   }
 }

@@ -14,7 +14,7 @@ export const useNotifications = () => {
   const { loanShares } = useLoanShares()
 
   const notifications = [
-    ...loanShares.filter((loanShare) => loanShare.accepted == null).map((loanShare) => ({
+    ...loanShares.map((loanShare) => ({
       type: NOTIFICATION_TYPE.LOAN_SHARES,
       meta: loanShare
     }))
