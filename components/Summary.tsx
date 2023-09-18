@@ -29,7 +29,9 @@ export const Summary = () => {
     if (curStartDate > date) return acc
     if (curEndDate < date) return acc
 
-    return acc + cur.fee
+    const { holderFee } = getLoanExtendedInformation(cur)
+
+    return acc + holderFee
   }, 0)
 
   const totalSubs = subs.reduce((acc, cur) => acc + (cur.yearly ? (cur.fee / 12) : cur.fee), 0)

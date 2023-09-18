@@ -23,13 +23,16 @@ import { LoanDelete } from './delete'
 import { LoanDetail } from './detail'
 import { LoanEdit } from './edit'
 
+// TODO: We are executing twice getLOanExtendedInformation for each loan. Refactor that
 const FeeContent = ({ loan }: { loan: LoanComplete }) => {
   const { shares } = loan
   const hasShares = shares.length > 0
   const anyShareAcepted = shares.some((share) => share.accepted === true)
 
+  const { holderFee } = getLoanExtendedInformation(loan)
+
   return <div className="flex items-center justify-end gap-2">
-    {hasShares ? <User className={!anyShareAcepted ? 'opacity-20' : ''} size={12} /> : null} {euroFormatter.format(loan.fee)}/m
+    {hasShares ? <User className={!anyShareAcepted ? 'opacity-20' : ''} size={12} /> : null} {euroFormatter.format(holderFee)}/mo
   </div>
 }
 
