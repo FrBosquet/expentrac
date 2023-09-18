@@ -11,6 +11,19 @@ export const getUserLoanShares = async (userId: string) => {
   return shares
 }
 
+export const updateLoanShare = async (id: string, accepted: boolean): Promise<LoanShareComplete> => {
+  const url = getUrl('loan-share')
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    body: JSON.stringify({ id, accepted })
+  })
+
+  const { data } = await response.json()
+
+  return data
+}
+
 export const deleteLoanShare = async (id: string) => {
   const url = getUrl(`loan-share?id=${id}`)
 

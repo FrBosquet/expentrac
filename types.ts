@@ -84,6 +84,7 @@ export type LoanComplete = Loan & {
   platform?: UserProvider & { provider: Provider }
   lender?: UserProvider & { provider: Provider }
   shares: LoanShareComplete[]
+  user: User
 }
 
 export type UserProviderComplete = UserProvider & {

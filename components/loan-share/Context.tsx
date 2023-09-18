@@ -38,8 +38,6 @@ export const LoanSharesProvider = ({ children, serverValue }: Props) => {
     serverValue
   )
 
-  console.log({ loanShares })
-
   return (
     <LoanShareContext.Provider value={{ loanShares, setShares, addShare, removeShare, updateShare, hasLoanShares: loanShares.length > 0 }}>
       {children}
@@ -52,8 +50,6 @@ export const useLoanShares = () => {
   if (context === undefined) {
     throw new Error('useLoanShares must be used within a Provider')
   }
-
-  console.log({ context })
 
   return context
 }

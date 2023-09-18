@@ -1,7 +1,19 @@
+import { type Prisma } from '@prisma/client'
 import { authOptions } from '@services/auth'
 import { prisma } from '@services/prisma'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
+
+const include = {
+  loan: {
+    include: {
+      user: true,
+      vendor: { include: { provider: true } },
+      platform: { include: { provider: true } },
+      lender: { include: { provider: true } }
+    }
+  }
+}
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -17,19 +29,57 @@ export const GET = async (req: Request) => {
 
   const loans = await prisma.loanShare.findMany({
     where: { userId },
-    include: {
-      loan: {
-        include: {
-          user: true,
-          vendor: { include: { provider: true } },
-          platform: { include: { provider: true } },
-          lender: { include: { provider: true } }
-        }
-      }
-    }
+    include
   })
 
   return NextResponse.json(loans)
+}
+
+export const PATCH = async (req: Request) => {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json({
+      message: 'userId is required'
+    }, {
+      status: 400
+    })
+  }
+
+  const userId = session.user.id
+
+  const body = await req.json()
+  const share = await prisma.loanShare.findUnique({ where: { id: body.id } })
+
+  if (!share) {
+    return NextResponse.json({
+      message: 'share not found'
+    }, {
+      status: 404
+    })
+  }
+
+  if (userId !== share?.userId) {
+    return NextResponse.json({
+      message: 'user does not own this resource'
+    }, {
+      status: 403
+    })
+  }
+
+  const args: Prisma.LoanShareUpdateArgs = {
+    data: {
+      accepted: body.accepted
+    },
+    where: {
+      id: body.id
+    },
+    include
+  }
+
+  const updatedShare = await prisma.loanShare.update(args)
+
+  return NextResponse.json({ message: 'success', data: updatedShare }, { status: 200 })
 }
 
 export const DELETE = async (req: Request) => {

@@ -48,7 +48,7 @@ export const Menu = ({ user }: Props) => {
     <DropdownMenuContent className="w-56">
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="cursor-pointer" onClick={async () => { push('/dashboard/notification') }}>
+      <DropdownMenuItem className="cursor-pointer" onClick={async () => { push('/dashboard/notifications') }}>
         {hasNotifications
           ? <BellRing className="mr-2 h-4 w-4 text-red-500" />
           : <Bell className="mr-2 h-4 w-4" />
