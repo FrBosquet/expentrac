@@ -11,7 +11,8 @@ const include = {
   lender: { include: { provider: true } },
   shares: {
     include: { user: true }
-  }
+  },
+  user: true
 }
 
 export const GET = async (req: Request) => {

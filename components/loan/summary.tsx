@@ -1,6 +1,8 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { useDate } from '@components/date/context'
+import { useLoanShares } from '@components/loan-share/Context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
 import {
   Table,
@@ -32,17 +34,29 @@ const FeeContent = ({ loan }: { loan: LoanComplete }) => {
 }
 
 export const LoanSummary = () => {
+  const { user } = useUser()
   const { date } = useDate()
   const { loans } = useLoans()
+  const { loanShares } = useLoanShares()
 
-  const activeLoans = loans.filter((loan) => {
+  const mixedLoans = [
+    ...loans,
+    ...loanShares.filter((loanShare) => loanShare.accepted).map((loanShare) => loanShare.loan)
+  ]
+
+  const activeLoans = mixedLoans.filter((loan) => {
     const startDate = new Date(loan.startDate)
     const endDate = new Date(loan.endDate)
 
     return startDate <= date && endDate >= date
+  }).sort((a, b) => {
+    const aDate = new Date(a.startDate)
+    const bDate = new Date(b.startDate)
+
+    return aDate.getTime() - bDate.getTime()
   })
 
-  if (loans.length === 0) return null
+  if (activeLoans.length === 0) return null
 
   return (
     <section className="flex flex-col gap-2 pt-8">
@@ -65,6 +79,7 @@ export const LoanSummary = () => {
         <TableBody>
           {activeLoans.map((loan) => {
             const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan, date)
+            const userOwnsLoan = loan.user.id === user.id
 
             return (
               <TableRow key={loan.id}>
@@ -84,8 +99,10 @@ export const LoanSummary = () => {
                   <FeeContent loan={loan} />
                 </TableCell>
                 <TableCell className="flex gap-1">
-                  <LoanEdit loan={loan} />
-                  <LoanDelete loan={loan} />
+                  {userOwnsLoan && <>
+                    <LoanEdit loan={loan} />
+                    <LoanDelete loan={loan} />
+                  </>}
                 </TableCell>
               </TableRow>
             )

@@ -1,14 +1,19 @@
 'use client'
 
 import { DateSelector } from '@components/date/selector'
+import { useLoanShares } from '@components/loan-share/Context'
 import { useLoans } from './Context'
 import { LoanAdd } from './add'
 import { LoanSummary } from './summary'
 
 export const LoanDashboard = () => {
+  const { hasLoanShares, loanShares } = useLoanShares()
   const { hasLoans } = useLoans()
 
-  return hasLoans
+  const hasAnyAcceptedShare = hasLoanShares && loanShares.some((loanShare) => loanShare.accepted === true)
+  const isNotEmpty = hasLoans || hasAnyAcceptedShare
+
+  return isNotEmpty
     ? <>
       <DateSelector />
       <LoanSummary />
