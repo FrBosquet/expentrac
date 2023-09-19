@@ -36,17 +36,18 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  loans         Loan[]
-  loanShares    LoanShare[]
-  subscriptions Subscription[]
-  providers     UserProvider[]
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  image              String?
+  accounts           Account[]
+  sessions           Session[]
+  loans              Loan[]
+  loanShares         LoanShare[]
+  subscriptions      Subscription[]
+  subscriptionShares SubscriptionShare[]
+  providers          UserProvider[]
 }
 
 model VerificationToken {
@@ -85,16 +86,26 @@ model LoanShare {
 }
 
 model Subscription {
-  id         String        @id @default(cuid())
+  id         String              @id @default(cuid())
   name       String
   fee        Float
   userId     String
-  yearly     Boolean       @default(false)
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  yearly     Boolean             @default(false)
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   vendorId   String?
-  vendor     UserProvider? @relation(name: "SubscriptionVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor     UserProvider?       @relation(name: "SubscriptionVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
   platformId String?
-  platform   UserProvider? @relation(name: "SubscriptionPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
+  platform   UserProvider?       @relation(name: "SubscriptionPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
+  shares     SubscriptionShare[]
+}
+
+model SubscriptionShare {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accepted       Boolean?
 }
 
 model Provider {

@@ -32,12 +32,12 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const loanShares = await prisma.loanShare.findMany({
+  const loans = await prisma.loanShare.findMany({
     where: { userId },
     include
   })
 
-  return NextResponse.json(loanShares)
+  return NextResponse.json(loans)
 }
 
 export const PATCH = async (req: Request) => {

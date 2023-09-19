@@ -59,7 +59,7 @@ export const LoanSummary = () => {
     return aDate.getTime() - bDate.getTime()
   })
 
-  if (activeLoans.length === 0) return null
+  if (activeLoans.length === 0 || !user) return null
 
   return (
     <section className="flex flex-col gap-2 pt-8">
