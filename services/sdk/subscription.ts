@@ -1,11 +1,11 @@
 import { getTag, getUrl } from '@lib/api'
-import { type Subscription } from '@prisma/client'
+import { type SubscriptionComplete } from '@types'
 
 export const getUserSubscriptions = async (userId: string) => {
   const url = getUrl(`subscription?userId=${userId}`)
 
   const response = await fetch(url, { next: { tags: [`subscription:${userId}`] } })
-  const subscriptions: Subscription[] = await response.json()
+  const subscriptions: SubscriptionComplete[] = await response.json()
 
   return subscriptions
 }
@@ -16,4 +16,21 @@ export const revalidateUserSubscriptions = async (userId: string) => {
   const response = await fetch(url, { method: 'POST' })
 
   return response
+}
+
+export const updateSubscription = async (body: Record<string, unknown>) => {
+  const result = await fetch(getUrl('/subscription'), {
+    method: 'PATCH',
+    body: JSON.stringify(body)
+  })
+
+  const { data } = await result.json() as { data: SubscriptionComplete }
+
+  return data
+}
+
+export const subscriptionSdk = {
+  get: getUserSubscriptions,
+  revalidate: revalidateUserSubscriptions,
+  update: updateSubscription
 }

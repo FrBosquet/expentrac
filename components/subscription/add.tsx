@@ -3,7 +3,7 @@
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
-import { type Subscription } from '@prisma/client'
+import { type SubscriptionComplete } from '@types'
 import { useState, type FormEventHandler } from 'react'
 import { useSubs } from './context'
 import { SubscriptionForm } from './form'
@@ -23,9 +23,8 @@ export const SubscriptionAdd = () => {
         body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
       })
 
-      const { data } = await result.json() as { data: Subscription }
+      const { data } = await result.json() as { data: SubscriptionComplete }
 
-      setLoading(false)
       if (result.ok) {
         setOpen(false)
         addSub(data)

@@ -5,12 +5,11 @@ import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
 const include = {
-  loan: {
+  subscription: {
     include: {
       user: true,
       vendor: { include: { provider: true } },
       platform: { include: { provider: true } },
-      lender: { include: { provider: true } },
       shares: {
         include: {
           user: true
@@ -32,12 +31,12 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const loans = await prisma.loanShare.findMany({
+  const subscription = await prisma.subscriptionShare.findMany({
     where: { userId },
     include
   })
 
-  return NextResponse.json(loans)
+  return NextResponse.json(subscription)
 }
 
 export const PATCH = async (req: Request) => {
@@ -54,7 +53,7 @@ export const PATCH = async (req: Request) => {
   const userId = session.user.id
 
   const body = await req.json()
-  const share = await prisma.loanShare.findUnique({ where: { id: body.id } })
+  const share = await prisma.subscriptionShare.findUnique({ where: { id: body.id } })
 
   if (!share) {
     return NextResponse.json({
@@ -72,7 +71,7 @@ export const PATCH = async (req: Request) => {
     })
   }
 
-  const args: Prisma.LoanShareUpdateArgs = {
+  const args: Prisma.SubscriptionShareUpdateArgs = {
     data: {
       accepted: body.accepted
     },
@@ -82,7 +81,7 @@ export const PATCH = async (req: Request) => {
     include
   }
 
-  const updatedShare = await prisma.loanShare.update(args)
+  const updatedShare = await prisma.subscriptionShare.update(args)
 
   return NextResponse.json({ message: 'success', data: updatedShare }, { status: 200 })
 }
@@ -109,22 +108,22 @@ export const DELETE = async (req: Request) => {
     })
   }
 
-  const loanShare = await prisma.loanShare.findUnique({
+  const subscriptionShare = await prisma.subscriptionShare.findUnique({
     where: { id },
     include: {
-      loan: true
+      subscription: true
     }
   })
 
-  if (!loanShare) {
+  if (!subscriptionShare) {
     return NextResponse.json({
-      message: 'loanShare not found'
+      message: 'subscriptionShare not found'
     }, {
       status: 404
     })
   }
 
-  if (session.user.id !== loanShare.loan.userId) {
+  if (session.user.id !== subscriptionShare.subscription.userId) {
     return NextResponse.json({
       message: 'user does not own this resource'
     }, {
@@ -132,7 +131,7 @@ export const DELETE = async (req: Request) => {
     })
   }
 
-  await prisma.loanShare.delete({ where: { id } })
+  await prisma.subscriptionShare.delete({ where: { id } })
 
   return NextResponse.json({ message: 'DELETED' }, { status: 200 })
 }
