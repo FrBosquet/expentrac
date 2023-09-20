@@ -1,26 +1,21 @@
 import { useLoanShares } from '@components/loan-share/Context'
-import { type LoanShareComplete } from '@types'
-
-export enum NOTIFICATION_TYPE {
-  LOAN_SHARES = 'LOAN_SHARES',
-}
-
-export interface Notification {
-  type: NOTIFICATION_TYPE.LOAN_SHARES
-  meta: LoanShareComplete
-}
+import { getLoanShareNotification } from '@components/loan-share/notification'
+import { useSubShares } from '@components/subscription-share/Context'
+import { getSubShareNotification } from '@components/subscription-share/notification'
 
 export const useNotifications = () => {
   const { loanShares } = useLoanShares()
+  const { subShares } = useSubShares()
 
   const notifications = [
-    ...loanShares.map((loanShare) => ({
-      type: NOTIFICATION_TYPE.LOAN_SHARES,
-      meta: loanShare
-    }))
+    ...loanShares.map(getLoanShareNotification),
+    ...subShares.map(getSubShareNotification)
   ]
 
+  const hasPending = notifications.some((notification) => !notification.ack)
+
   return {
-    notifications
+    notifications,
+    hasPending
   }
 }

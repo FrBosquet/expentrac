@@ -1,6 +1,6 @@
 'use client'
 
-import { useLoanShares } from '@components/loan-share/Context'
+import { useNotifications } from '@components/notifications/hooks'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ interface Props {
 }
 
 export const Menu = ({ user }: Props) => {
-  const { loanShares } = useLoanShares()
+  const { hasPending } = useNotifications()
   const { push } = useRouter()
 
   const fallback = user.name?.split(' ').map((n) => n.charAt(0)).join('')
@@ -33,8 +33,6 @@ export const Menu = ({ user }: Props) => {
     void signOut()
   }
 
-  const hasNotifications = loanShares.some((share) => share.accepted === null)
-
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
@@ -42,14 +40,14 @@ export const Menu = ({ user }: Props) => {
           <AvatarImage src={user.image as string} alt={user.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>
-        {hasNotifications ? <div className='w-3 h-3 absolute left-0 bottom-0 bg-red-400 rounded-full' /> : null}
+        {hasPending ? <div className='w-3 h-3 absolute left-0 bottom-0 bg-red-400 rounded-full' /> : null}
       </article>
     </DropdownMenuTrigger>
     <DropdownMenuContent className="w-56">
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem className="cursor-pointer" onClick={async () => { push('/dashboard/notifications') }}>
-        {hasNotifications
+        {hasPending
           ? <BellRing className="mr-2 h-4 w-4 text-red-500" />
           : <Bell className="mr-2 h-4 w-4" />
         }

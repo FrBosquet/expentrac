@@ -1,7 +1,9 @@
 'use client'
 
 import { LoanShareNotification } from '@components/loan-share/notification'
-import { NOTIFICATION_TYPE, useNotifications } from './hooks'
+import { SubscriptionShareNotification } from '@components/subscription-share/notification'
+import { NOTIFICATION_TYPE } from '@types'
+import { useNotifications } from './hooks'
 
 export const NotificationList = () => {
   const { notifications } = useNotifications()
@@ -15,6 +17,8 @@ export const NotificationList = () => {
           switch (type) {
             case NOTIFICATION_TYPE.LOAN_SHARES:
               return <LoanShareNotification key={meta.id} loanShare={meta} />
+            case NOTIFICATION_TYPE.SUB_SHARES:
+              return <SubscriptionShareNotification key={meta.id} subscriptionShare={meta} />
             default:
               return null
           }

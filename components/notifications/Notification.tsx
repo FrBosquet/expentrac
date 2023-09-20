@@ -11,8 +11,8 @@ interface Props {
 }
 
 export const Notification = ({ children, accept, reject, loading, acknowledged }: Props) => {
-  return <div className={twMerge('p-2 flex shadow-md gap-2 bg-slate-100 rounded-md', acknowledged && 'opacity-60')}>
-    <section className={twMerge('flex-1 w-full', loading && 'opacity-40')}>
+  return <div className={twMerge('p-2 flex shadow-md gap-2 bg-slate-100 rounded-md', acknowledged && 'opacity-40')}>
+    <section className={twMerge('flex-1 w-full', loading && 'opacity-20')}>
       {children}
     </section>
     {

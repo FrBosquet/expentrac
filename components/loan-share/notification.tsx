@@ -3,8 +3,20 @@ import { LoanDetail } from '@components/loan/detail'
 import { Notification } from '@components/notifications/Notification'
 import { euroFormatter } from '@lib/currency'
 import { updateLoanShare } from '@services/sdk/loanShare'
-import { type LoanShareComplete } from '@types'
+import { NOTIFICATION_TYPE, type LoanShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
+
+export interface NotificationLoanShare {
+  type: NOTIFICATION_TYPE.LOAN_SHARES
+  meta: LoanShareComplete
+  ack: boolean
+}
+
+export const getLoanShareNotification = (loanShare: LoanShareComplete): NotificationLoanShare => ({
+  type: NOTIFICATION_TYPE.LOAN_SHARES,
+  meta: loanShare,
+  ack: loanShare.accepted !== null
+})
 
 const Content = ({ share }: { share: LoanShareComplete }): ReactNode => {
   const { loan, accepted } = share
