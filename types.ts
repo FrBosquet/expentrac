@@ -115,3 +115,9 @@ export enum NOTIFICATION_TYPE {
   LOAN_SHARES = 'LOAN_SHARES',
   SUB_SHARES = 'SUB_SHARES',
 }
+
+export interface NotificationBase {
+  type: NOTIFICATION_TYPE
+  createdAt: Date
+  ack: boolean
+}

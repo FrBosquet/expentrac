@@ -40,7 +40,7 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
         <DialogHeader>
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>
-            Loan details
+            Subscription details
           </DialogDescription>
         </DialogHeader>
         <section className="grid grid-cols-2 gap-6">

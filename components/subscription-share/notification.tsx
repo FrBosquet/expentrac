@@ -3,20 +3,20 @@ import { euroFormatter } from '@lib/currency'
 
 import { SubscriptionDetail } from '@components/subscription/detail'
 import { subscriptionShareSdk } from '@services/sdk/subscriptionShare'
-import { NOTIFICATION_TYPE, type SubscriptionShareComplete } from '@types'
+import { NOTIFICATION_TYPE, type NotificationBase, type SubscriptionShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
 import { useSubShares } from './context'
 
-export interface NotificationSubShare {
+export type NotificationSubShare = NotificationBase & {
   type: NOTIFICATION_TYPE.SUB_SHARES
   meta: SubscriptionShareComplete
-  ack: boolean
 }
 
 export const getSubShareNotification = (subShare: SubscriptionShareComplete): NotificationSubShare => ({
   type: NOTIFICATION_TYPE.SUB_SHARES,
   meta: subShare,
-  ack: subShare.accepted !== null
+  ack: subShare.accepted !== null,
+  createdAt: new Date(subShare.createdAt)
 })
 
 const Content = ({ share }: { share: SubscriptionShareComplete }): ReactNode => {
@@ -30,11 +30,11 @@ const Content = ({ share }: { share: SubscriptionShareComplete }): ReactNode => 
 
   switch (accepted) {
     case true:
-      return <p className='w-full whitespace-nowrap overflow-hidden text-ellipsis'>You accepted the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
+      return <p className='w-full'>You accepted the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
     case false:
-      return <p className='w-full whitespace-nowrap overflow-hidden text-ellipsis'>You rejected the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+      return <p className='w-full'>You rejected the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
     default:
-      return <p className='w-full whitespace-nowrap overflow-hidden text-ellipsis'>{subscription.user.name} wants to share <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+      return <p className='w-full'>{subscription.user.name} wants to share <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
   }
 }
 
@@ -64,7 +64,7 @@ export const SubscriptionShareNotification = ({ subscriptionShare }: { subscript
 
   const acknowledged = subscriptionShare.accepted !== null
 
-  return <Notification key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={acknowledged}>
+  return <Notification date={subscriptionShare.createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={acknowledged}>
     <Content share={subscriptionShare} />
   </Notification>
 }

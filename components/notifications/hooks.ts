@@ -10,7 +10,7 @@ export const useNotifications = () => {
   const notifications = [
     ...loanShares.map(getLoanShareNotification),
     ...subShares.map(getSubShareNotification)
-  ]
+  ].sort((a, b) => b.createdAt > a.createdAt ? 1 : 1)
 
   const hasPending = notifications.some((notification) => !notification.ack)
 
