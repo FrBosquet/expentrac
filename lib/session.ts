@@ -19,7 +19,9 @@ export const getUser = (data: Session | null): User => {
       name: null,
       email: null,
       emailVerified: null,
-      image: null
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   }
 
