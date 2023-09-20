@@ -1,6 +1,6 @@
 'use client'
 
-import { useSubShares } from '@components/subscription-share/Context'
+import { useSubShares } from '@components/subscription-share/context'
 import { useResourceContext } from '@lib/resourceContext'
 import { type SubscriptionComplete } from '@types'
 import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'

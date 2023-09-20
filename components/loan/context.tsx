@@ -1,6 +1,6 @@
 'use client'
 
-import { useLoanShares } from '@components/loan-share/Context'
+import { useLoanShares } from '@components/loan-share/context'
 import { useResourceContext } from '@lib/resourceContext'
 import { type LoanComplete } from '@types'
 import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'

@@ -2,7 +2,7 @@
 
 import { useUser } from '@components/Provider'
 import { useDate } from '@components/date/context'
-import { useLoanShares } from '@components/loan-share/Context'
+import { useLoanShares } from '@components/loan-share/context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
 import {
   Table,
@@ -17,8 +17,8 @@ import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
 import { type LoanComplete } from '@types'
 import { CalendarCheck2, User } from 'lucide-react'
-import { useLoans } from './Context'
 import { LoanAdd } from './add'
+import { useLoans } from './context'
 import { LoanDelete } from './delete'
 import { LoanDetail } from './detail'
 import { LoanEdit } from './edit'

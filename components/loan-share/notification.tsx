@@ -1,10 +1,10 @@
-import { useLoanShares } from '@components/loan-share/Context'
 import { LoanDetail } from '@components/loan/detail'
 import { Notification } from '@components/notifications/Notification'
 import { euroFormatter } from '@lib/currency'
 import { updateLoanShare } from '@services/sdk/loanShare'
 import { NOTIFICATION_TYPE, type LoanShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
+import { useLoanShares } from './context'
 
 export interface NotificationLoanShare {
   type: NOTIFICATION_TYPE.LOAN_SHARES

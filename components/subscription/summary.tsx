@@ -2,7 +2,7 @@
 
 import { useUser } from '@components/Provider'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
-import { useSubShares } from '@components/subscription-share/Context'
+import { useSubShares } from '@components/subscription-share/context'
 import {
   Table,
   TableBody,

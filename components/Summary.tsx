@@ -13,7 +13,7 @@ import { euroFormatter } from '@lib/currency'
 import Link from 'next/link'
 import { useDate } from './date/context'
 import { DateSelector } from './date/selector'
-import { useLoans } from './loan/Context'
+import { useLoans } from './loan/context'
 import { useSubs } from './subscription/context'
 
 export const Summary = () => {

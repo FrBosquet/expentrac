@@ -5,7 +5,7 @@ import { SubscriptionDetail } from '@components/subscription/detail'
 import { subscriptionShareSdk } from '@services/sdk/subscriptionShare'
 import { NOTIFICATION_TYPE, type SubscriptionShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
-import { useSubShares } from './Context'
+import { useSubShares } from './context'
 
 export interface NotificationSubShare {
   type: NOTIFICATION_TYPE.SUB_SHARES

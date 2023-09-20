@@ -8,9 +8,9 @@ import { SubscriptionSummary } from './summary'
 // a subscription is a payment that you do every month or every year to a service that you use (like netflix, spotify, etc) or a service that you need (like a gym membership, a phone plan, etc)
 
 export const SubsDashboard = () => {
-  const { hasSubs } = useSubs()
+  const { hasAnySubs } = useSubs()
 
-  return hasSubs
+  return hasAnySubs
     ? <>
       <DateSelector />
       <SubscriptionSummary />

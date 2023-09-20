@@ -8,7 +8,7 @@ import { deleteLoanShare } from '@services/sdk/loanShare'
 import { type LoanComplete } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
-import { useLoans } from './Context'
+import { useLoans } from './context'
 import { LoanForm } from './form'
 
 interface Props {

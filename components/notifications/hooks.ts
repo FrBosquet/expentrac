@@ -1,6 +1,6 @@
-import { useLoanShares } from '@components/loan-share/Context'
+import { useLoanShares } from '@components/loan-share/context'
 import { getLoanShareNotification } from '@components/loan-share/notification'
-import { useSubShares } from '@components/subscription-share/Context'
+import { useSubShares } from '@components/subscription-share/context'
 import { getSubShareNotification } from '@components/subscription-share/notification'
 
 export const useNotifications = () => {
