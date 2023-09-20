@@ -9,17 +9,19 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  id                String   @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?  @db.Text
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -36,6 +38,8 @@ model Session {
 }
 
 model User {
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   id                 String              @id @default(cuid())
   name               String?
   email              String?             @unique
@@ -59,6 +63,8 @@ model VerificationToken {
 }
 
 model Loan {
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
   id         String        @id @default(cuid())
   name       String
   fee        Float
@@ -77,15 +83,19 @@ model Loan {
 }
 
 model LoanShare {
-  id       String   @id @default(cuid())
-  loanId   String
-  loan     Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accepted Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  loanId    String
+  loan      Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accepted  Boolean?
 }
 
 model Subscription {
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
   id         String              @id @default(cuid())
   name       String
   fee        Float
@@ -100,6 +110,8 @@ model Subscription {
 }
 
 model SubscriptionShare {
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   id             String       @id @default(cuid())
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
@@ -109,6 +121,8 @@ model SubscriptionShare {
 }
 
 model Provider {
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   id             String         @id @default(cuid())
   name           String         @unique
   users          UserProvider[]
@@ -121,6 +135,8 @@ model Provider {
 }
 
 model UserProvider {
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
   id                      String         @id @default(cuid())
   userId                  String
   user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
