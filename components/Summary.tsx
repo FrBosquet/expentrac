@@ -19,10 +19,10 @@ import { useSubs } from './subscription/context'
 export const Summary = () => {
   const { date } = useDate()
 
-  const { loans } = useLoans()
-  const { subs } = useSubs()
+  const { allLoans, hasAnyLoans } = useLoans()
+  const { allSubs, hasAnySubs } = useSubs()
 
-  const totalLoans = loans.reduce((acc, cur) => {
+  const totalLoans = allLoans.reduce((acc, cur) => {
     const curStartDate = new Date(cur.startDate)
     const curEndDate = new Date(cur.endDate)
 
@@ -34,7 +34,7 @@ export const Summary = () => {
     return acc + holderFee
   }, 0)
 
-  const totalSubs = subs.reduce((acc, cur) => {
+  const totalSubs = allSubs.reduce((acc, cur) => {
     const monthlyFee = cur.yearly ? (cur.fee / 12) : cur.fee
     const holders = cur.shares.filter(share => share.accepted === true).length + 1
     const fee = monthlyFee / holders
@@ -43,9 +43,9 @@ export const Summary = () => {
   }, 0)
   const total = totalLoans + totalSubs
 
-  const owedMoney = loans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).owedAmount, 0)
+  const owedMoney = allLoans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).holderAmount, 0)
 
-  if (loans.length === 0 && subs.length === 0) {
+  if (!hasAnyLoans && !hasAnySubs) {
     return <section className='flex flex-col gap-4 p-12'>
       <h1 className="text-6xl font-semibold text-center">Hello there!</h1>
       <p className='text-slate-700 text-center'>Looks like you are new in here. You can start by going to <Link className='text-primary font-semibold' href='/dashboard/loans'>loans</Link> or <Link className='text-primary font-semibold' href="/dashboard/subscriptions">subscriptions</Link> and track some of your expenses</p>

@@ -14,7 +14,7 @@ import {
 import { euroFormatter } from '@lib/currency'
 import { getAccentColor } from '@lib/provider'
 import { type SubscriptionComplete } from '@types'
-import { User } from 'lucide-react'
+import { CalendarCheck, User } from 'lucide-react'
 import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
 import { SubscriptionDelete } from './delete'
@@ -70,9 +70,13 @@ export const SubscriptionSummary = () => {
               <TableRow key={sub.id}>
                 <TableCell className="border-l-4" style={{
                   borderLeftColor: accentColor
-                }}>{
-                    <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
-                  }</TableCell>
+                }}>
+                  {
+                    sub.vendor
+                      ? <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
+                      : <CalendarCheck className='h-8 w-8 m-auto' />
+                  }
+                </TableCell>
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>

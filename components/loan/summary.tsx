@@ -16,7 +16,7 @@ import { euroFormatter } from '@lib/currency'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
 import { type LoanComplete } from '@types'
-import { Banknote, User } from 'lucide-react'
+import { CalendarCheck2, User } from 'lucide-react'
 import { useLoans } from './Context'
 import { LoanAdd } from './add'
 import { LoanDelete } from './delete'
@@ -89,7 +89,7 @@ export const LoanSummary = () => {
                 <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>
                   {loan.vendor
                     ? <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
-                    : <Banknote className='h-8 w-8 m-auto' />
+                    : <CalendarCheck2 className='h-8 w-8 m-auto' />
                   }
                 </TableCell>
                 <TableCell className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">

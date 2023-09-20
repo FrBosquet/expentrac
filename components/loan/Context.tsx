@@ -1,5 +1,6 @@
 'use client'
 
+import { useLoanShares } from '@components/loan-share/Context'
 import { useResourceContext } from '@lib/resourceContext'
 import { type LoanComplete } from '@types'
 import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
@@ -54,5 +55,22 @@ export const useLoans = () => {
   if (context === undefined) {
     throw new Error('useLoans must be used within a Provider')
   }
-  return context
+
+  const { loanShares } = useLoanShares()
+
+  const sharedLoans = loanShares.filter(share => share.accepted).map((loanShare) => loanShare.loan)
+  const allLoans = [...context.loans, ...sharedLoans]
+
+  const hasOwnLoans = context.loans.length > 0
+  const hasSharedLoans = sharedLoans.length > 0
+  const hasAnyLoans = hasOwnLoans || hasSharedLoans
+
+  return {
+    ...context,
+    sharedLoans,
+    allLoans,
+    hasOwnLoans,
+    hasSharedLoans,
+    hasAnyLoans
+  }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useSubShares } from '@components/subscription-share/Context'
 import { useResourceContext } from '@lib/resourceContext'
 import { type SubscriptionComplete } from '@types'
 import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
@@ -51,5 +52,21 @@ export const useSubs = () => {
   if (context === undefined) {
     throw new Error('useSubs must be used within a Provider')
   }
-  return context
+
+  const { subShares } = useSubShares()
+
+  const sharedShares = subShares.filter(share => share.accepted).map((share) => share.subscription)
+  const allSubs = [...context.subs, ...sharedShares]
+
+  const hasOwnSubs = context.subs.length > 0
+  const hasSharedSubs = sharedShares.length > 0
+  const hasAnySubs = hasOwnSubs || hasSharedSubs
+
+  return {
+    ...context,
+    allSubs,
+    hasOwnSubs,
+    hasSharedSubs,
+    hasAnySubs
+  }
 }
