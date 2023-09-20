@@ -1,3 +1,4 @@
+import { Footer } from '@components/Footer'
 import { Logo } from '@components/Logo'
 import { Navigation } from '@components/NavigationMenu'
 import { DateProvider } from '@components/date/context'
@@ -57,9 +58,7 @@ export default async function Layout({ children }: Props) {
                   </header>
                   <Navigation />
                   {children}
-                  <footer className="flex gap-4 bg-white p-2 justify-between items-center border-t border-gray-300">
-                    footer
-                  </footer>
+                  <Footer />
                 </main >
               </DateProvider>
             </SubsProvider>
