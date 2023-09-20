@@ -1,4 +1,4 @@
-import { type SubscriptionShare, type Loan, type LoanShare, type Provider, type Subscription, type User, type UserProvider } from '@prisma/client'
+import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@prisma/client'
 
 export interface LoanExtendedInfo {
   totalAmount: number
@@ -98,6 +98,7 @@ export type SubscriptionComplete = Subscription & {
   vendor?: UserProvider & { provider: Provider }
   platform?: UserProvider & { provider: Provider }
   shares: SubscriptionShareComplete[]
+  user: User
 }
 
 export type LoanShareComplete = LoanShare & {

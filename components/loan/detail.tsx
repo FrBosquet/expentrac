@@ -11,6 +11,7 @@ import { type LoanComplete } from '@types'
 import { Edit, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { SharesDetail } from '../common/shares-detail'
 import { LoanDelete } from './delete'
 import { LoanEdit } from './edit'
 
@@ -21,70 +22,15 @@ interface Props {
   className?: string
 }
 
-const SharesDetail = ({ loan: { shares, fee, user: loanUser } }: { loan: LoanComplete }) => {
-  const { user: currentUser } = useUser()
-
-  const parts = shares.filter(share => share.accepted === true).length + 1
-  const chargeByPart = fee / parts
-  const inEuros = `${euroFormatter.format(chargeByPart)}/m`
-
-  const userOwnThis = currentUser.id === loanUser.id
-
-  return <>
-    <Separator className="col-span-2" />
-    <section className='col-span-2 flex flex-col gap-2'>
-
-      <p className="text-sm">This loan fee is shared by:</p>
-      <article className="flex items-center gap-2">
-        <p className={twMerge('text-sm font-semibold', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${loanUser.name} (owner)`}</p>
-        {
-          userOwnThis
-            ? null
-            : <p className="text-sm text-slate-500 flex-1">{loanUser.email}</p>
-        }
-        <p className="text-xs">{inEuros}</p>
-      </article>
-      {
-        shares.map((share) => {
-          const { user } = share
-          const { accepted } = share
-
-          const isCurrentUser = currentUser.id === user.id
-
-          return <article key={share.id} className="flex items-center gap-2">
-            <p className={twMerge('text-sm font-semibold', isCurrentUser && 'flex-1')}>{isCurrentUser ? 'You' : user.name}</p>
-            {!isCurrentUser ? <p className="text-sm text-slate-500 flex-1">{user.email}{ }</p> : null}
-            {
-              accepted === true
-                ? <p className='text-xs'>{inEuros}</p>
-                : null
-            }
-            {
-              accepted === false
-                ? <p className='text-xs'>Rejected</p>
-                : null
-            }
-            {
-              accepted === null
-                ? <p className='text-xs'>Pending</p>
-                : null
-            }
-          </article>
-        })
-      }
-    </section>
-  </>
-}
-
 export const LoanDetail = ({ loan, triggerContent = loan.name, children, className }: Props) => {
-  const { user } = useUser()
+  const { ownsAsset } = useUser()
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name, initial } = loan
   const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares } = getLoanExtendedInformation(loan)
 
-  const userOwnThis = user.id === loan.userId
+  const userOwnThis = ownsAsset(loan)
 
   useEffect(() => {
     if (!open) {
@@ -167,7 +113,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
           </article>
 
           {
-            hasShares && <SharesDetail loan={loan} />
+            hasShares && <SharesDetail assetType='loan' asset={loan} />
           }
 
           {

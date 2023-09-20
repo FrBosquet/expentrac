@@ -12,22 +12,24 @@ import {
 import { euroFormatter } from '@lib/currency'
 import { getAccentColor } from '@lib/provider'
 import { type SubscriptionComplete } from '@types'
+import { User } from 'lucide-react'
 import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
 import { SubscriptionDelete } from './delete'
 import { SubscriptionDetail } from './detail'
 import { SubscriptionEdit } from './edit'
 
-const getFee = (sub: SubscriptionComplete) => {
-  const feeString = euroFormatter.format(sub.fee)
+const FeeContent = ({ sub }: { sub: SubscriptionComplete }) => {
+  const { shares, fee } = sub
+  const hasShares = shares.length > 0
+  const acceptedShares = shares.filter((share) => share.accepted === true)
+  const anyShareAcepted = acceptedShares.length > 0
 
-  if (sub.yearly) {
-    const monthlyFeeString = euroFormatter.format(sub.fee / 12)
+  const holderFee = fee / (acceptedShares.length + 1)
 
-    return <p><span className='font-light'>({feeString}/y)</span> {monthlyFeeString}/m</p>
-  } else {
-    return `${feeString}/m`
-  }
+  return <div className="flex items-center justify-end gap-2">
+    {hasShares ? <User className={!anyShareAcepted ? 'opacity-20' : ''} size={12} /> : null} {euroFormatter.format(holderFee)}/mo
+  </div>
 }
 
 export const SubscriptionSummary = () => {
@@ -64,7 +66,9 @@ export const SubscriptionSummary = () => {
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>
-                <TableCell className="font-semibold text-right">{getFee(sub)}</TableCell>
+                <TableCell className="font-semibold text-right">
+                  <FeeContent sub={sub} />
+                </TableCell>
                 <TableCell className="flex gap-1">
                   <SubscriptionEdit sub={sub} />
                   <SubscriptionDelete sub={sub} />

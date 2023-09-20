@@ -23,5 +23,9 @@ export const useUser = () => {
   const loading = status === 'loading'
   const user = session?.user as User
 
-  return { user, loading }
+  const ownsAsset = (asset: { userId: string }) => {
+    return user.id === asset.userId
+  }
+
+  return { user, loading, ownsAsset }
 }
