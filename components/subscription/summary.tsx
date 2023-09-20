@@ -1,6 +1,8 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
+import { useSubShares } from '@components/subscription-share/Context'
 import {
   Table,
   TableBody,
@@ -33,9 +35,16 @@ const FeeContent = ({ sub }: { sub: SubscriptionComplete }) => {
 }
 
 export const SubscriptionSummary = () => {
+  const { ownsAsset } = useUser()
   const { subs } = useSubs()
+  const { subShares } = useSubShares()
 
-  if (subs.length === 0) return null
+  const mixedSubs = [
+    ...subs,
+    ...subShares.filter((subShare) => subShare.accepted).map((subShare) => subShare.subscription)
+  ]
+
+  if (mixedSubs.length === 0) return null
 
   return (
     <section className="flex flex-col gap-2 pt-8">
@@ -53,8 +62,9 @@ export const SubscriptionSummary = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {subs.map((sub) => {
+          {mixedSubs.map((sub) => {
             const accentColor = getAccentColor(sub.vendor?.provider)
+            const userOwnsSub = ownsAsset(sub)
 
             return (
               <TableRow key={sub.id}>
@@ -70,8 +80,14 @@ export const SubscriptionSummary = () => {
                   <FeeContent sub={sub} />
                 </TableCell>
                 <TableCell className="flex gap-1">
-                  <SubscriptionEdit sub={sub} />
-                  <SubscriptionDelete sub={sub} />
+                  {
+                    userOwnsSub
+                      ? <>
+                        <SubscriptionEdit sub={sub} />
+                        <SubscriptionDelete sub={sub} />
+                      </>
+                      : null
+                  }
                 </TableCell>
               </TableRow>
             )

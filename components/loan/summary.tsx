@@ -37,7 +37,7 @@ const FeeContent = ({ loan }: { loan: LoanComplete }) => {
 }
 
 export const LoanSummary = () => {
-  const { user } = useUser()
+  const { user, ownsAsset } = useUser()
   const { date } = useDate()
   const { loans } = useLoans()
   const { loanShares } = useLoanShares()
@@ -82,7 +82,7 @@ export const LoanSummary = () => {
         <TableBody>
           {activeLoans.map((loan) => {
             const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan, date)
-            const userOwnsLoan = loan.user.id === user.id
+            const userOwnsLoan = ownsAsset(loan)
 
             return (
               <TableRow key={loan.id}>
