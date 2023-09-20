@@ -81,8 +81,8 @@ export const tailwindPreset = {
         }
       },
       fontFamily: {
-        sans: ['__Inter_20951f', '__Inter_Fallback_20951f'],
-        logo: ['__montserrat_d57222', '__montserrat_Fallback_d57222']
+        sans: 'var(--font-inter)',
+        logo: 'var(--font-montserrat)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

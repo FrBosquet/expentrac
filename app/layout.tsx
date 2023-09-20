@@ -8,9 +8,10 @@ const montserrat = localFont({
   src: [
     { path: '../public/fonts/MontserratAlt1-SemiBold.woff2', weight: '500', style: 'normal' },
     { path: '../public/fonts/MontserratAlt1-ExtraBold.woff2', weight: '800', style: 'normal' }
-  ]
+  ],
+  variable: '--font-montserrat'
 })
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'Expentrac',
@@ -25,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${montserrat.className} text-black [view-timeline-name: fall]`}>
+      <body className={`${inter.variable} ${montserrat.variable} font-sans text-black [view-timeline-name: fall]`}>
         <RootProvider >
           {children}
         </RootProvider>
