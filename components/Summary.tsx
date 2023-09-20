@@ -34,7 +34,13 @@ export const Summary = () => {
     return acc + holderFee
   }, 0)
 
-  const totalSubs = subs.reduce((acc, cur) => acc + (cur.yearly ? (cur.fee / 12) : cur.fee), 0)
+  const totalSubs = subs.reduce((acc, cur) => {
+    const monthlyFee = cur.yearly ? (cur.fee / 12) : cur.fee
+    const holders = cur.shares.filter(share => share.accepted === true).length + 1
+    const fee = monthlyFee / holders
+
+    return acc + fee
+  }, 0)
   const total = totalLoans + totalSubs
 
   const owedMoney = loans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).owedAmount, 0)
