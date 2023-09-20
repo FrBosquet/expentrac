@@ -1,4 +1,4 @@
-import { type Loan, type Provider, type Subscription, type UserProvider } from '@prisma/client'
+import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@prisma/client'
 
 export interface LoanExtendedInfo {
   totalAmount: number
@@ -14,6 +14,10 @@ export interface LoanExtendedInfo {
   lender?: Provider
 
   isOver: boolean
+
+  hasShares: boolean
+  holderAmount: number
+  holderFee: number
 }
 
 export interface BrandExtendedInfo {
@@ -82,6 +86,8 @@ export type LoanComplete = Loan & {
   vendor?: UserProvider & { provider: Provider }
   platform?: UserProvider & { provider: Provider }
   lender?: UserProvider & { provider: Provider }
+  shares: LoanShareComplete[]
+  user: User
 }
 
 export type UserProviderComplete = UserProvider & {
@@ -91,4 +97,27 @@ export type UserProviderComplete = UserProvider & {
 export type SubscriptionComplete = Subscription & {
   vendor?: UserProvider & { provider: Provider }
   platform?: UserProvider & { provider: Provider }
+  shares: SubscriptionShareComplete[]
+  user: User
+}
+
+export type LoanShareComplete = LoanShare & {
+  loan: LoanComplete
+  user: User
+}
+
+export type SubscriptionShareComplete = SubscriptionShare & {
+  subscription: SubscriptionComplete
+  user: User
+}
+
+export enum NOTIFICATION_TYPE {
+  LOAN_SHARES = 'LOAN_SHARES',
+  SUB_SHARES = 'SUB_SHARES',
+}
+
+export interface NotificationBase {
+  type: NOTIFICATION_TYPE
+  createdAt: Date
+  ack: boolean
 }

@@ -9,7 +9,7 @@ import { revalidatUserLoans } from '@services/sdk'
 import { type LoanComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
-import { useLoans } from './Context'
+import { useLoans } from './context'
 
 interface Props {
   loan: LoanComplete

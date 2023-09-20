@@ -5,13 +5,13 @@ import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
 import { cn } from '@lib/utils'
-import { type Subscription } from '@prisma/client'
+import { type SubscriptionComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useSubs } from './context'
 
 interface Props {
-  sub: Subscription
+  sub: SubscriptionComplete
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode

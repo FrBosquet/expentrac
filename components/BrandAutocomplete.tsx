@@ -62,7 +62,7 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
           setQueries(data)
         }
       } catch (err) {
-        console.log('Something went wrong, try again later.')
+        console.error('Something went wrong, try again later.')
       }
       return
     }

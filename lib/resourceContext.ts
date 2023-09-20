@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 
 interface ResourceContext<T> {
   resource: T[]
@@ -11,7 +11,7 @@ interface ResourceContext<T> {
 export const useResourceContext = <T extends { id: string }>
   (
     initialValue: T[],
-    sortFunction: (a: T, b: T) => number
+    sortFunction?: (a: T, b: T) => number
   ): ResourceContext<T> => {
   const [resource, setResource] = useState(initialValue)
 

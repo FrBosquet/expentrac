@@ -2,13 +2,13 @@
 
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
 import { cn } from '@lib/utils'
-import { revalidatUserLoans } from '@services/sdk'
+import { loanSdk } from '@services/sdk'
+import { deleteLoanShare } from '@services/sdk/loanShare'
 import { type LoanComplete } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
-import { useLoans } from './Context'
+import { useLoans } from './context'
 import { LoanForm } from './form'
 
 interface Props {
@@ -20,6 +20,39 @@ interface Props {
 
 const TRIGGER_DECORATOR = <Edit size={12} />
 
+const hasLoanChanged = (loan: LoanComplete, formData: Record<string, FormDataEntryValue>) => {
+  const ignoredKeys = ['id', 'shares', 'vendor', 'platform', 'lender', 'userId']
+
+  for (const key in loan) {
+    if (ignoredKeys.includes(key)) continue
+
+    const value = loan[key as keyof LoanComplete]
+    const formValue = formData[key]
+
+    switch (key) {
+      case 'fee':
+      case 'initial':
+        if (value !== Number(formValue)) return true
+        break
+      case 'startDate':
+      case 'endDate':
+        if (new Date(formValue as string).toISOString() !== new Date(value as string).toISOString()) return true
+        break
+      case 'vendorId':
+      case 'platformId':
+      case 'lenderId':
+        if (!value && formValue === 'NONE') break
+        if (value !== formValue) return true
+        break
+      default:
+        if (value !== formValue) return true
+        break
+    }
+  }
+
+  return false
+}
+
 export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const { updateLoan } = useLoans()
   const [open, setOpen] = useState(false)
@@ -29,22 +62,46 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
     e.preventDefault()
     setLoading(true)
 
-    const result = await fetch(getUrl('/loan'), {
-      method: 'PATCH',
-      body: JSON.stringify({
-        id: loan.id,
-        ...Object.fromEntries(new FormData(e.currentTarget))
-      })
-    })
+    try {
+      const { shares } = loan
+      const formData = Object.fromEntries(new FormData(e.currentTarget))
 
-    const { data } = await result.json() as { data: LoanComplete }
+      const sharedWith = Object.keys(formData).reduce<string[]>((acc, key) => {
+        if (key.startsWith('sharedWith')) {
+          return [...acc, formData[key] as string]
+        }
+        return acc
+      }, [])
 
-    setLoading(false)
+      const sharesToRemove = shares.filter((share) => !sharedWith.includes(share.userId))
+      const sharesToAdd = sharedWith.filter((userId) => !shares.some((share) => share.userId === userId))
 
-    if (result.ok) {
-      void revalidatUserLoans(loan.userId)
+      for (const share of sharesToRemove) {
+        await deleteLoanShare(share.id)
+      }
+
+      if (hasLoanChanged(loan, formData) || sharesToAdd.length) {
+        const data = await loanSdk.updateLoan({
+          id: loan.id,
+          ...formData
+        })
+
+        updateLoan(data)
+      } else {
+        const updatedLoan = {
+          ...loan,
+          shares: shares.filter((share) => sharedWith.includes(share.userId))
+        }
+
+        updateLoan(updatedLoan)
+      }
+
+      void loanSdk.revalidatUserLoans(loan.userId)
+      setLoading(false)
       setOpen(false)
-      updateLoan(data)
+    } catch (e) {
+      console.error(e)
+      setLoading(false)
     }
   }
 

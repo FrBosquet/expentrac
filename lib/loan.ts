@@ -25,7 +25,7 @@ export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: nu
 }
 
 export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = now): LoanExtendedInfo => {
-  const { fee, initial } = loan
+  const { fee, initial, shares } = loan
 
   const {
     endDate,
@@ -47,6 +47,10 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const owedAmount = totalAmount - paidAmount
 
   const isOver = refDate > endDate
+  const hasShares = shares ? shares.length > 0 : false
+
+  const holderAmount = loan.shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
+  const holderFee = fee / (holderAmount + 1)
 
   return {
     payments,
@@ -61,6 +65,10 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
     platform,
     lender,
 
-    isOver
+    isOver,
+
+    hasShares,
+    holderAmount,
+    holderFee
   }
 }

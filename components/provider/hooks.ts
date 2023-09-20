@@ -1,4 +1,4 @@
-import { useLoans } from '@components/loan/Context'
+import { useLoans } from '@components/loan/context'
 import { useSubs } from '@components/subscription/context'
 import { type BrandExtendedInfo, type UserProviderComplete } from '@types'
 

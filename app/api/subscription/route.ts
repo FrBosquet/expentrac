@@ -5,6 +5,15 @@ import { prisma } from '@services/prisma'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
+const include = {
+  vendor: { include: { provider: true } },
+  platform: { include: { provider: true } },
+  shares: {
+    include: { user: true }
+  },
+  user: true
+}
+
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get('userId')
@@ -24,10 +33,7 @@ export const GET = async (req: Request) => {
         name: 'asc'
       }
     ],
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } }
-    }
+    include
   })
 
   return NextResponse.json(subs)
@@ -37,6 +43,8 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   return Object.entries(body).reduce((acc, [key, value]) => {
     let parsedValue: any = value
     let parsedKey = key
+
+    if (key.startsWith('sharedWith')) return acc
 
     switch (key) {
       case 'fee':
@@ -75,6 +83,27 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   }, {}) as T
 }
 
+const addShares = async (subscriptionId: string, body: Record<string, string>) => {
+  for (const key in body) {
+    if (key.startsWith('sharedWith')) {
+      await prisma.subscriptionShare.create({
+        data: {
+          user: {
+            connect: {
+              id: body[key]
+            }
+          },
+          subscription: {
+            connect: {
+              id: subscriptionId
+            }
+          }
+        }
+      })
+    }
+  }
+}
+
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
@@ -90,7 +119,7 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  const newSub = await prisma.subscription.create({
+  const args: Prisma.SubscriptionCreateArgs = {
     data: {
       ...parseBody<Omit<Subscription, 'userId' | 'vendorId' | 'platformId'>>(body, true),
       user: {
@@ -99,13 +128,19 @@ export const POST = async (req: Request) => {
         }
       }
     },
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } }
-    }
+    include
+  }
+
+  const newSub = await prisma.subscription.create(args)
+
+  await addShares(newSub.id, body)
+
+  const data = await prisma.subscription.findFirst({
+    where: { id: newSub.id },
+    include
   })
 
-  return NextResponse.json({ message: 'success', data: newSub }, { status: 201 })
+  return NextResponse.json({ message: 'success', data }, { status: 201 })
 }
 
 export const PATCH = async (req: Request) => {
@@ -145,11 +180,10 @@ export const PATCH = async (req: Request) => {
     where: {
       id: body.id
     },
-    include: {
-      vendor: { include: { provider: true } },
-      platform: { include: { provider: true } }
-    }
+    include
   }
+
+  await addShares(body.id, body)
 
   const updatedsubscription = await prisma.subscription.update(args)
 

@@ -1,6 +1,5 @@
-import { getTag, getUrl } from "@lib/api"
-import { LoanComplete } from "@types"
-
+import { getTag, getUrl } from '@lib/api'
+import { type LoanComplete } from '@types'
 
 export const getUserLoans = async (userId: string) => {
   const url = getUrl(`loan?userId=${userId}`)
@@ -17,4 +16,21 @@ export const revalidatUserLoans = async (userId: string) => {
   const response = await fetch(url, { method: 'POST' })
 
   return response
+}
+
+export const updateLoan = async (body: Record<string, unknown>) => {
+  const result = await fetch(getUrl('/loan'), {
+    method: 'PATCH',
+    body: JSON.stringify(body)
+  })
+
+  const { data } = await result.json() as { data: LoanComplete }
+
+  return data
+}
+
+export const loanSdk = {
+  getUserLoans,
+  revalidatUserLoans,
+  updateLoan
 }

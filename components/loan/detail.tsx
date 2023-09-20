@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { ProviderDetail } from '@components/ProviderDetail'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Progress } from '@components/ui/progress'
@@ -9,6 +10,8 @@ import { getLoanExtendedInformation } from '@lib/loan'
 import { type LoanComplete } from '@types'
 import { Edit, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
+import { SharesDetail } from '../common/shares-detail'
 import { LoanDelete } from './delete'
 import { LoanEdit } from './edit'
 
@@ -16,14 +19,18 @@ interface Props {
   loan: LoanComplete
   triggerContent?: React.ReactNode
   children?: React.ReactNode
+  className?: string
 }
 
-export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props) => {
+export const LoanDetail = ({ loan, triggerContent = loan.name, children, className }: Props) => {
+  const { ownsAsset } = useUser()
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name, initial } = loan
-  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount } = getLoanExtendedInformation(loan)
+  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares } = getLoanExtendedInformation(loan)
+
+  const userOwnThis = ownsAsset(loan)
 
   useEffect(() => {
     if (!open) {
@@ -38,7 +45,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="hover:text-primary">{children ?? triggerContent}</button>
+        <button className={twMerge('hover:text-primary', className)}>{children ?? triggerContent}</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
         e.preventDefault()
@@ -105,14 +112,23 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children }: Props
             <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
           </article>
 
-          <Separator className="col-span-2" />
+          {
+            hasShares && <SharesDetail assetType='loan' asset={loan} />
+          }
 
-          <menu className="col-span-2 flex gap-2 justify-end">
-            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-            <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
-          </menu>
+          {
+            userOwnThis
+              ? <>
+                <Separator className="col-span-2" />
+                <menu className="col-span-2 flex gap-2 justify-end" >
+                  <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+                  <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
+                </menu>
+              </>
+              : null
+          }
         </section>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }

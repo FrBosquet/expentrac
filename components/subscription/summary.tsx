@@ -1,6 +1,8 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
+import { useSubShares } from '@components/subscription-share/context'
 import {
   Table,
   TableBody,
@@ -12,26 +14,37 @@ import {
 import { euroFormatter } from '@lib/currency'
 import { getAccentColor } from '@lib/provider'
 import { type SubscriptionComplete } from '@types'
+import { CalendarCheck, User } from 'lucide-react'
 import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
 import { SubscriptionDelete } from './delete'
 import { SubscriptionDetail } from './detail'
 import { SubscriptionEdit } from './edit'
 
-const getFee = (sub: SubscriptionComplete) => {
-  const feeString = euroFormatter.format(sub.fee)
+const FeeContent = ({ sub }: { sub: SubscriptionComplete }) => {
+  const { shares, fee } = sub
+  const hasShares = shares.length > 0
+  const acceptedShares = shares.filter((share) => share.accepted === true)
+  const anyShareAcepted = acceptedShares.length > 0
 
-  if (sub.yearly) {
-    const monthlyFeeString = euroFormatter.format(sub.fee / 12)
+  const holderFee = fee / (acceptedShares.length + 1)
 
-    return <p><span className='font-light'>({feeString}/y)</span> {monthlyFeeString}/m</p>
-  } else {
-    return `${feeString}/m`
-  }
+  return <div className="flex items-center justify-end gap-2">
+    {hasShares ? <User className={!anyShareAcepted ? 'opacity-20' : ''} size={12} /> : null} {euroFormatter.format(holderFee)}/mo
+  </div>
 }
 
 export const SubscriptionSummary = () => {
+  const { ownsAsset } = useUser()
   const { subs } = useSubs()
+  const { subShares } = useSubShares()
+
+  const mixedSubs = [
+    ...subs,
+    ...subShares.filter((subShare) => subShare.accepted).map((subShare) => subShare.subscription)
+  ]
+
+  if (mixedSubs.length === 0) return null
 
   return (
     <section className="flex flex-col gap-2 pt-8">
@@ -49,23 +62,36 @@ export const SubscriptionSummary = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {subs.map((sub) => {
+          {mixedSubs.map((sub) => {
             const accentColor = getAccentColor(sub.vendor?.provider)
+            const userOwnsSub = ownsAsset(sub)
 
             return (
               <TableRow key={sub.id}>
                 <TableCell className="border-l-4" style={{
                   borderLeftColor: accentColor
-                }}>{
-                    <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
-                  }</TableCell>
+                }}>
+                  {
+                    sub.vendor
+                      ? <ProviderLogo className="h-8" provider={sub.vendor?.provider} />
+                      : <CalendarCheck className='h-8 w-8 m-auto' />
+                  }
+                </TableCell>
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
                 </TableCell>
-                <TableCell className="font-semibold text-right">{getFee(sub)}</TableCell>
+                <TableCell className="font-semibold text-right">
+                  <FeeContent sub={sub} />
+                </TableCell>
                 <TableCell className="flex gap-1">
-                  <SubscriptionEdit sub={sub} />
-                  <SubscriptionDelete sub={sub} />
+                  {
+                    userOwnsSub
+                      ? <>
+                        <SubscriptionEdit sub={sub} />
+                        <SubscriptionDelete sub={sub} />
+                      </>
+                      : null
+                  }
                 </TableCell>
               </TableRow>
             )
