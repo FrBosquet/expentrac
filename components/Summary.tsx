@@ -22,8 +22,6 @@ export const Summary = () => {
   const { allLoans, hasAnyLoans } = useLoans()
   const { allSubs, hasAnySubs } = useSubs()
 
-  console.log(allLoans, allSubs)
-
   const totalLoans = allLoans.reduce((acc, cur) => {
     const curStartDate = new Date(cur.startDate)
     const curEndDate = new Date(cur.endDate)
