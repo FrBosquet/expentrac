@@ -62,6 +62,14 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
             <h4 className="text-sm font-semibold">Monthly fee</h4>
             <p className="text-lg text-slate-700">{euroFormatter.format(sub.yearly ? fee / 12 : fee)}</p>
           </article>
+          {
+            sub.payday
+              ? <article className="flex flex-col gap-2">
+                <h4 className="text-sm font-semibold">Payment day</h4>
+                <p className="text-lg text-slate-700">{sub.payday}</p>
+              </article>
+              : null
+          }
 
           {
             sub.shares.length > 0 && (
