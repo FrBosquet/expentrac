@@ -38,6 +38,9 @@ const hasSubscriptionChanged = (subscription: SubscriptionComplete, formData: Re
         if (!value && formValue === 'NONE') break
         if (value !== formValue) return true
         break
+      case 'payday':
+        if (Number(formValue) !== value) return true
+        break
       default:
         if (value !== formValue) return true
         break

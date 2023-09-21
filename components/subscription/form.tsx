@@ -2,6 +2,7 @@
 
 import { ProviderSelect } from '@components/ProviderSelect'
 import { UserSearch } from '@components/UserSearch'
+import { DaySelect } from '@components/form/DaySelect'
 import { useProviders } from '@components/provider/context'
 import { Button } from '@components/ui/button'
 import { Label } from '@components/ui/label'
@@ -37,12 +38,13 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={sub?.name} name="name" label="Name" />
       <FormField required defaultValue={sub?.fee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
-      <div className="flex justify-end items-center col-span-2 gap-2">
+
+      <section className="flex justify-end items-center col-span-2 gap-2">
         <Switch id="yearly" name='yearly' defaultChecked={sub?.yearly} />
         <Label htmlFor="yearly" className='font-semibold'>Paid yearly?</Label>
-      </div>
+      </section>
 
-      <div className="col-span-2 grid grid-cols-2 gap-2">
+      <section className="col-span-2 grid grid-cols-2 gap-2">
         <span className="flex flex-col gap-2">
           <Label htmlFor='vendorId' className="text-xs text-center">
             Vendor
@@ -56,7 +58,14 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
           </Label>
           <ProviderSelect required name="platformId" items={brandOptions} defaultValue={sub?.platformId} />
         </span>
-      </div>
+      </section>
+
+      <section className='col-span-2 flex gap-2 items-center justify-end'>
+        <Label htmlFor='payday' className="text-center font-semibold text-sm selft-end">
+          Payday (optional)
+        </Label>
+        <DaySelect className='w-auto min-w-[8rem]' name="payday" defaultValue={sub?.payday} />
+      </section>
 
       <Separator className="col-span-2" />
       <div className='col-span-2 flex flex-col gap-4'>

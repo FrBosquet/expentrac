@@ -107,6 +107,7 @@ model Subscription {
   platformId String?
   platform   UserProvider?       @relation(name: "SubscriptionPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
   shares     SubscriptionShare[]
+  payday     Int?
 }
 
 model SubscriptionShare {
