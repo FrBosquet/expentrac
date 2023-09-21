@@ -130,6 +130,11 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
           : null}
       </div>
 
+      <Separator className="col-span-2" />
+
+      <FormField defaultValue={loan?.link ?? ''} name="link" label="Link" />
+      <p className='text-xs col-span-2'>Direct link to this loan page</p>
+
       {calculatedFee && <>
         <Separator className="col-span-2" />
 

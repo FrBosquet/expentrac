@@ -68,6 +68,10 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
       </section>
 
       <Separator className="col-span-2" />
+      <FormField defaultValue={sub?.link ?? ''} name="link" label="Link" />
+      <p className='text-xs col-span-2'>Direct link to this subscription page</p>
+
+      <Separator className="col-span-2" />
       <div className='col-span-2 flex flex-col gap-4'>
         <section className='flex justify-between items-center'>
           <Label>Share this payment </Label>
