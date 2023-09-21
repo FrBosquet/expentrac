@@ -53,6 +53,9 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
       case 'yearly':
         parsedValue = value === 'on'
         break
+      case 'payday':
+        parsedValue = value === '0' ? null : Number(value)
+        break
       case 'vendorId':
       case 'platformId':
       case 'lenderId':

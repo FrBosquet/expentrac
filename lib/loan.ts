@@ -51,6 +51,7 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
 
   const holderAmount = loan.shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
   const holderFee = fee / (holderAmount + 1)
+  const holderTotal = totalAmount / (holderAmount + 1)
 
   return {
     payments,
@@ -69,6 +70,7 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
 
     hasShares,
     holderAmount,
-    holderFee
+    holderFee,
+    holderTotal
   }
 }

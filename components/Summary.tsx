@@ -43,7 +43,7 @@ export const Summary = () => {
   }, 0)
   const total = totalLoans + totalSubs
 
-  const owedMoney = allLoans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).holderAmount, 0)
+  const owedMoney = allLoans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).holderTotal, 0)
 
   if (!hasAnyLoans && !hasAnySubs) {
     return <section className='flex flex-col gap-4 p-12'>

@@ -57,6 +57,7 @@ export const SubscriptionSummary = () => {
           <TableRow>
             <TableHead className="w-14" />
             <TableHead className="flex-1">Subscription</TableHead>
+            <TableHead>Payment day</TableHead>
             <TableHead className="text-right">Monthly fee</TableHead>
             <TableHead className="w-4" />
           </TableRow>
@@ -79,6 +80,9 @@ export const SubscriptionSummary = () => {
                 </TableCell>
                 <TableCell className="font-medium">
                   <SubscriptionDetail sub={sub} />
+                </TableCell>
+                <TableCell>
+                  {sub.payday}
                 </TableCell>
                 <TableCell className="font-semibold text-right">
                   <FeeContent sub={sub} />
