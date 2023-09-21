@@ -18,6 +18,7 @@ export interface LoanExtendedInfo {
   hasShares: boolean
   holderAmount: number
   holderFee: number
+  holderTotal: number
 }
 
 export interface BrandExtendedInfo {

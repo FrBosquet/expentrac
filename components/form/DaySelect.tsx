@@ -15,8 +15,6 @@ interface Props {
 }
 
 export const DaySelect = ({ name, required, className, defaultValue }: Props) => {
-  console.log('DaySelect', { name, required, className, defaultValue })
-
   return <UiSelect name={name} required={required} defaultValue={defaultValue?.toString() ?? '0'}>
     <SelectTrigger className={twMerge('overflow-hidden whitespace-nowrap text-ellipsis w-full', className)}>
       <SelectValue />
