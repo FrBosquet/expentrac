@@ -72,6 +72,14 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
           }
 
           {
+            sub.link
+              ? <article className="flex flex-col gap-2 col-span-2">
+                <a target='_blank' href={sub.link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Subscription link</a>
+              </article>
+              : null
+          }
+
+          {
             sub.shares.length > 0 && (
               <>
                 <SharesDetail assetType='subscription' asset={sub} />

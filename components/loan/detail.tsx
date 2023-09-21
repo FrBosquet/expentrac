@@ -111,6 +111,13 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
             <h4 className="text-xs font-semibold">You still owe</h4>
             <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
           </article>
+          {
+            loan.link
+              ? <article className="flex flex-col gap-2 col-span-2">
+                <a target='_blank' href={loan.link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Loan link</a>
+              </article>
+              : null
+          }
 
           {
             hasShares && <SharesDetail assetType='loan' asset={loan} />
