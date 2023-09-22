@@ -28,7 +28,7 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
   const [progress, setProgress] = useState(0)
 
   const { startDate, endDate, fee, name, initial } = loan
-  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares } = getLoanExtendedInformation(loan)
+  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares, isOver } = getLoanExtendedInformation(loan)
 
   const userOwnThis = ownsAsset(loan)
 
@@ -79,10 +79,14 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
             <h4 className="text-xs font-semibold">Total amount</h4>
             <p className="text-sm text-slate-500">{euroFormatter.format(totalAmount)}</p>
           </article>
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">Already paid</h4>
-            <p className="text-sm text-slate-500">{euroFormatter.format(paidAmount)}</p>
-          </article>
+          {
+            !isOver
+              ? <article className="flex flex-col gap-2">
+                <h4 className="text-xs font-semibold">Already paid</h4>
+                <p className="text-sm text-slate-500">{euroFormatter.format(paidAmount)}</p>
+              </article>
+              : null
+          }
 
           <article className="flex flex-col gap-2 col-span-2">
             <Progress value={progress} />
@@ -95,22 +99,29 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
             <p className="text-sm text-slate-500">{new Date(startDate).toLocaleDateString()}</p>
           </article>
           <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">Ends</h4>
+            <h4 className="text-xs font-semibold">{isOver ? 'Finished' : 'Ends'}</h4>
             <p className="text-sm text-slate-500">{new Date(endDate).toLocaleDateString()}</p>
           </article>
 
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">Payments done</h4>
-            <p className="text-sm text-slate-500">{paymentsDone}/{payments}</p>
-          </article>
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">Payments left</h4>
-            <p className="text-sm text-slate-500">{paymentsLeft}</p>
-          </article>
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">You still owe</h4>
-            <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
-          </article>
+          {
+            !isOver
+              ? <>
+                <article className="flex flex-col gap-2">
+                  <h4 className="text-xs font-semibold">Payments done</h4>
+                  <p className="text-sm text-slate-500">{paymentsDone}/{payments}</p>
+                </article>
+                <article className="flex flex-col gap-2">
+                  <h4 className="text-xs font-semibold">Payments left</h4>
+                  <p className="text-sm text-slate-500">{paymentsLeft}</p>
+                </article>
+                <article className="flex flex-col gap-2">
+                  <h4 className="text-xs font-semibold">You still owe</h4>
+                  <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
+                </article>
+
+              </>
+              : null
+          }
           {
             loan.link
               ? <article className="flex flex-col gap-2 col-span-2">
