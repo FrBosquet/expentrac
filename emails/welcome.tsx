@@ -11,13 +11,13 @@ import { Section } from '@react-email/section'
 import { Tailwind } from '@react-email/tailwind'
 import { Text } from '@react-email/text'
 
-interface Props {
+export interface WelcomeEmailProps {
   username: string
 }
 
 export default function WelcomeEmail({
   username = 'Fran Bosquet'
-}: Props) {
+}: WelcomeEmailProps) {
   return (
     <Html>
       <Head />
