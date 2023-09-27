@@ -23,7 +23,22 @@ const features = [
   }
 ]
 
+export const Feature = ({ title, description, image, alt }: {
+  title: string | JSX.Element
+  description: string | JSX.Element
+  image: string
+  alt: string
+}) => {
+  return <>
+    <Image src={image} alt={alt} width={300} height={300} className='hidden md:block shadow-lg row-start-2 rounded-full scroll-anim-rise' />
+    <h3 className='text-secondary text-4xl uppercase tracking-wider text-center scroll-anim-rise md:row-start-3 '>{title}</h3>
+    <p className='text-slate-300 text-center scroll-anim-rise md:row-start-4'>{description}</p>
+  </>
+}
+
 export const Features = () => {
+  const [connected, social, smart] = features
+
   return <section className='py-24 md:py-[unset] md:h-[80vh] flex flex-col justify-center'>
     <div className='
       gap-x-8 gap-y-4 max-w-screen-xl w-full p-6 m-auto grid justify-center justify-items-center
@@ -33,15 +48,9 @@ export const Features = () => {
       <h1 className='text-6xl pb-10 w-full text-left scroll-anim-fall
       col-span-1 md:col-span-3
       '><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
-      {
-        features.map(({ title, description, image, alt }) => {
-          return <>
-            <Image key={image} src={image} alt={alt} width={300} height={300} className='hidden md:block shadow-lg row-start-2 rounded-full scroll-anim-rise' />
-            <h3 key={alt} className='text-secondary text-4xl uppercase tracking-wider text-center scroll-anim-rise md:row-start-3 '>{title}</h3>
-            <p key={description} className='text-slate-300 text-center scroll-anim-rise md:row-start-4'>{description}</p>
-          </>
-        })
-      }
+      <Feature title={connected.title} description={connected.description} image={connected.image} alt={connected.alt} />
+      <Feature title={social.title} description={social.description} image={social.image} alt={social.alt} />
+      <Feature title={smart.title} description={smart.description} image={smart.image} alt={smart.alt} />
     </div>
   </section >
 }
