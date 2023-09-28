@@ -11,17 +11,25 @@ import { Section } from '@react-email/section'
 import { Tailwind } from '@react-email/tailwind'
 import { Text } from '@react-email/text'
 
-export interface WelcomeEmailProps {
+export interface LoanShareProps {
   username: string
+  sharer: string
+  loanAmount: number
+  loanName: string
+  months: number
 }
 
-export default function WelcomeEmail({
-  username = 'Fran Bosquet'
-}: WelcomeEmailProps) {
+export default function LoanShareEmail({
+  username = 'Fran Bosquet',
+  sharer = 'Other User',
+  loanName = 'Car loan',
+  loanAmount = 10000,
+  months = 60
+}: LoanShareProps) {
   return (
     <Html>
       <Head />
-      <Preview>Welcome to Expentrac, {username}</Preview>
+      <Preview>{sharer} wants to share a loan with you</Preview>
       <Tailwind>
         <Body className="bg-gradient-to-b from-slate-950 to-slate-700 my-auto mx-auto">
           <Container className="bg-slate-200 border border-solid border-slate-100 rounded-lg my-[40px] mx-auto p-[20px] w-[465px] font-sans">
@@ -35,33 +43,25 @@ export default function WelcomeEmail({
               />
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
-              Welcome {username}
+              Hey {username}
             </Heading>
             <Text className="text-black text-[14px] leading-[24px]">
-              This is <strong>Fran</strong>, from <strong>Expentrac</strong>
+              {sharer} wants to share a loan with you. The loan in question is:
+            </Text>
+            <Text className="text-black text-[20px] leading-[24px] text-center">
+              <strong>{loanName}</strong>
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
-              Thank you very much for giving us a try! We are very excited to onboard new users like you. Im working hard to make <strong>Expentrac</strong> the best expense tracker possible. I hope you enjoy it!
-            </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
-              You can start by jumping straight to your dashboard and start adding your expenses. If you have any questions, please feel free to reach <a href="https:x.com/frbosquet" target='_blank' rel="noreferrer">out to me at X</a>.
+              Monthly fee for this loan is <strong>{new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'EUR' }).format(loanAmount)}</strong>. Its going to last <strong>{months}</strong> months. You can accept or reject the loan in your notifications section.
             </Text>
             <Section className="mt-[24px] mb-[24px] flex justify-center">
               <Button
                 pX={20}
                 pY={12}
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px]"
-                href='https://www.expentrac.app/dashboard/loans'
-              >
-                Add a loan
-              </Button>
-              <Button
-                pX={20}
-                pY={12}
                 className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
-                href='https://www.expentrac.app/dashboard/subscriptions'
+                href='https://www.expentrac.app/dashboard/notifications'
               >
-                Add a subscription
+                Your notifications centre
               </Button>
             </Section>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
