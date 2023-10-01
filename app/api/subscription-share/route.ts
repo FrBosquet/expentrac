@@ -1,10 +1,13 @@
 import { type Prisma } from '@prisma/client'
 import { authOptions } from '@services/auth'
+import { emailSdk } from '@services/email'
 import { prisma } from '@services/prisma'
+import { type SubscriptionShareComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
 const include = {
+  user: true,
   subscription: {
     include: {
       user: true,
@@ -81,7 +84,21 @@ export const PATCH = async (req: Request) => {
     include
   }
 
-  const updatedShare = await prisma.subscriptionShare.update(args)
+  const updatedShare = await prisma.subscriptionShare.update(args) as SubscriptionShareComplete
+
+  const { subscription, user: { name } } = updatedShare
+
+  if (updatedShare.accepted) {
+    await emailSdk.sendSubShareAcceptance(
+      name as string,
+      subscription
+    )
+  } else {
+    await emailSdk.sendSubShareRejection(
+      name as string,
+      subscription
+    )
+  }
 
   return NextResponse.json({ message: 'success', data: updatedShare }, { status: 200 })
 }
