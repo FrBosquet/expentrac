@@ -87,8 +87,6 @@ export const PATCH = async (req: Request) => {
 
   const updatedShare = await prisma.loanShare.update(args) as LoanShareComplete
 
-  console.log(updatedShare)
-
   const { loan, user: { name } } = updatedShare
 
   if (updatedShare.accepted) {

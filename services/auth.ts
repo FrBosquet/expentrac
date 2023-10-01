@@ -30,10 +30,7 @@ export const authOptions: AuthOptions = {
   },
   events: {
     async createUser(message) {
-      console.log('createUser', message)
-
       if (message.user.email) {
-        console.log('sendWelcome', message.user.email, message.user.name)
         void emailSdk.sendWelcome(message.user.email, message.user.name as string)
       }
     }

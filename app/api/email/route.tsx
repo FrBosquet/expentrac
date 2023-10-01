@@ -7,23 +7,6 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_KEY)
 
-// const sendFunction = async function () {
-//   try {
-//     const Template = templates.test
-
-//     const data = await resend.emails.send({
-//       from: 'Fran from Expentrac <info@expentrac.app>',
-//       to: ['frbosquet@gmail.com'],
-//       subject: 'Welcome to expentrac',
-//       react: <Template />
-//     })
-
-//     console.log(data)
-//   } catch (error) {
-//     console.error(error)
-//   }
-// }
-
 const templates = {
   welcome: WelcomeEmail
 }
@@ -65,8 +48,6 @@ export const POST = async (req: Request) => {
   const { userId, template } = body as { userId: string, template: string }
 
   await sendEmail(userId, template as Template)
-
-  console.log(userId, template)
 
   return NextResponse.json('ok')
 }

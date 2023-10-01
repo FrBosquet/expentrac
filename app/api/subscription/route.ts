@@ -109,8 +109,6 @@ const addShares = async (subscription: SubscriptionComplete, body: Record<string
         }
       })
 
-      console.log(email, name, subscription)
-
       await emailSdk.sendSubShare(email as string, name as string, subscription)
     }
   }
