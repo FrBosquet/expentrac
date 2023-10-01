@@ -1,7 +1,9 @@
 import { SELECT_OPTIONS } from '@components/Select'
 import { type Loan, type Prisma } from '@prisma/client'
 import { authOptions } from '@services/auth'
+import { emailSdk } from '@services/email'
 import { prisma } from '@services/prisma'
+import { type LoanComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -87,10 +89,10 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   }, {}) as T
 }
 
-const addShares = async (loanId: string, body: Record<string, string>) => {
+const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
   for (const key in body) {
     if (key.startsWith('sharedWith')) {
-      await prisma.loanShare.create({
+      const { user: { email, name } } = await prisma.loanShare.create({
         data: {
           user: {
             connect: {
@@ -99,11 +101,16 @@ const addShares = async (loanId: string, body: Record<string, string>) => {
           },
           loan: {
             connect: {
-              id: loanId
+              id: loan.id
             }
           }
+        },
+        include: {
+          user: true
         }
       })
+
+      await emailSdk.sendLoanShare(email as string, name as string, loan)
     }
   }
 }
@@ -131,12 +138,13 @@ export const POST = async (req: Request) => {
           id: userId
         }
       }
-    }
+    },
+    include
   }
 
   const newLoan = await prisma.loan.create(args)
 
-  await addShares(newLoan.id, body)
+  await addShares(newLoan as LoanComplete, body)
 
   const data = await prisma.loan.findFirst({
     where: { id: newLoan.id },
@@ -160,7 +168,7 @@ export const PATCH = async (req: Request) => {
   const userId = session.user.id
 
   const body = await req.json()
-  const loan = await prisma.loan.findUnique({ where: { id: body.id } })
+  const loan = await prisma.loan.findUnique({ where: { id: body.id }, include })
 
   if (!loan) {
     return NextResponse.json({
@@ -186,7 +194,7 @@ export const PATCH = async (req: Request) => {
     include
   }
 
-  await addShares(body.id, body)
+  await addShares(loan as LoanComplete, body)
 
   const updatedLoan = await prisma.loan.update(args)
 

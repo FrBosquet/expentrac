@@ -2,5 +2,6 @@
   "editor.codeActionsOnSave": [
     "source.organizeImports",
     "source.fixAll.eslint"
-  ]
+  ],
+  "cSpell.enabled": true
 }

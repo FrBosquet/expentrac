@@ -30,6 +30,9 @@
       "@components/*": [
         "./components/*"
       ],
+      "@emails": [
+        "./emails"
+      ],
     }
   },
   "include": [
