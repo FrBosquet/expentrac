@@ -24,7 +24,7 @@ export const authOptions: AuthOptions = {
       return session
     }
   },
-  secret: process.env.AUTH_SECRET as string,
+  secret: process.env.NEXTAUTH_SECRET as string,
   pages: {
     signIn: '/'
   },
