@@ -52,7 +52,7 @@ export default async function Layout({ children }: Props) {
 
               <DateProvider>
                 <main className="flex flex-col min-h-screen">
-                  <header className="flex gap-4 bg-white p-2 justify-between items-center border-b border-gray-300">
+                  <header className="flex gap-4 bg-slate-900 p-2 justify-between items-center border-b border-gray-300">
                     <Logo className="text-4xl -tracking-widest px-2">et</Logo>
                     <Menu user={user} />
                   </header>

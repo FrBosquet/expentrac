@@ -36,7 +36,7 @@ export const Menu = ({ user }: Props) => {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
-        <Avatar className="cursor-pointer">
+        <Avatar className="cursor-pointer border border-white">
           <AvatarImage src={user.image as string} alt={user.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>
