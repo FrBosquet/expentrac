@@ -52,6 +52,7 @@ model User {
   subscriptions      Subscription[]
   subscriptionShares SubscriptionShare[]
   providers          UserProvider[]
+  notifications      Notification[]
 }
 
 model VerificationToken {
@@ -150,4 +151,16 @@ model UserProvider {
   loansAsLender           Loan[]         @relation(name: "LoanLenderRelation")
   subscriptionsAsVendor   Subscription[] @relation(name: "SubscriptionVendorRelation")
   subscriptionsAsPlatform Subscription[] @relation(name: "SubscriptionPlatformRelation")
+}
+
+model Notification {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  type      String
+  message   String
+  ack       Boolean  @default(false)
 }
