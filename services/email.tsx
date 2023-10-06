@@ -1,4 +1,4 @@
-import { LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
+import { GenericEmail, LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { type LoanComplete, type SubscriptionComplete } from '@types'
 
@@ -84,6 +84,16 @@ const sendSubShareRejection = async (username: string, sub: SubscriptionComplete
   })
 }
 
+// GENERIC
+const sendGenericEmail = async (direction: string, username: string, message: string) => {
+  await resend.emails.send({
+    from: 'Fran from Expentrac <info@expentrac.app>',
+    to: direction,
+    subject: 'Notification from Expentrac',
+    react: <GenericEmail username={username} message={message} />
+  })
+}
+
 // SDK
 export const emailSdk = {
   sendWelcome,
@@ -92,5 +102,6 @@ export const emailSdk = {
   sendLoanShareRejection,
   sendSubShare,
   sendSubShareAcceptance,
-  sendSubShareRejection
+  sendSubShareRejection,
+  sendGenericEmail
 }
