@@ -92,7 +92,11 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
 const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
   for (const key in body) {
     if (key.startsWith('sharedWith')) {
-      const { user: { email, name } } = await prisma.loanShare.create({
+      const userId = body[key]
+
+      if (loan.shares.some(share => share.user.id === userId)) continue
+
+      await prisma.loanShare.create({
         data: {
           user: {
             connect: {
