@@ -113,6 +113,7 @@ export type SubscriptionShareComplete = SubscriptionShare & {
 }
 
 export enum NOTIFICATION_TYPE {
+  GENERIC = 'GENERIC',
   LOAN_SHARES = 'LOAN_SHARES',
   SUB_SHARES = 'SUB_SHARES',
 }
