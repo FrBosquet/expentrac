@@ -1,9 +1,9 @@
 import { SELECT_OPTIONS } from '@components/Select'
 import { type Loan, type Prisma } from '@prisma/client'
 import { authOptions } from '@services/auth'
-import { emailSdk } from '@services/email'
+import { notificationSdk } from '@services/notificationSdk'
 import { prisma } from '@services/prisma'
-import { type LoanComplete } from '@types'
+import { NOTIFICATION_TYPE, type LoanComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -114,7 +114,10 @@ const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
         }
       })
 
-      await emailSdk.sendLoanShare(email as string, name as string, loan)
+      await notificationSdk.createNotification(userId, true, {
+        type: NOTIFICATION_TYPE.LOAN_SHARES,
+        loan
+      })
     }
   }
 }
