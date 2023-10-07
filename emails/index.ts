@@ -9,3 +9,5 @@ export { default as SubShareAcceptEmail } from './sub-share-acceptance'
 export { default as SubShareRejectEmail } from './sub-share-rejection'
 
 export { default as GenericEmail } from './generic'
+
+export { default as DailyEmail } from './daily'

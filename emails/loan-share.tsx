@@ -20,7 +20,7 @@ export default function LoanShareEmail({
   months = 60
 }: LoanShareProps) {
   return (
-    <TemplateEmail username={username} preview={`${sharer} wants to share a loan with you`}>
+    <TemplateEmail preview={`${sharer} wants to share a loan with you`}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Hey {username}
       </Heading>

@@ -14,7 +14,7 @@ export default function GenericEmail({
   message = 'lore ipsum dolor sit amet'
 }: GenericEmailProps) {
   return (
-    <TemplateEmail username={username} preview={`Welcome to Expentrac, ${username}`}>
+    <TemplateEmail username={username} preview={`An email from Expentrac, ${username}`}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Hi {username}
       </Heading>

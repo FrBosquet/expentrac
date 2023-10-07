@@ -16,7 +16,7 @@ export default function SubShareAcceptEmail({
   subName = 'Netflix'
 }: SubShareAcceptProps) {
   return (
-    <TemplateEmail username={username} preview={`${shareHolder} accepted to share a subscription with you`}>
+    <TemplateEmail preview={`${shareHolder} accepted to share a subscription with you`}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Hey {username}
       </Heading>

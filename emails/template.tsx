@@ -10,13 +10,11 @@ import { Tailwind } from '@react-email/tailwind'
 import { Text } from '@react-email/text'
 
 export interface TemplateProps {
-  username: string
   children: React.ReactNode
   preview: string
 }
 
 export default function TemplateEmail({
-  username = 'Fran Bosquet',
   children,
   preview = 'Expentrac email'
 }: TemplateProps) {
