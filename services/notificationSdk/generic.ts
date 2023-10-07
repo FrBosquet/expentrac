@@ -14,7 +14,7 @@ export const handleGeneric = async (user: User, shouldEmail: boolean, payload: G
       user: {
         connect: { id: user.id }
       },
-      message: payload.message,
+      payload: { message: payload.message },
       type: NOTIFICATION_TYPE.GENERIC,
       ack: false,
       date: new Date().toISOString()

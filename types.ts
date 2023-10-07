@@ -123,3 +123,9 @@ export interface NotificationBase {
   createdAt: Date
   ack: boolean
 }
+
+export enum SHARE_STATE {
+  PENDING = 0,
+  ACCEPTED = 1,
+  REJECTED = 2
+}

@@ -1,9 +1,9 @@
 import { SELECT_OPTIONS } from '@components/Select'
 import { type Prisma, type Subscription } from '@prisma/client'
 import { authOptions } from '@services/auth'
-import { emailSdk } from '@services/email'
+import { notificationSdk } from '@services/notificationSdk'
 import { prisma } from '@services/prisma'
-import { type SubscriptionComplete } from '@types'
+import { NOTIFICATION_TYPE, type SubscriptionComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -91,11 +91,15 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
 const addShares = async (subscription: SubscriptionComplete, body: Record<string, string>) => {
   for (const key in body) {
     if (key.startsWith('sharedWith')) {
-      const { user: { email, name } } = await prisma.subscriptionShare.create({
+      const userId = body[key]
+
+      if (subscription.shares.some(sub => sub.user.id === userId)) continue
+
+      await prisma.subscriptionShare.create({
         data: {
           user: {
             connect: {
-              id: body[key]
+              id: userId
             }
           },
           subscription: {
@@ -109,7 +113,10 @@ const addShares = async (subscription: SubscriptionComplete, body: Record<string
         }
       })
 
-      await emailSdk.sendSubShare(email as string, name as string, subscription)
+      await notificationSdk.createNotification(userId, true, {
+        type: NOTIFICATION_TYPE.SUB_SHARES,
+        sub: subscription
+      })
     }
   }
 }

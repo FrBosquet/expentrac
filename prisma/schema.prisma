@@ -161,6 +161,6 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date      DateTime
   type      String
-  message   String
+  payload   Json?
   ack       Boolean  @default(false)
 }
