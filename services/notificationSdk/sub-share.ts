@@ -1,4 +1,4 @@
-import { type User } from '@prisma/client'
+import { type SubscriptionShare, type User } from '@prisma/client'
 import { NOTIFICATION_TYPE, SHARE_STATE, type SubscriptionComplete } from '@types'
 import { emailSdk } from '../email'
 import { prisma } from '../prisma'
@@ -6,20 +6,19 @@ import { prisma } from '../prisma'
 export interface SubShareNotification {
   type: NOTIFICATION_TYPE.SUB_SHARES
   sub: SubscriptionComplete
+  subShare: SubscriptionShare
 }
 
 export interface SubShareNotificationPayload {
-  owner: string
-  name: string
-  fee: number
+  sub: SubscriptionComplete
+  subShare: SubscriptionShare
   state: SHARE_STATE
 }
 
-export const handleSubsShare = async (user: User, shouldEmail: boolean, sub: SubscriptionComplete) => {
+export const handleSubsShare = async (user: User, shouldEmail: boolean, sub: SubscriptionComplete, subShare: SubscriptionShare) => {
   const payload: SubShareNotificationPayload = {
-    owner: sub.user.id,
-    name: sub.name,
-    fee: sub.fee,
+    sub,
+    subShare,
     state: SHARE_STATE.PENDING
   }
 

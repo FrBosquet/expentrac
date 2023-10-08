@@ -1,9 +1,13 @@
 import { Notification } from '@components/notifications/Notification'
 import { euroFormatter } from '@lib/currency'
 
+import { useNotifications } from '@components/notifications/context'
 import { SubscriptionDetail } from '@components/subscription/detail'
+import { type Notification as NotificationType } from '@prisma/client'
+import { type SubShareNotificationPayload } from '@services/notificationSdk/sub-share'
+import { ackNotification } from '@services/sdk/notifications'
 import { subscriptionShareSdk } from '@services/sdk/subscriptionShare'
-import { NOTIFICATION_TYPE, type NotificationBase, type SubscriptionShareComplete } from '@types'
+import { NOTIFICATION_TYPE, SHARE_STATE, type NotificationBase, type SubscriptionShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
 import { useSubShares } from './context'
 
@@ -19,36 +23,41 @@ export const getSubShareNotification = (subShare: SubscriptionShareComplete): No
   createdAt: new Date(subShare.createdAt)
 })
 
-const Content = ({ share }: { share: SubscriptionShareComplete }): ReactNode => {
-  const { subscription, accepted } = share
+const Content = ({ payload }: { payload: SubShareNotificationPayload }): ReactNode => {
+  const { sub, state } = payload
 
-  const { fee } = subscription
+  const { fee } = sub
 
-  const part = fee / (subscription.shares.filter(share => share.accepted === true).length + 1)
+  const part = fee / (sub.shares.filter(share => share.accepted === true).length + 1)
 
   const monthlyFee = `${euroFormatter.format(part)}/mo`
 
-  switch (accepted) {
-    case true:
-      return <p className='w-full'>You accepted the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
-    case false:
-      return <p className='w-full'>You rejected the share request by {subscription.user.name} for <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+  switch (state) {
+    case SHARE_STATE.ACCEPTED:
+      return <p className='w-full'>You accepted the share request by {sub.user.name} for <SubscriptionDetail sub={sub} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
+    case SHARE_STATE.REJECTED:
+      return <p className='w-full'>You rejected the share request by {sub.user.name} for <SubscriptionDetail sub={sub} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
     default:
-      return <p className='w-full'>{subscription.user.name} wants to share <SubscriptionDetail sub={subscription} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+      return <p className='w-full'>{sub.user.name} wants to share <SubscriptionDetail sub={sub} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
   }
 }
 
-export const SubscriptionShareNotification = ({ subscriptionShare }: { subscriptionShare: SubscriptionShareComplete }) => {
+export const SubscriptionShareNotification = ({ notification }: { notification: NotificationType }) => {
   const [loading, setLoading] = useState(false)
   const { updateShare } = useSubShares()
-  const { id } = subscriptionShare
+  const { updateNotification } = useNotifications()
+
+  const { id, ack, createdAt } = notification
+  const payload = JSON.parse(notification.payload as string) as SubShareNotificationPayload
 
   const handleAccept = async () => {
     setLoading(true)
 
-    const updatedShare = await subscriptionShareSdk.update(id, true)
+    const updatedShare = await subscriptionShareSdk.update(payload.subShare.id, true)
+    const updatedNotification = await ackNotification(id, SHARE_STATE.ACCEPTED)
 
     updateShare(updatedShare)
+    updateNotification(updatedNotification)
 
     setLoading(false)
   }
@@ -56,15 +65,16 @@ export const SubscriptionShareNotification = ({ subscriptionShare }: { subscript
   const handleReject = async () => {
     setLoading(true)
 
-    const updatedShare = await subscriptionShareSdk.update(id, false)
+    const updatedShare = await subscriptionShareSdk.update(payload.subShare.id, false)
+    const updatedNotification = await ackNotification(id, SHARE_STATE.REJECTED)
+
     updateShare(updatedShare)
+    updateNotification(updatedNotification)
 
     setLoading(false)
   }
 
-  const acknowledged = subscriptionShare.accepted !== null
-
-  return <Notification date={subscriptionShare.createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={acknowledged}>
-    <Content share={subscriptionShare} />
+  return <Notification date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
+    <Content payload={payload} />
   </Notification>
 }

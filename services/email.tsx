@@ -58,7 +58,7 @@ const sendSubShare = async (email: string, username: string, sub: SubscriptionCo
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: email,
-    subject: `${username} wants to share a subscription with you`,
+    subject: `${sharer} wants to share a subscription with you`,
     react: <SubShareEmail username={username} sharer={sharer as string} subAmount={fee} subName={name} />
   })
 }

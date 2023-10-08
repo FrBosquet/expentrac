@@ -10,6 +10,7 @@ export interface LoanShareNotification {
 }
 
 // TODO: Adding the whole loan would flood the notification table with data. Add a cron job to clean up every week or so.
+// Also, the info is outdated. Check if we can conditionally add the loan info.
 export interface LoanShareNotificationPayload {
   loan: LoanComplete
   loanShare: LoanShare

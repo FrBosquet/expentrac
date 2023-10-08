@@ -88,14 +88,14 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   }, {}) as T
 }
 
-const addShares = async (subscription: SubscriptionComplete, body: Record<string, string>) => {
+const addShares = async (sub: SubscriptionComplete, body: Record<string, string>) => {
   for (const key in body) {
     if (key.startsWith('sharedWith')) {
       const userId = body[key]
 
-      if (subscription.shares.some(sub => sub.user.id === userId)) continue
+      if (sub.shares.some(sub => sub.user.id === userId)) continue
 
-      await prisma.subscriptionShare.create({
+      const subShare = await prisma.subscriptionShare.create({
         data: {
           user: {
             connect: {
@@ -104,7 +104,7 @@ const addShares = async (subscription: SubscriptionComplete, body: Record<string
           },
           subscription: {
             connect: {
-              id: subscription.id
+              id: sub.id
             }
           }
         },
@@ -115,7 +115,8 @@ const addShares = async (subscription: SubscriptionComplete, body: Record<string
 
       await notificationSdk.createNotification(userId, true, {
         type: NOTIFICATION_TYPE.SUB_SHARES,
-        sub: subscription
+        sub,
+        subShare
       })
     }
   }

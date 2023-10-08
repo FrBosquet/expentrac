@@ -25,7 +25,7 @@ const createNotification = async (userId: string, shouldEmail: boolean, data: No
       return await handleLoanShare(user, shouldEmail, data.loan, data.loanShare)
     }
     case NOTIFICATION_TYPE.SUB_SHARES: {
-      return await handleSubsShare(user, shouldEmail, data.sub)
+      return await handleSubsShare(user, shouldEmail, data.sub, data.subShare)
     }
     default:
       throw new Error('Unknown notification type')
