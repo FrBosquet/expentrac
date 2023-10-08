@@ -4,7 +4,7 @@ import { useUser } from '@components/Provider'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
-import { revalidatUserLoans } from '@services/sdk'
+import { loanSdk } from '@sdk'
 import { type LoanComplete } from '@types'
 import { useState, type FormEventHandler } from 'react'
 import { useLoans } from './context'
@@ -36,7 +36,7 @@ export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR }: Props) => {
       const { data } = await result.json() as { data: LoanComplete }
 
       if (result.ok) {
-        void revalidatUserLoans(user.id)
+        void loanSdk.revalidate(user.id)
         setOpen(false)
         addLoan(data)
       }

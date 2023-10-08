@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@components/ui/dropdown-menu'
-import { type User } from '@prisma/client'
+import { type User } from '@lib/prisma'
 import {
   Bell,
   BellRing,

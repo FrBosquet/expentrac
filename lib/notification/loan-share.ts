@@ -1,7 +1,6 @@
-import { type LoanShare, type User } from '@prisma/client'
+import { emailSdk } from '@lib/email'
+import { prisma, type LoanShare, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE, type LoanComplete } from '@types'
-import { emailSdk } from '../email'
-import { prisma } from '../prisma'
 
 export interface LoanShareNotification {
   type: NOTIFICATION_TYPE.LOAN_SHARES

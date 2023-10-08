@@ -1,7 +1,6 @@
-import { type User } from '@prisma/client'
+import { emailSdk } from '@lib/email'
+import { prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
-import { emailSdk } from '../email'
-import { prisma } from '../prisma'
 
 export interface GenericNotification {
   type: NOTIFICATION_TYPE.GENERIC

@@ -1,6 +1,6 @@
 import { DailyEmail, GenericEmail, LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
 import { getLoanExtendedInformation } from '@lib/loan'
-import { type Loan, type Subscription } from '@prisma/client'
+import { type Loan, type Subscription } from '@lib/prisma'
 import { type LoanComplete, type SubscriptionComplete } from '@types'
 
 import { Resend } from 'resend'

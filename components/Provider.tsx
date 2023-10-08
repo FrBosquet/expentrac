@@ -1,6 +1,6 @@
 'use client'
 
-import { type User } from '@prisma/client'
+import { type User } from '@lib/prisma'
 import { SessionProvider, useSession } from 'next-auth/react'
 import { TooltipProvider } from './ui/tooltip'
 

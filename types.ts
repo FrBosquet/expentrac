@@ -1,4 +1,4 @@
-import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@prisma/client'
+import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@lib/prisma'
 
 export interface LoanExtendedInfo {
   totalAmount: number
@@ -128,4 +128,9 @@ export enum SHARE_STATE {
   PENDING = 0,
   ACCEPTED = 1,
   REJECTED = 2
+}
+
+export enum SELECT_OPTIONS {
+  NONE = 'NONE',
+  CREATE = 'CREATE'
 }

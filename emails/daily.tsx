@@ -1,4 +1,4 @@
-import { type Loan, type Subscription } from '@prisma/client'
+import { type Loan, type Subscription } from '@lib/prisma'
 import { Button } from '@react-email/button'
 import { Heading } from '@react-email/heading'
 import { Section } from '@react-email/section'

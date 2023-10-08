@@ -1,5 +1,5 @@
 import { getUrl } from '@lib/api'
-import { type Notification } from '@prisma/client'
+import { type Notification } from '@lib/prisma'
 import { type SHARE_STATE } from '@types'
 
 export const getUserNotifications = async (userId: string) => {
@@ -25,4 +25,9 @@ export const ackNotification = async (id: string, state?: SHARE_STATE) => {
   const { notification } = await response.json()
 
   return notification as Notification
+}
+
+export const notificationSdk = {
+  get: getUserNotifications,
+  ack: ackNotification
 }

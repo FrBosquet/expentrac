@@ -5,7 +5,7 @@ import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
 import { cn } from '@lib/utils'
-import { revalidateUserProviders } from '@services/sdk'
+import { userProviderSdk } from '@sdk'
 import { type UserProviderComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
@@ -37,7 +37,7 @@ export const ProviderDelete = ({ userProvider, className, variant = 'destructive
 
     if (result.ok) {
       sideEffect?.()
-      void revalidateUserProviders(userProvider.userId)
+      void userProviderSdk.revalidate(userProvider.userId)
       removeProvider(userProvider)
       setOpen(false)
     } else {

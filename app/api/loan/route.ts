@@ -1,9 +1,7 @@
-import { SELECT_OPTIONS } from '@components/Select'
-import { type Loan, type Prisma } from '@prisma/client'
-import { authOptions } from '@services/auth'
-import { notificationSdk } from '@services/notificationSdk'
-import { prisma } from '@services/prisma'
-import { NOTIFICATION_TYPE, type LoanComplete } from '@types'
+import { authOptions } from '@lib/auth'
+import { notificationSdk } from '@lib/notification'
+import { prisma, type Loan, type Prisma } from '@lib/prisma'
+import { NOTIFICATION_TYPE, SELECT_OPTIONS, type LoanComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 

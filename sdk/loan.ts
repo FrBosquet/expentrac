@@ -10,7 +10,7 @@ export const getUserLoans = async (userId: string) => {
   return loans
 }
 
-export const revalidatUserLoans = async (userId: string) => {
+export const revalidateUserLoans = async (userId: string) => {
   const url = getUrl(`revalidate?tag=${getTag('loan', userId)}&secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`)
 
   const response = await fetch(url, { method: 'POST' })
@@ -30,7 +30,7 @@ export const updateLoan = async (body: Record<string, unknown>) => {
 }
 
 export const loanSdk = {
-  getUserLoans,
-  revalidatUserLoans,
-  updateLoan
+  get: getUserLoans,
+  revalidate: revalidateUserLoans,
+  update: updateLoan
 }

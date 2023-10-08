@@ -1,6 +1,6 @@
+import { type Provider } from '@lib/prisma'
 import { getProviderLink } from '@lib/provider'
 import { cn } from '@lib/utils'
-import { type Provider } from '@prisma/client'
 import { CircleOff } from 'lucide-react'
 import { Tooltip } from './Tooltip'
 import { ProviderLogo } from './provider/ProviderLogo'

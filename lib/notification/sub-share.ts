@@ -1,7 +1,6 @@
-import { type SubscriptionShare, type User } from '@prisma/client'
+import { emailSdk } from '@lib/email'
+import { prisma, type SubscriptionShare, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE, type SubscriptionComplete } from '@types'
-import { emailSdk } from '../email'
-import { prisma } from '../prisma'
 
 export interface SubShareNotification {
   type: NOTIFICATION_TYPE.SUB_SHARES

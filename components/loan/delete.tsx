@@ -5,7 +5,7 @@ import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
 import { cn } from '@lib/utils'
-import { revalidatUserLoans } from '@services/sdk'
+import { loanSdk } from '@sdk'
 import { type LoanComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
@@ -36,7 +36,7 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
 
     if (result.ok) {
       sideEffect?.()
-      void revalidatUserLoans(loan.userId)
+      void loanSdk.revalidate(loan.userId)
       removeLoan(loan)
       setOpen(false)
     } else {

@@ -1,7 +1,7 @@
 'use client'
 
+import { type Notification } from '@lib/prisma'
 import { useResourceContext } from '@lib/resourceContext'
-import { type Notification } from '@prisma/client'
 
 import {
   createContext,

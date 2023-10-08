@@ -1,9 +1,7 @@
-import { SELECT_OPTIONS } from '@components/Select'
-import { type Prisma, type Subscription } from '@prisma/client'
-import { authOptions } from '@services/auth'
-import { notificationSdk } from '@services/notificationSdk'
-import { prisma } from '@services/prisma'
-import { NOTIFICATION_TYPE, type SubscriptionComplete } from '@types'
+import { authOptions } from '@lib/auth'
+import { notificationSdk } from '@lib/notification'
+import { prisma, type Prisma, type Subscription } from '@lib/prisma'
+import { NOTIFICATION_TYPE, SELECT_OPTIONS, type SubscriptionComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 

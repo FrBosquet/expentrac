@@ -1,6 +1,5 @@
-import { type Loan, type Subscription, type User } from '@prisma/client'
-import { emailSdk } from '@services/email'
-import { prisma } from '@services/prisma'
+import { emailSdk } from '@lib/email'
+import { prisma, type Loan, type Subscription, type User } from '@lib/prisma'
 import { type LoanComplete } from '@types'
 import { NextResponse } from 'next/server'
 

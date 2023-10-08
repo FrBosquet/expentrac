@@ -9,12 +9,9 @@ import { ProvidersProvider } from '@components/provider/context'
 import { SubscriptionSharesProvider } from '@components/subscription-share/context'
 import { SubsProvider } from '@components/subscription/context'
 import { Menu } from '@components/user/Menu'
+import { authOptions } from '@lib/auth'
 import { hasUser } from '@lib/session'
-import { authOptions } from '@services/auth'
-import { getUserLoans, getUserProviders, getUserSubscriptions } from '@services/sdk'
-import { getUserLoanShares } from '@services/sdk/loanShare'
-import { getUserNotifications } from '@services/sdk/notifications'
-import { getUserSubscriptionShares } from '@services/sdk/subscriptionShare'
+import { loanSdk, loanShareSdk, notificationSdk, subscriptionSdk, subscriptionShareSdk, userProviderSdk } from '@sdk'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 
@@ -39,12 +36,12 @@ export default async function Layout({ children }: Props) {
     subShares,
     notifications
   ] = await Promise.all([
-    getUserProviders(user.id),
-    getUserLoans(user.id),
-    getUserSubscriptions(user.id),
-    getUserLoanShares(user.id),
-    getUserSubscriptionShares(user.id),
-    getUserNotifications(user.id)
+    userProviderSdk.get(user.id),
+    loanSdk.get(user.id),
+    subscriptionSdk.get(user.id),
+    loanShareSdk.get(user.id),
+    subscriptionShareSdk.get(user.id),
+    notificationSdk.get(user.id)
   ])
 
   return (

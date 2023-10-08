@@ -29,3 +29,9 @@ export const deleteLoanShare = async (id: string) => {
 
   await fetch(url, { method: 'DELETE' })
 }
+
+export const loanShareSdk = {
+  get: getUserLoanShares,
+  update: updateLoanShare,
+  delete: deleteLoanShare
+}

@@ -1,7 +1,7 @@
 import { type Brand } from '@components/BrandAutocomplete'
-import { authOptions } from '@services/auth'
-import { fetchBrandInfo } from '@services/brandfetch'
-import { prisma } from '@services/prisma'
+import { authOptions } from '@lib/auth'
+import { fetchBrandInfo } from '@lib/brandfetch'
+import { prisma } from '@lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 

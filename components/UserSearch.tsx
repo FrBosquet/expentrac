@@ -1,5 +1,5 @@
-import { type User } from '@prisma/client'
-import { getUsersByEmail } from '@services/sdk/user'
+import { type User } from '@lib/prisma'
+import { getUsersByEmail } from '@sdk/user'
 import { ChevronsUpDown } from 'lucide-react'
 import { useCallback, useRef, useState, type ChangeEvent } from 'react'
 import { useUser } from './Provider'

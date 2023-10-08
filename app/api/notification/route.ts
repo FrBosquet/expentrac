@@ -1,5 +1,5 @@
-import { notificationSdk } from '@services/notificationSdk'
-import { prisma } from '@services/prisma'
+import { notificationSdk } from '@lib/notification'
+import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 

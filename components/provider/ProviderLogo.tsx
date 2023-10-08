@@ -1,5 +1,5 @@
+import { type Provider } from '@lib/prisma'
 import { cn } from '@lib/utils'
-import { type Provider } from '@prisma/client'
 import { FormatEnum, type BrandExtendedInfo } from '@types'
 
 interface Props {

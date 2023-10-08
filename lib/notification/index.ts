@@ -1,5 +1,5 @@
+import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
-import { prisma } from '../prisma'
 import { handleGeneric, type GenericNotification } from './generic'
 import { handleLoanShare, type LoanShareNotification } from './loan-share'
 import { handleSubsShare, type SubShareNotification } from './sub-share'
