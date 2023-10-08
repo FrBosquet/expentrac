@@ -1,6 +1,7 @@
 'use client'
 
 import { NOTIFICATION_TYPE } from '@types'
+import { DailyNotification } from './components/daily'
 import { LoanShareNotification } from './components/loan-share'
 import { LoanShareAcceptedNotification } from './components/loan-share-accepted'
 import { LoanShareRejectedNotification } from './components/loan-share-rejected'
@@ -31,8 +32,10 @@ export const NotificationList = () => {
               return <SubShareAcceptedNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE_REJECTED:
               return <SubShareRejectedNotification key={id} notification={notification} />
+            case NOTIFICATION_TYPE.DAILY:
+              return <DailyNotification key={id} notification={notification} />
             default:
-              return null
+              return 'patacas'
           }
         })
         : <p className="text-center">Nothing to see here!</p>

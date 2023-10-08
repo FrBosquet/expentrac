@@ -1,5 +1,6 @@
 import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
+import { handleDaily, type DailyNotification } from './daily'
 import { handleGeneric, type GenericNotification } from './generic'
 import { handleLoanShare, type LoanShareNotification } from './loan-share'
 import { handleLoanShareAccept, type LoanShareAcceptNotification } from './loan-share-accept'
@@ -15,7 +16,8 @@ type NotificationData =
   LoanShareRejectionNotification |
   SubShareNotification |
   SubShareAcceptNotification |
-  SubShareRejectNotification
+  SubShareRejectNotification |
+  DailyNotification
 
 const createNotification = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
   const user = await prisma.user.findUnique({
@@ -49,6 +51,9 @@ const createNotification = async (userId: string, shouldEmail: boolean, data: No
     }
     case NOTIFICATION_TYPE.SUB_SHARE_REJECTED: {
       return await handleSubShareReject(user, shouldEmail, data.sub)
+    }
+    case NOTIFICATION_TYPE.DAILY: {
+      return await handleDaily(user, shouldEmail, data)
     }
     default:
       throw new Error('Unknown notification type')

@@ -1,6 +1,6 @@
-import { emailSdk } from '@lib/email'
+import { notificationSdk } from '@lib/notification'
 import { prisma, type Loan, type Subscription, type User } from '@lib/prisma'
-import { type LoanComplete } from '@types'
+import { NOTIFICATION_TYPE, type LoanComplete } from '@types'
 import { NextResponse } from 'next/server'
 
 export const GET = async () => {
@@ -48,12 +48,14 @@ export const GET = async () => {
 
   // email
   await Promise.all(Object.keys(users).map(async userId => {
-    const { loans, subs, name, email } = users[userId]
+    const { loans, subs } = users[userId]
 
     // send email
-    if (email) {
-      await emailSdk.sendDailyEmail(email, name as string, loans, subs)
-    }
+    await notificationSdk.createNotification(userId, true, {
+      type: NOTIFICATION_TYPE.DAILY,
+      loans,
+      subscriptions: subs
+    })
   }))
 
   // done

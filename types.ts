@@ -120,6 +120,7 @@ export enum NOTIFICATION_TYPE {
   SUB_SHARE = 'SUB_SHARE',
   SUB_SHARE_ACCEPTED = 'SUB_SHARE_ACCEPTED',
   SUB_SHARE_REJECTED = 'SUB_SHARE_REJECTED',
+  DAILY = 'DAILY'
 }
 
 export interface NotificationBase {
