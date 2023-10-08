@@ -1,12 +1,12 @@
 import { NOTIFICATION_TYPE } from '@types'
 import { prisma } from '../prisma'
-import { handleGeneric, type GenericNotificationPayload } from './generic'
-import { handleLoanShare, type LoanShareNotificationPayload } from './loan-share'
-import { handleSubsShare, type SubShareNotificationPayload } from './sub-share'
+import { handleGeneric, type GenericNotification } from './generic'
+import { handleLoanShare, type LoanShareNotification } from './loan-share'
+import { handleSubsShare, type SubShareNotification } from './sub-share'
 
-type Payload = GenericNotificationPayload | LoanShareNotificationPayload | SubShareNotificationPayload
+type NotificationData = GenericNotification | LoanShareNotification | SubShareNotification
 
-const createNotification = async (userId: string, shouldEmail: boolean, payload: Payload) => {
+const createNotification = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
   const user = await prisma.user.findUnique({
     where: {
       id: userId
@@ -15,17 +15,17 @@ const createNotification = async (userId: string, shouldEmail: boolean, payload:
 
   if (!user) throw new Error(`Generating notification, no user found for id: ${userId}`)
 
-  const { type } = payload
+  const { type } = data
 
   switch (type) {
     case NOTIFICATION_TYPE.GENERIC: {
-      return await handleGeneric(user, shouldEmail, payload)
+      return await handleGeneric(user, shouldEmail, data)
     }
     case NOTIFICATION_TYPE.LOAN_SHARES: {
-      return await handleLoanShare(user, shouldEmail, payload.loan)
+      return await handleLoanShare(user, shouldEmail, data.loan, data.loanShare)
     }
     case NOTIFICATION_TYPE.SUB_SHARES: {
-      return await handleSubsShare(user, shouldEmail, payload.sub)
+      return await handleSubsShare(user, shouldEmail, data.sub)
     }
     default:
       throw new Error('Unknown notification type')

@@ -3,23 +3,32 @@ import { NOTIFICATION_TYPE, SHARE_STATE, type SubscriptionComplete } from '@type
 import { emailSdk } from '../email'
 import { prisma } from '../prisma'
 
-export interface SubShareNotificationPayload {
+export interface SubShareNotification {
   type: NOTIFICATION_TYPE.SUB_SHARES
   sub: SubscriptionComplete
 }
 
+export interface SubShareNotificationPayload {
+  owner: string
+  name: string
+  fee: number
+  state: SHARE_STATE
+}
+
 export const handleSubsShare = async (user: User, shouldEmail: boolean, sub: SubscriptionComplete) => {
+  const payload: SubShareNotificationPayload = {
+    owner: sub.user.id,
+    name: sub.name,
+    fee: sub.fee,
+    state: SHARE_STATE.PENDING
+  }
+
   const notification = await prisma.notification.create({
     data: {
       user: {
         connect: { id: user.id }
       },
-      payload: {
-        owner: sub.user.id,
-        name: sub.name,
-        fee: sub.fee,
-        state: SHARE_STATE.PENDING
-      },
+      payload: JSON.stringify(payload),
       type: NOTIFICATION_TYPE.SUB_SHARES,
       ack: false,
       date: new Date().toISOString()

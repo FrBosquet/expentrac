@@ -96,7 +96,7 @@ const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
 
       if (loan.shares.some(share => share.user.id === userId)) continue
 
-      await prisma.loanShare.create({
+      const loanShare = await prisma.loanShare.create({
         data: {
           user: {
             connect: {
@@ -116,7 +116,8 @@ const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
 
       await notificationSdk.createNotification(userId, true, {
         type: NOTIFICATION_TYPE.LOAN_SHARES,
-        loan
+        loan,
+        loanShare
       })
     }
   }

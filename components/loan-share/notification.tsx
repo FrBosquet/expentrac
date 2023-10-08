@@ -1,8 +1,12 @@
 import { LoanDetail } from '@components/loan/detail'
 import { Notification } from '@components/notifications/Notification'
+import { useNotifications } from '@components/notifications/context'
 import { euroFormatter } from '@lib/currency'
+import { type Notification as NotificationType } from '@prisma/client'
+import { type LoanShareNotificationPayload } from '@services/notificationSdk/loan-share'
 import { updateLoanShare } from '@services/sdk/loanShare'
-import { NOTIFICATION_TYPE, type LoanShareComplete, type NotificationBase } from '@types'
+import { ackNotification } from '@services/sdk/notifications'
+import { NOTIFICATION_TYPE, SHARE_STATE, type LoanShareComplete, type NotificationBase } from '@types'
 import { useState, type ReactNode } from 'react'
 import { useLoanShares } from './context'
 
@@ -18,8 +22,8 @@ export const getLoanShareNotification = (loanShare: LoanShareComplete): Notifica
   createdAt: new Date(loanShare.createdAt)
 })
 
-const Content = ({ share }: { share: LoanShareComplete }): ReactNode => {
-  const { loan, accepted } = share
+const Content = ({ payload }: { payload: LoanShareNotificationPayload }): ReactNode => {
+  const { loan, state } = payload
 
   const { fee } = loan
 
@@ -27,27 +31,31 @@ const Content = ({ share }: { share: LoanShareComplete }): ReactNode => {
 
   const monthlyFee = `${euroFormatter.format(part)}/mo`
 
-  switch (accepted) {
-    case true:
+  switch (true) {
+    case state === SHARE_STATE.ACCEPTED:
       return <p className='w-full'>You accepted the share request by {loan.user.name} for <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
-    case false:
+    case state === SHARE_STATE.REJECTED:
       return <p className='w-full'>You rejected the share request by {loan.user.name} for <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
     default:
       return <p className='w-full'>{loan.user.name} wants to share <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
   }
 }
 
-export const LoanShareNotification = ({ loanShare }: { loanShare: LoanShareComplete }) => {
+export const LoanShareNotification = ({ notification }: { notification: NotificationType }) => {
   const [loading, setLoading] = useState(false)
   const { updateShare } = useLoanShares()
-  const { id } = loanShare
+  const { updateNotification } = useNotifications()
+  const { id, ack, createdAt } = notification
+  const payload = JSON.parse(notification.payload as string) as LoanShareNotificationPayload
 
   const handleAccept = async () => {
     setLoading(true)
 
-    const updatedShare = await updateLoanShare(id, true)
+    const updatedShare = await updateLoanShare(payload.loanShare.id, true)
+    const updatedNotification = await ackNotification(id, SHARE_STATE.ACCEPTED)
 
     updateShare(updatedShare)
+    updateNotification(updatedNotification)
 
     setLoading(false)
   }
@@ -55,15 +63,16 @@ export const LoanShareNotification = ({ loanShare }: { loanShare: LoanShareCompl
   const handleReject = async () => {
     setLoading(true)
 
-    const updatedShare = await updateLoanShare(id, false)
+    const updatedShare = await updateLoanShare(payload.loanShare.id, false)
+    const updatedNotification = await ackNotification(id, SHARE_STATE.REJECTED)
+
     updateShare(updatedShare)
+    updateNotification(updatedNotification)
 
     setLoading(false)
   }
 
-  const acknowledged = loanShare.accepted !== null
-
-  return <Notification date={loanShare.createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={acknowledged}>
-    <Content share={loanShare} />
+  return <Notification date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
+    <Content payload={payload} />
   </Notification>
 }
