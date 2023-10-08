@@ -1,5 +1,5 @@
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@lib/prisma'
 import { type AuthOptions } from 'next-auth'
 import { type Adapter } from 'next-auth/adapters'
 import GoogleProvider from 'next-auth/providers/google'
@@ -24,7 +24,7 @@ export const authOptions: AuthOptions = {
       return session
     }
   },
-  secret: process.env.AUTH_SECRET as string,
+  secret: process.env.NEXTAUTH_SECRET as string,
   pages: {
     signIn: '/'
   },

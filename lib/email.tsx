@@ -1,5 +1,6 @@
-import { LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
+import { DailyEmail, GenericEmail, LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
 import { getLoanExtendedInformation } from '@lib/loan'
+import { type Loan, type Subscription } from '@lib/prisma'
 import { type LoanComplete, type SubscriptionComplete } from '@types'
 
 import { Resend } from 'resend'
@@ -57,7 +58,7 @@ const sendSubShare = async (email: string, username: string, sub: SubscriptionCo
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: email,
-    subject: `${username} wants to share a subscription with you`,
+    subject: `${sharer} wants to share a subscription with you`,
     react: <SubShareEmail username={username} sharer={sharer as string} subAmount={fee} subName={name} />
   })
 }
@@ -84,6 +85,26 @@ const sendSubShareRejection = async (username: string, sub: SubscriptionComplete
   })
 }
 
+// GENERIC
+const sendGenericEmail = async (direction: string, username: string, message: string) => {
+  await resend.emails.send({
+    from: 'Fran from Expentrac <info@expentrac.app>',
+    to: direction,
+    subject: 'Notification from Expentrac',
+    react: <GenericEmail username={username} message={message} />
+  })
+}
+
+// DAILY
+const sendDailyEmail = async (direction: string, username: string, loans: Loan[], subs: Subscription[]) => {
+  await resend.emails.send({
+    from: 'Fran from Expentrac <info@expentrac.app>',
+    to: direction,
+    subject: 'Your payments for today',
+    react: <DailyEmail username={username} loans={loans} subscriptions={subs} />
+  })
+}
+
 // SDK
 export const emailSdk = {
   sendWelcome,
@@ -92,5 +113,7 @@ export const emailSdk = {
   sendLoanShareRejection,
   sendSubShare,
   sendSubShareAcceptance,
-  sendSubShareRejection
+  sendSubShareRejection,
+  sendGenericEmail,
+  sendDailyEmail
 }

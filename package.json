@@ -1,13 +1,13 @@
 {
   "name": "expentrac",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "npm run prisma:generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel:env_pull": "npx vercel env pull .env.development.local",
+    "vercel:env_pull": "npx vercel env pull .env.local",
     "prisma:env": "dotenv -e .env.development.local --",
     "prisma:migrate": "npm run prisma:env prisma migrate dev",
     "prisma:generate": "npm run prisma:env prisma generate",

@@ -3,8 +3,7 @@
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { cn } from '@lib/utils'
-import { loanSdk } from '@services/sdk'
-import { deleteLoanShare } from '@services/sdk/loanShare'
+import { loanSdk, loanShareSdk } from '@sdk'
 import { type LoanComplete } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
@@ -77,11 +76,11 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
       const sharesToAdd = sharedWith.filter((userId) => !shares.some((share) => share.userId === userId))
 
       for (const share of sharesToRemove) {
-        await deleteLoanShare(share.id)
+        await loanShareSdk.delete(share.id)
       }
 
       if (hasLoanChanged(loan, formData) || sharesToAdd.length) {
-        const data = await loanSdk.updateLoan({
+        const data = await loanSdk.update({
           id: loan.id,
           ...formData
         })
@@ -96,7 +95,7 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
         updateLoan(updatedLoan)
       }
 
-      void loanSdk.revalidatUserLoans(loan.userId)
+      void loanSdk.revalidate(loan.userId)
       setLoading(false)
       setOpen(false)
     } catch (e) {

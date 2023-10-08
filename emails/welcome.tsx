@@ -12,7 +12,7 @@ export default function WelcomeEmail({
   username = 'Fran Bosquet'
 }: WelcomeEmailProps) {
   return (
-    <TemplateEmail username={username} preview={`Welcome to Expentrac, ${username}`}>
+    <TemplateEmail preview={`Welcome to Expentrac, ${username}`}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Welcome {username}
       </Heading>

@@ -1,8 +1,8 @@
-import { type Prisma } from '@prisma/client'
-import { authOptions } from '@services/auth'
-import { emailSdk } from '@services/email'
-import { prisma } from '@services/prisma'
-import { type LoanShareComplete } from '@types'
+import { authOptions } from '@lib/auth'
+import { notificationSdk } from '@lib/notification'
+import { prisma, type Prisma } from '@lib/prisma'
+
+import { NOTIFICATION_TYPE, type LoanShareComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -87,19 +87,17 @@ export const PATCH = async (req: Request) => {
 
   const updatedShare = await prisma.loanShare.update(args) as LoanShareComplete
 
-  const { loan, user: { name } } = updatedShare
+  const { loan } = updatedShare
 
-  if (updatedShare.accepted) {
-    await emailSdk.sendLoanShareAcceptance(
-      name as string,
+  // Notification
+  await notificationSdk.createNotification(
+    userId,
+    true,
+    {
+      type: updatedShare.accepted ? NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED : NOTIFICATION_TYPE.LOAN_SHARE_REJECTED,
       loan
-    )
-  } else {
-    await emailSdk.sendLoanShareRejection(
-      name as string,
-      loan
-    )
-  }
+    }
+  )
 
   return NextResponse.json({ message: 'success', data: updatedShare }, { status: 200 })
 }

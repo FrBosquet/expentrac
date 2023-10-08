@@ -5,6 +5,7 @@ import {
   SelectValue,
   Select as UiSelect
 } from '@/components/ui/select'
+import { SELECT_OPTIONS } from '@types'
 import { Separator } from './ui/separator'
 
 interface Props {
@@ -15,11 +16,6 @@ interface Props {
   name: string
   required?: boolean
   defaultValue?: string | null
-}
-
-export enum SELECT_OPTIONS {
-  NONE = 'NONE',
-  CREATE = 'CREATE'
 }
 
 export const Select = ({ items, name, required, defaultValue = SELECT_OPTIONS.NONE }: Props) => {

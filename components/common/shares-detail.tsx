@@ -1,7 +1,7 @@
 import { useUser } from '@components/Provider'
 import { Separator } from '@components/ui/separator'
 import { euroFormatter } from '@lib/currency'
-import { type User } from '@prisma/client'
+import { type User } from '@lib/prisma'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {

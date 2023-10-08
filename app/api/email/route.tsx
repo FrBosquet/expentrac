@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import WelcomeEmail from '@emails/welcome'
 
-import { prisma } from '@services/prisma'
+import { prisma } from '@lib/prisma'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_KEY)

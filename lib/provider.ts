@@ -1,4 +1,4 @@
-import { type Provider } from '@prisma/client'
+import { type Provider } from '@lib/prisma'
 import { type BrandExtendedInfo, type ProviderFetched, type ProviderUnfetched } from '@types'
 
 export const isFetchedProvider = (provider: ProviderFetched | ProviderUnfetched): provider is ProviderFetched => {

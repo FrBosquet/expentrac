@@ -1,5 +1,5 @@
 import { getTag, getUrl } from '@lib/api'
-import { type User } from '@prisma/client'
+import { type User } from '@lib/prisma'
 
 export const getUsersByEmail = async (search: string) => {
   const url = getUrl(`user?search=${search}`)
@@ -8,4 +8,8 @@ export const getUsersByEmail = async (search: string) => {
   const users: User[] = await response.json()
 
   return users
+}
+
+export const userSdk = {
+  find: getUsersByEmail
 }

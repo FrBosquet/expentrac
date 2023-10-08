@@ -1,6 +1,6 @@
 'use client'
 
-import { useNotifications } from '@components/notifications/hooks'
+import { useNotifications } from '@components/notifications/context'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@components/ui/dropdown-menu'
-import { type User } from '@prisma/client'
+import { type User } from '@lib/prisma'
 import {
   Bell,
   BellRing,
@@ -36,7 +36,7 @@ export const Menu = ({ user }: Props) => {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
-        <Avatar className="cursor-pointer">
+        <Avatar className="cursor-pointer border border-white">
           <AvatarImage src={user.image as string} alt={user.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>

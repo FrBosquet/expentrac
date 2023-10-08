@@ -29,3 +29,9 @@ export const addUserProvider = async (brand: Brand) => {
 
   return data
 }
+
+export const userProviderSdk = {
+  get: getUserProviders,
+  revalidate: revalidateUserProviders,
+  add: addUserProvider
+}

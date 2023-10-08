@@ -10,13 +10,11 @@ import { Tailwind } from '@react-email/tailwind'
 import { Text } from '@react-email/text'
 
 export interface TemplateProps {
-  username: string
   children: React.ReactNode
   preview: string
 }
 
 export default function TemplateEmail({
-  username = 'Fran Bosquet',
   children,
   preview = 'Expentrac email'
 }: TemplateProps) {
@@ -29,9 +27,9 @@ export default function TemplateEmail({
           <Container className="bg-slate-200 border border-solid border-slate-100 rounded-lg my-[40px] mx-auto p-[20px] w-[465px] font-sans">
             <Section className="mt-[32px]">
               <Img
-                src={'https://expentrac.app/logo.svg'}
-                width="40"
-                height="40"
+                src={'https://expentrac.app/logo.png'}
+                width="80"
+                height="80"
                 alt="Expentrac Logo"
                 className="mx-auto"
               />
