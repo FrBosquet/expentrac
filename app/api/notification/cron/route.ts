@@ -58,6 +58,19 @@ export const GET = async () => {
     })
   }))
 
+  // Clean up older notifications
+  const aMonthAgo = new Date()
+  aMonthAgo.setMonth(aMonthAgo.getMonth() - 1)
+
+  // using prisma, delete notification with more than a month
+  await prisma.notification.deleteMany({
+    where: {
+      createdAt: {
+        lt: aMonthAgo
+      }
+    }
+  })
+
   // done
   return NextResponse.json({
     message: 'Job finished',
