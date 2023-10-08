@@ -1,5 +1,4 @@
 import { LoanDetail } from '@components/loan/detail'
-import { Notification } from '@components/notifications/Notification'
 import { useNotifications } from '@components/notifications/context'
 import { euroFormatter } from '@lib/currency'
 import { type LoanShareNotificationPayload } from '@lib/notification/loan-share'
@@ -8,15 +7,16 @@ import { updateLoanShare } from '@sdk/loanShare'
 import { ackNotification } from '@sdk/notifications'
 import { NOTIFICATION_TYPE, SHARE_STATE, type LoanShareComplete, type NotificationBase } from '@types'
 import { useState, type ReactNode } from 'react'
-import { useLoanShares } from './context'
+import { useLoanShares } from '../../loan-share/context'
+import { NotificationWrapper } from './wrapper'
 
 export type NotificationLoanShare = NotificationBase & {
-  type: NOTIFICATION_TYPE.LOAN_SHARES
+  type: NOTIFICATION_TYPE.LOAN_SHARE
   meta: LoanShareComplete
 }
 
 export const getLoanShareNotification = (loanShare: LoanShareComplete): NotificationLoanShare => ({
-  type: NOTIFICATION_TYPE.LOAN_SHARES,
+  type: NOTIFICATION_TYPE.LOAN_SHARE,
   meta: loanShare,
   ack: loanShare.accepted !== null,
   createdAt: new Date(loanShare.createdAt)
@@ -72,7 +72,7 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
     setLoading(false)
   }
 
-  return <Notification date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
+  return <NotificationWrapper date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
     <Content payload={payload} />
-  </Notification>
+  </NotificationWrapper>
 }

@@ -1,23 +1,22 @@
-import { Notification } from '@components/notifications/Notification'
-import { euroFormatter } from '@lib/currency'
-
 import { useNotifications } from '@components/notifications/context'
 import { SubscriptionDetail } from '@components/subscription/detail'
+import { euroFormatter } from '@lib/currency'
 import { type SubShareNotificationPayload } from '@lib/notification/sub-share'
 import { type Notification as NotificationType } from '@lib/prisma'
 import { ackNotification } from '@sdk/notifications'
 import { subscriptionShareSdk } from '@sdk/subscriptionShare'
 import { NOTIFICATION_TYPE, SHARE_STATE, type NotificationBase, type SubscriptionShareComplete } from '@types'
 import { useState, type ReactNode } from 'react'
-import { useSubShares } from './context'
+import { useSubShares } from '../../subscription-share/context'
+import { NotificationWrapper } from './wrapper'
 
 export type NotificationSubShare = NotificationBase & {
-  type: NOTIFICATION_TYPE.SUB_SHARES
+  type: NOTIFICATION_TYPE.SUB_SHARE
   meta: SubscriptionShareComplete
 }
 
 export const getSubShareNotification = (subShare: SubscriptionShareComplete): NotificationSubShare => ({
-  type: NOTIFICATION_TYPE.SUB_SHARES,
+  type: NOTIFICATION_TYPE.SUB_SHARE,
   meta: subShare,
   ack: subShare.accepted !== null,
   createdAt: new Date(subShare.createdAt)
@@ -74,7 +73,7 @@ export const SubscriptionShareNotification = ({ notification }: { notification: 
     setLoading(false)
   }
 
-  return <Notification date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
+  return <NotificationWrapper date={createdAt} key={id} accept={handleAccept} reject={handleReject} loading={loading} acknowledged={ack}>
     <Content payload={payload} />
-  </Notification>
+  </NotificationWrapper>
 }

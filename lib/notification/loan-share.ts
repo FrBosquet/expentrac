@@ -3,7 +3,7 @@ import { prisma, type LoanShare, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE, type LoanComplete } from '@types'
 
 export interface LoanShareNotification {
-  type: NOTIFICATION_TYPE.LOAN_SHARES
+  type: NOTIFICATION_TYPE.LOAN_SHARE
   loan: LoanComplete
   loanShare: LoanShare
 }
@@ -29,7 +29,7 @@ export const handleLoanShare = async (user: User, shouldEmail: boolean, loan: Lo
         connect: { id: user.id }
       },
       payload: JSON.stringify(payload),
-      type: NOTIFICATION_TYPE.LOAN_SHARES,
+      type: NOTIFICATION_TYPE.LOAN_SHARE,
       ack: false,
       date: new Date().toISOString()
     }

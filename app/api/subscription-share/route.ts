@@ -1,7 +1,7 @@
 import { authOptions } from '@lib/auth'
-import { emailSdk } from '@lib/email'
+import { notificationSdk } from '@lib/notification'
 import { prisma, type Prisma } from '@lib/prisma'
-import { type SubscriptionShareComplete } from '@types'
+import { NOTIFICATION_TYPE, type SubscriptionShareComplete } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -85,19 +85,17 @@ export const PATCH = async (req: Request) => {
 
   const updatedShare = await prisma.subscriptionShare.update(args) as SubscriptionShareComplete
 
-  const { subscription, user: { name } } = updatedShare
+  const { subscription } = updatedShare
 
-  if (updatedShare.accepted) {
-    await emailSdk.sendSubShareAcceptance(
-      name as string,
-      subscription
-    )
-  } else {
-    await emailSdk.sendSubShareRejection(
-      name as string,
-      subscription
-    )
-  }
+  // Notification
+  await notificationSdk.createNotification(
+    userId,
+    true,
+    {
+      type: updatedShare.accepted ? NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED : NOTIFICATION_TYPE.SUB_SHARE_REJECTED,
+      sub: subscription
+    }
+  )
 
   return NextResponse.json({ message: 'success', data: updatedShare }, { status: 200 })
 }

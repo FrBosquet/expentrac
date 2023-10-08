@@ -2,9 +2,20 @@ import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 import { handleGeneric, type GenericNotification } from './generic'
 import { handleLoanShare, type LoanShareNotification } from './loan-share'
+import { handleLoanShareAccept, type LoanShareAcceptNotification } from './loan-share-accept'
+import { handleLoanShareReject, type LoanShareRejectionNotification } from './loan-share-reject'
 import { handleSubsShare, type SubShareNotification } from './sub-share'
+import { handleSubShareAccept, type SubShareAcceptNotification } from './sub-share-accept'
+import { handleSubShareReject, type SubShareRejectNotification } from './sub-share-reject'
 
-type NotificationData = GenericNotification | LoanShareNotification | SubShareNotification
+type NotificationData =
+  GenericNotification |
+  LoanShareNotification |
+  LoanShareAcceptNotification |
+  LoanShareRejectionNotification |
+  SubShareNotification |
+  SubShareAcceptNotification |
+  SubShareRejectNotification
 
 const createNotification = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
   const user = await prisma.user.findUnique({
@@ -21,11 +32,23 @@ const createNotification = async (userId: string, shouldEmail: boolean, data: No
     case NOTIFICATION_TYPE.GENERIC: {
       return await handleGeneric(user, shouldEmail, data)
     }
-    case NOTIFICATION_TYPE.LOAN_SHARES: {
+    case NOTIFICATION_TYPE.LOAN_SHARE: {
       return await handleLoanShare(user, shouldEmail, data.loan, data.loanShare)
     }
-    case NOTIFICATION_TYPE.SUB_SHARES: {
+    case NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED: {
+      return await handleLoanShareAccept(user, shouldEmail, data.loan)
+    }
+    case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED: {
+      return await handleLoanShareReject(user, shouldEmail, data.loan)
+    }
+    case NOTIFICATION_TYPE.SUB_SHARE: {
       return await handleSubsShare(user, shouldEmail, data.sub, data.subShare)
+    }
+    case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED: {
+      return await handleSubShareAccept(user, shouldEmail, data.sub)
+    }
+    case NOTIFICATION_TYPE.SUB_SHARE_REJECTED: {
+      return await handleSubShareReject(user, shouldEmail, data.sub)
     }
     default:
       throw new Error('Unknown notification type')

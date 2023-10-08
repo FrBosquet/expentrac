@@ -112,7 +112,7 @@ const addShares = async (sub: SubscriptionComplete, body: Record<string, string>
       })
 
       await notificationSdk.createNotification(userId, true, {
-        type: NOTIFICATION_TYPE.SUB_SHARES,
+        type: NOTIFICATION_TYPE.SUB_SHARE,
         sub,
         subShare
       })

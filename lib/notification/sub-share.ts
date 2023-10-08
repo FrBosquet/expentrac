@@ -3,7 +3,7 @@ import { prisma, type SubscriptionShare, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE, type SubscriptionComplete } from '@types'
 
 export interface SubShareNotification {
-  type: NOTIFICATION_TYPE.SUB_SHARES
+  type: NOTIFICATION_TYPE.SUB_SHARE
   sub: SubscriptionComplete
   subShare: SubscriptionShare
 }
@@ -27,7 +27,7 @@ export const handleSubsShare = async (user: User, shouldEmail: boolean, sub: Sub
         connect: { id: user.id }
       },
       payload: JSON.stringify(payload),
-      type: NOTIFICATION_TYPE.SUB_SHARES,
+      type: NOTIFICATION_TYPE.SUB_SHARE,
       ack: false,
       date: new Date().toISOString()
     }

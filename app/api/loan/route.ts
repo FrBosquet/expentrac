@@ -113,7 +113,7 @@ const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
       })
 
       await notificationSdk.createNotification(userId, true, {
-        type: NOTIFICATION_TYPE.LOAN_SHARES,
+        type: NOTIFICATION_TYPE.LOAN_SHARE,
         loan,
         loanShare
       })
