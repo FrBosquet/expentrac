@@ -1,4 +1,5 @@
 import { RootProvider } from '@components/Provider'
+import { DarkModeProvider } from '@components/darkmode'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
@@ -26,10 +27,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${montserrat.variable} font-sans text-black [view-timeline-name: fall]`}>
-        <RootProvider >
-          {children}
-        </RootProvider>
+      <body className={`${inter.variable} ${montserrat.variable} font-sans [view-timeline-name: fall]`}>
+        <DarkModeProvider>
+          <RootProvider >
+            {children}
+          </RootProvider>
+        </DarkModeProvider>
       </body>
     </html>
   )

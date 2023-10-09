@@ -15,7 +15,7 @@ export const DarkModeContext = createContext<DarkModeContextType>({
 })
 
 export const DarkModeProvider = ({ children }: { children: ReactNode }) => {
-  const [darkMode, setDarkMode] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches)
+  const [darkMode, setDarkMode] = useState(true)
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
@@ -23,7 +23,7 @@ export const DarkModeProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
-      <main className={twMerge('flex flex-col min-h-screen border-theme-border bg-theme-back', darkMode && 'dark')}>
+      <main className={twMerge('flex flex-col min-h-screen border-theme-border bg-theme-back text-foreground', darkMode && 'dark')}>
         {children}
       </main>
     </DarkModeContext.Provider >

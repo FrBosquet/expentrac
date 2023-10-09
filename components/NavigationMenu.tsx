@@ -33,7 +33,7 @@ const components: Array<{ title: string, href: string, description: string }> = 
   }
 ]
 
-export function Navigation () {
+export function Navigation() {
   return (
     <NavigationMenu className="p-2 flex-grow-0">
       <NavigationMenuList>
@@ -54,11 +54,11 @@ export function Navigation () {
                   key={title}
                   title={title}
                   href={href}
-                  className="p-2 hover:bg-slate-100 hover:text-slate-700 rounded-md"
+                  className="p-2  rounded-md"
                 >
                   <li>
                     <h5 className="font-semibold text-sm">{title}</h5>
-                    <p className="text-xs text-slate-500">{description}</p>
+                    <p className="text-xs ">{description}</p>
                   </li>
                 </Link>
               ))}

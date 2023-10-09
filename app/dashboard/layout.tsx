@@ -1,5 +1,4 @@
 import { Navigation } from '@components/NavigationMenu'
-import { DarkModeProvider } from '@components/darkmode'
 import { DateProvider } from '@components/date/context'
 import { Footer } from '@components/footer'
 import { Header } from '@components/header'
@@ -52,12 +51,10 @@ export default async function Layout({ children }: Props) {
             <SubsProvider serverValue={subs}>
               <NotificationsProvider serverValue={notifications}>
                 <DateProvider>
-                  <DarkModeProvider>
-                    <Header />
-                    <Navigation />
-                    {children}
-                    <Footer />
-                  </DarkModeProvider>
+                  <Header />
+                  <Navigation />
+                  {children}
+                  <Footer />
                 </DateProvider>
               </NotificationsProvider>
             </SubsProvider>

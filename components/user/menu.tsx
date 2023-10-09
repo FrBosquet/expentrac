@@ -24,6 +24,8 @@ export const UserMenu = () => {
   const { hasPending } = useNotifications()
   const { push } = useRouter()
 
+  if (!session) return null
+
   const { user } = session as { user: User }
 
   const fallback = user.name?.split(' ').map((n) => n.charAt(0)).join('')

@@ -33,7 +33,7 @@ interface Props {
 export const SignInHeader = ({ className }: Props) => {
   const { handleClick, isLogged, user } = useClickHandler()
 
-  return <Button onClick={handleClick} className={twMerge('hidden sm:flex gap-4 text-slate-800 bg-primary-600 hover:bg-primary-300', className)}>
+  return <Button variant="expentrac" onClick={handleClick} className={twMerge('hidden sm:flex gap-4', className)}>
     {isLogged
       ? `Hi ${user.name}`
       : <>

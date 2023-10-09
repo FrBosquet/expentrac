@@ -12,7 +12,7 @@ export const Resume = () => {
         <Image src='/screenshots/dashboard.png' alt="" width={500} height={500} className='max-w-[50%] m-auto shadow-lg scroll-anim-snapshot' />
       </article>
 
-      <h1 className='text-6xl self-end scroll-anim-fall'><Pen size={36} className='inline' /> Track whatever you need</h1>
+      <h1 className='text-6xl text-theme-accent self-end scroll-anim-fall'><Pen size={36} className='inline' /> Track whatever you need</h1>
       <p className='text-slate-400'>Expentrac allows you to easily record and manage all your recurring expenses, from your mortgage payment to subscriptions to services like Netflix. Don&rsquo;t waste time tracking each expense manually; with Expentrac, everything is just a click away. Efficiently record your loan payments and subscriptions, and maintain complete control of your personal finances</p>
     </div>
   </section>
