@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@components/Provider'
 import { useNotifications } from '@components/notifications/context'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
@@ -10,23 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@components/ui/dropdown-menu'
-import { type User } from '@lib/prisma'
 import {
   Bell,
   BellRing,
   LogOut
 } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export const UserMenu = () => {
-  const { data: session } = useSession()
+  const { user } = useUser()
   const { hasPending } = useNotifications()
   const { push } = useRouter()
-
-  if (!session) return null
-
-  const { user } = session as { user: User }
 
   const fallback = user.name?.split(' ').map((n) => n.charAt(0)).join('')
 
@@ -37,7 +33,7 @@ export const UserMenu = () => {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
-        <Avatar className="cursor-pointer border border-slate-900 dark:border-slate-200">
+        <Avatar className="cursor-pointer border border-theme-border w-20 h-20">
           <AvatarImage src={user.image as string} alt={user.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>

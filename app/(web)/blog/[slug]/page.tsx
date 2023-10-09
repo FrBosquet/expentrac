@@ -16,7 +16,7 @@ interface Props {
 const PostHeader = ({ title, date, image }: Post) => {
   return <>
     <header className="border-b-2 border-slate-300 pb-2 mb-4 flex flex-col">
-      <h1 className="text-6xl bg-gradient-to-r from-primary-300 to-secondary text-transparent py-2 bg-clip-text inline-block">{title}</h1>
+      <h1 className="text-6xl bg-gradient-to-r from-theme to-theme-accent text-transparent py-2 bg-clip-text inline-block">{title}</h1>
       <span className="text-sm text-slate-500">{fullDateFormater.format(new Date(date))}</span>
       {image
         ? <><div className="w-full h-60 relative overflow-hidden my-2 shadow-lg">

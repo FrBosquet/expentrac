@@ -1,5 +1,6 @@
 'use client'
 
+import { Card } from '@components/ui/card'
 import { getAccentColor } from '@lib/provider'
 import { cn } from '@lib/utils'
 import { type BrandExtendedInfo, type UserProviderComplete } from '@types'
@@ -29,12 +30,12 @@ export const UserProviderCard = ({ userProvider }: Props) => {
   // fetched
   return <ProviderDetail userProvider={userProvider}>
     {
-      <article className={cn('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8', !hasAnyItem && 'opacity-40')} style={{ borderBottomColor: accentColor }}>
+      <Card className={cn('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8', !hasAnyItem && 'opacity-40')} style={{ borderBottomColor: accentColor }}>
         <ProviderLogo provider={provider} />
         <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-slate-600">
           <a target="_blank" href={`https://${extendedData.domain}`} rel="noreferrer">{extendedData.name}</a>
         </h3>
-      </article>
+      </Card>
     }
   </ProviderDetail>
 }

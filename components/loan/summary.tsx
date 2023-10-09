@@ -4,6 +4,7 @@ import { useUser } from '@components/Provider'
 import { useDate } from '@components/date/context'
 import { useLoanShares } from '@components/loan-share/context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
+import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import {
   Table,
   TableBody,
@@ -62,56 +63,58 @@ export const LoanSummary = () => {
   if (activeLoans.length === 0 || !user) return null
 
   return (
-    <section className="flex flex-col gap-2 pt-8">
-      <div className="flex justify-between">
-        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Your loans:</h4>
+    <Card>
+      <CardHeader className="flex flex-row justify-between">
+        <CardTitle>Loans</CardTitle>
         <LoanAdd />
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-14" />
-            <TableHead className="flex-1">Loan</TableHead>
-            <TableHead>Payments</TableHead>
-            <TableHead>Payment day</TableHead>
-            <TableHead>Pending</TableHead>
-            <TableHead className="text-right">Monthly fee</TableHead>
-            <TableHead className="w-4" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {activeLoans.map((loan) => {
-            const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan, date)
-            const userOwnsLoan = ownsAsset(loan)
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-14" />
+              <TableHead className="flex-1">Loan</TableHead>
+              <TableHead>Payments</TableHead>
+              <TableHead>Payment day</TableHead>
+              <TableHead>Pending</TableHead>
+              <TableHead className="text-right">Monthly fee</TableHead>
+              <TableHead className="w-4" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {activeLoans.map((loan) => {
+              const { paymentsDone, payments, paymentsLeft } = getLoanExtendedInformation(loan, date)
+              const userOwnsLoan = ownsAsset(loan)
 
-            return (
-              <TableRow key={loan.id}>
-                <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>
-                  {loan.vendor
-                    ? <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
-                    : <CalendarCheck2 className='h-8 w-8 m-auto' />
-                  }
-                </TableCell>
-                <TableCell className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                  <LoanDetail key={loan.id} loan={loan} />
-                </TableCell>
-                <TableCell>{paymentsDone}/{payments}</TableCell>
-                <TableCell>{new Date(loan.startDate).getDate()}</TableCell>
-                <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
-                <TableCell className="font-semibold text-right">
-                  <FeeContent loan={loan} />
-                </TableCell>
-                <TableCell className="flex gap-1">
-                  {userOwnsLoan && <>
-                    <LoanEdit loan={loan} />
-                    <LoanDelete loan={loan} />
-                  </>}
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </section>
+              return (
+                <TableRow key={loan.id}>
+                  <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>
+                    {loan.vendor
+                      ? <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
+                      : <CalendarCheck2 className='h-8 w-8 m-auto' />
+                    }
+                  </TableCell>
+                  <TableCell className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                    <LoanDetail key={loan.id} loan={loan} />
+                  </TableCell>
+                  <TableCell>{paymentsDone}/{payments}</TableCell>
+                  <TableCell>{new Date(loan.startDate).getDate()}</TableCell>
+                  <TableCell className="text-slate-500">{paymentsLeft}</TableCell>
+                  <TableCell className="font-semibold text-right">
+                    <FeeContent loan={loan} />
+                  </TableCell>
+                  <TableCell className="flex gap-1">
+                    {userOwnsLoan && <>
+                      <LoanEdit loan={loan} />
+                      <LoanDelete loan={loan} />
+                    </>}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   )
 }

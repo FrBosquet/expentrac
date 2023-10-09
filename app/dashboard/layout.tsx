@@ -1,7 +1,6 @@
-import { Navigation } from '@components/NavigationMenu'
+import { NavigationMenu } from '@components/NavigationMenu'
 import { DateProvider } from '@components/date/context'
 import { Footer } from '@components/footer'
-import { Header } from '@components/header'
 import { LoanSharesProvider } from '@components/loan-share/context'
 import { LoansProvider } from '@components/loan/context'
 import { NotificationsProvider } from '@components/notifications/context'
@@ -51,10 +50,10 @@ export default async function Layout({ children }: Props) {
             <SubsProvider serverValue={subs}>
               <NotificationsProvider serverValue={notifications}>
                 <DateProvider>
-                  <Header />
-                  <Navigation />
-                  {children}
-                  <Footer />
+                  <NavigationMenu>
+                    {children}
+                    <Footer />
+                  </NavigationMenu>
                 </DateProvider>
               </NotificationsProvider>
             </SubsProvider>
