@@ -1,4 +1,3 @@
-import { type Config } from 'tailwindcss'
 import animatePlugin from 'tailwindcss-animate'
 import plugin from 'tailwindcss/plugin'
 
@@ -78,6 +77,13 @@ export const tailwindPreset = {
         gradient: {
           start: '#2dff87',
           end: '#EDE2D3'
+        },
+        theme: {
+          back: 'var(--theme-back)',
+          border: 'var(--theme-border)',
+          front: 'var(--theme-front)',
+          light: 'var(--theme-light)',
+          accent: 'var(--theme-accent)'
         }
       },
       fontFamily: {

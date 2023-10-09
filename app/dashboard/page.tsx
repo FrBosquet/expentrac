@@ -4,7 +4,7 @@ import { SubscriptionSummary } from '@components/subscription/summary'
 
 export default async function Page() {
   return (
-    <section className="flex-1 bg-white w-screen max-w-3xl p-6 mx-auto">
+    <section className="flex-1 w-screen max-w-3xl p-6 mx-auto">
       <Summary />
       <LoanSummary />
       <SubscriptionSummary />

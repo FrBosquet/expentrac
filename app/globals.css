@@ -36,3 +36,21 @@
     opacity: 0;
   }
 }
+
+@layer base {
+  :root {
+    --theme-back: #e2e8f0;
+    --theme-border: #cbd5e1;
+    --theme-front: #0f172a;
+    --theme-light: #64748b;
+    --theme-accent: #675b39
+  }
+  
+  .dark {
+    --theme-back: #0f172a;
+    --theme-border: #334155;
+    --theme-text: #e2e8f0,
+    --theme-light: #64748b;
+    --theme-accent: #EDE2D3
+  }
+}

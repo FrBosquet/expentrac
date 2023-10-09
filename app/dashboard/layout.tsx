@@ -1,14 +1,14 @@
-import { Footer } from '@components/Footer'
-import { Logo } from '@components/Logo'
 import { Navigation } from '@components/NavigationMenu'
+import { DarkModeProvider } from '@components/darkmode'
 import { DateProvider } from '@components/date/context'
+import { Footer } from '@components/footer'
+import { Header } from '@components/header'
 import { LoanSharesProvider } from '@components/loan-share/context'
 import { LoansProvider } from '@components/loan/context'
 import { NotificationsProvider } from '@components/notifications/context'
 import { ProvidersProvider } from '@components/provider/context'
 import { SubscriptionSharesProvider } from '@components/subscription-share/context'
 import { SubsProvider } from '@components/subscription/context'
-import { Menu } from '@components/user/Menu'
 import { authOptions } from '@lib/auth'
 import { hasUser } from '@lib/session'
 import { loanSdk, loanShareSdk, notificationSdk, subscriptionSdk, subscriptionShareSdk, userProviderSdk } from '@sdk'
@@ -52,15 +52,12 @@ export default async function Layout({ children }: Props) {
             <SubsProvider serverValue={subs}>
               <NotificationsProvider serverValue={notifications}>
                 <DateProvider>
-                  <main className="flex flex-col min-h-screen">
-                    <header className="flex gap-4 bg-slate-900 p-2 justify-between items-center border-b border-gray-300">
-                      <Logo className="text-4xl -tracking-widest px-2">et</Logo>
-                      <Menu user={user} />
-                    </header>
+                  <DarkModeProvider>
+                    <Header />
                     <Navigation />
                     {children}
                     <Footer />
-                  </main >
+                  </DarkModeProvider>
                 </DateProvider>
               </NotificationsProvider>
             </SubsProvider>

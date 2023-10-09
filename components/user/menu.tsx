@@ -16,16 +16,15 @@ import {
   BellRing,
   LogOut
 } from 'lucide-react'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-interface Props {
-  user: User
-}
-
-export const Menu = ({ user }: Props) => {
+export const UserMenu = () => {
+  const { data: session } = useSession()
   const { hasPending } = useNotifications()
   const { push } = useRouter()
+
+  const { user } = session as { user: User }
 
   const fallback = user.name?.split(' ').map((n) => n.charAt(0)).join('')
 
@@ -36,7 +35,7 @@ export const Menu = ({ user }: Props) => {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
-        <Avatar className="cursor-pointer border border-white">
+        <Avatar className="cursor-pointer border border-slate-900 dark:border-slate-200">
           <AvatarImage src={user.image as string} alt={user.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>

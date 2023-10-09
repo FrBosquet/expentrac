@@ -1,4 +1,4 @@
-import { Footer } from '@components/Footer'
+import { Footer } from '@components/footer'
 import { Features } from '@components/hero/Features'
 import { Resume } from '@components/hero/Resume'
 import { StartNow } from '@components/hero/StartNow'
@@ -9,7 +9,7 @@ import { Header } from '@components/web/Header'
 // TODO: If we put this page in the (web) group, the layout breaks, so for now we need to stick to leave it here and try to re work i in the future
 export default function Home() {
   return (
-    <main className='relative bg-gradient-to-r h-screen from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 perspective-container'>
+    <main className='relative bg-gradient-to-r h-screen from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 perspective-container dark'>
       <div className='absolute top-1/2 left-1/4 text-slate-200 opacity-5 text-8xl -translate-y-[50%] scale-[200%] font-semibold blur-xs'>
         <p>Your finances</p>
         <p>under your control</p>
