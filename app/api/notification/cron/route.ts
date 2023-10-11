@@ -3,6 +3,7 @@ import { prisma, type Loan, type Subscription, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, type LoanComplete } from '@types'
 import { NextResponse } from 'next/server'
 
+export const revalidate = 0
 export const GET = async () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
