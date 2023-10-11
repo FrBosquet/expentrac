@@ -62,11 +62,11 @@ export const Summary = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-[1fr_auto]">
-            <p className="text-sm text-slate-500 dark:text-slate-400">Loans</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 text-right">{euroFormatter.format(totalLoans)}/month</p>
+            <p className="text-sm">Loans</p>
+            <p className="text-sm text-right">{euroFormatter.format(totalLoans)}/month</p>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400">Subscriptions</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 text-right">{euroFormatter.format(totalSubs)}/month</p>
+            <p className="text-sm">Subscriptions</p>
+            <p className="text-sm text-right">{euroFormatter.format(totalSubs)}/month</p>
 
             <p className="text-slate-800 dark:text-slate-200">Total</p>
             <p className="text-slate-800 dark:text-slate-200 text-right">{euroFormatter.format(total)}/month</p>
