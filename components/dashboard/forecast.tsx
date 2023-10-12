@@ -40,8 +40,6 @@ const useForecastData = () => {
     const month = monthDate.toLocaleString('default', { month: 'short', year: differentYear ? '2-digit' : undefined })
 
     const loanFee = loans.reduce((acc, cur) => {
-      console.log({ cur, monthDate })
-
       if (new Date(cur.startDate) > monthDate) return acc
       if (new Date(cur.endDate) < monthDate) return acc
 

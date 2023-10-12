@@ -18,8 +18,9 @@ import {
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { twMerge } from 'tailwind-merge'
 
-export const UserMenu = () => {
+export const UserMenu = ({ className }: { className?: string }) => {
   const { user, name } = useUser()
   const { hasPending } = useNotifications()
   const { push } = useRouter()
@@ -33,7 +34,7 @@ export const UserMenu = () => {
   return <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <article className='relative'>
-        <Avatar className="cursor-pointer border border-theme-border w-20 h-20">
+        <Avatar className={twMerge('cursor-pointer border border-theme-border w-12 h-12', className)}>
           <AvatarImage src={user?.image as string} alt={user?.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>

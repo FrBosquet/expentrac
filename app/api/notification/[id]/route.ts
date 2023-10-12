@@ -4,8 +4,6 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 
 export const PATCH = async (req: Request, { params }: { params: { id: string } }) => {
-  console.log(req.body)
-
   const id = params.id
   const session = await getServerSession(authOptions)
 
