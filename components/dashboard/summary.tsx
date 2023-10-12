@@ -50,8 +50,8 @@ export const Summary = () => {
       </div>
     </CardContent>
     <Image src={Grid} alt="grid layout" layout='fill' objectFit='cover' className='absolute inset-0 opacity-20' />
-    <div className='absolute h-full inset-0 overflow-hidden flex justify-end'>
-      <Image src={Money} alt="Money Icon" height={400} width={400} className='object-cover hue-rotate-180' />
+    <div className='absolute inset-0 overflow-hidden flex justify-end'>
+      <Image src={Money} alt="Money Icon" height={400} width={400} className='object-contain hue-rotate-180 w-[45%] xl:w-auto' />
     </div>
   </Card>
 }

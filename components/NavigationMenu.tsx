@@ -53,8 +53,9 @@ const Sidebar = () => {
   const { user, loading } = useUser()
   const pathname = usePathname()
 
-  return <aside className='group bg-card py-10 flex flex-col items-center gap-10 fixed h-screen border-r shadow-xl z-50
-      w-20 hover:w-56 transition-all overflow-hidden
+  return <aside className='group bg-card py-10 flex-col items-center gap-10 fixed h-screen border-r shadow-xl z-50
+      hidden
+      md:flex w-20 hover:w-56 transition-all overflow-hidden
       xl:w-56
     '>
     <Logo className='text-3xl -tracking-widest px-6 self-start hidden xl:block'>expentrac</Logo>
@@ -103,7 +104,7 @@ export function NavigationMenu({ children }: Props) {
 
     {/* PAGE CONTENT */}
     <section className='flex-1 min-h-screen flex flex-col
-      pl-20 xl:pl-56
+      md:pl-20 xl:pl-56
     '>
       {children}
     </section>
