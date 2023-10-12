@@ -12,7 +12,6 @@ import {
 import { euroFormatter } from '@lib/currency'
 import Link from 'next/link'
 import { useDate } from './date/context'
-import { DateSelector } from './date/selector'
 import { useLoans } from './loan/context'
 import { useSubs } from './subscription/context'
 
@@ -53,26 +52,23 @@ export const Summary = () => {
   }
 
   return (
-    <>
-      <DateSelector />
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Your summary</CardTitle>
-          <CardDescription>Right now, you owe {euroFormatter.format(owedMoney)}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-[1fr_auto]">
-            <p className="text-sm">Loans</p>
-            <p className="text-sm text-right">{euroFormatter.format(totalLoans)}/month</p>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Your summary</CardTitle>
+        <CardDescription>Right now, you owe {euroFormatter.format(owedMoney)}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-[1fr_auto]">
+          <p className="text-sm">Loans</p>
+          <p className="text-sm text-right">{euroFormatter.format(totalLoans)}/month</p>
 
-            <p className="text-sm">Subscriptions</p>
-            <p className="text-sm text-right">{euroFormatter.format(totalSubs)}/month</p>
+          <p className="text-sm">Subscriptions</p>
+          <p className="text-sm text-right">{euroFormatter.format(totalSubs)}/month</p>
 
-            <p className="text-slate-800 dark:text-slate-200">Total</p>
-            <p className="text-slate-800 dark:text-slate-200 text-right">{euroFormatter.format(total)}/month</p>
-          </div>
-        </CardContent>
-      </Card>
-    </>
+          <p className="text-slate-800 dark:text-slate-200">Total</p>
+          <p className="text-slate-800 dark:text-slate-200 text-right">{euroFormatter.format(total)}/month</p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

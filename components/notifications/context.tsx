@@ -22,7 +22,8 @@ const defaultContextValue = {
   addNotification: () => null,
   removeNotification: () => null,
   updateNotification: () => null,
-  hasPending: false
+  hasPending: false,
+  pending: 0
 }
 
 export const NotificationContext = createContext<{
@@ -32,6 +33,7 @@ export const NotificationContext = createContext<{
   removeNotification: (provider: Notification) => void
   updateNotification: (provider: Notification) => void
   hasPending: boolean
+  pending: number
 }>(defaultContextValue)
 
 export const NotificationsProvider = ({ children, serverValue }: Props) => {
@@ -43,6 +45,8 @@ export const NotificationsProvider = ({ children, serverValue }: Props) => {
     update: updateNotification
   } = useResourceContext<Notification>(serverValue, (a, b) => b.createdAt > a.createdAt ? 1 : -1)
 
+  const pending = notifications.filter((notification) => !notification.ack).length
+
   return (
     <NotificationContext.Provider
       value={{
@@ -51,7 +55,8 @@ export const NotificationsProvider = ({ children, serverValue }: Props) => {
         addNotification,
         removeNotification,
         updateNotification,
-        hasPending: notifications.some((notification) => !notification.ack)
+        hasPending: pending > 0,
+        pending
       }}
     >
       {children}
