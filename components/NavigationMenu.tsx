@@ -49,14 +49,14 @@ interface Props {
 
 export function NavigationMenu({ children }: Props) {
   const pathname = usePathname()
-  const { user } = useUser()
+  const { user, loading } = useUser()
 
   return <div className='flex w-full'>
     <aside className='bg-card py-10 flex flex-col items-center gap-10 fixed h-screen w-56 border-r shadow-xl'>
       <Logo className='text-3xl -tracking-widest px-6 self-start'>expentrac</Logo>
       <article className='flex flex-col gap-1 items-center w-full'>
         <UserMenu />
-        <h2 className='text-lg pt-4'>{user.name}</h2>
+        <h2 className='text-lg pt-4'>{loading ? '...' : user.name}</h2>
         <p className='text-theme-light leading-[0.35rem]'>user</p>
       </article>
       <menu className='flex-1 flex flex-col w-full'>
@@ -75,7 +75,7 @@ export function NavigationMenu({ children }: Props) {
 
       </menu>
     </aside>
-    <section className='flex-1 pl-56'>
+    <section className='flex-1 pl-56 min-h-screen flex flex-col'>
       {children}
     </section>
   </div>

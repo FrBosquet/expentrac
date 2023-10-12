@@ -27,5 +27,5 @@ export const useUser = () => {
     return user?.id === asset?.userId
   }
 
-  return { user, loading, ownsAsset }
+  return { user, loading, ownsAsset, name: loading ? '...' : user?.name }
 }
