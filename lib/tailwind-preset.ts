@@ -147,6 +147,10 @@ export const tailwindPreset = {
         fall: {
           from: { transform: 'translateY(-10vh)', opacity: '0' },
           to: { transform: 'translateY(0)', opacity: '1' }
+        },
+        'fall-short': {
+          from: { transform: 'translateY(-2rem)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' }
         }
       },
       blur: {
@@ -161,6 +165,7 @@ export const tailwindPreset = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         fall: 'fall 1s ease-out',
+        'fall-short': 'fall-short 1s ease-out',
         'spin-slow': 'spin 700s linear infinite',
         'spin-slower': 'spin 800s linear infinite',
         'spin-slowest': 'spin 900s linear infinite'

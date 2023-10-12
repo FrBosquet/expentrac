@@ -15,34 +15,61 @@ import { useDate } from './date/context'
 import { useLoans } from './loan/context'
 import { useSubs } from './subscription/context'
 
-export const Summary = () => {
+export const useSummary = () => {
   const { date } = useDate()
 
   const { allLoans, hasAnyLoans } = useLoans()
   const { allSubs, hasAnySubs } = useSubs()
 
-  const totalLoans = allLoans.reduce((acc, cur) => {
-    const curStartDate = new Date(cur.startDate)
-    const curEndDate = new Date(cur.endDate)
+  const activeLoans = allLoans.filter(loan => {
+    const curStartDate = new Date(loan.startDate)
+    const curEndDate = new Date(loan.endDate)
 
-    if (curStartDate > date) return acc
-    if (curEndDate < date) return acc
+    return curStartDate <= date && curEndDate >= date
+  })
 
+  const loanCount = activeLoans.length
+  const loanFee = activeLoans.reduce((acc, cur) => {
     const { holderFee } = getLoanExtendedInformation(cur)
 
     return acc + holderFee
   }, 0)
 
-  const totalSubs = allSubs.reduce((acc, cur) => {
+  const subCount = allSubs.length
+
+  const subFee = allSubs.reduce((acc, cur) => {
     const monthlyFee = cur.yearly ? (cur.fee / 12) : cur.fee
     const holders = cur.shares.filter(share => share.accepted === true).length + 1
     const fee = monthlyFee / holders
 
     return acc + fee
   }, 0)
-  const total = totalLoans + totalSubs
+
+  const totalFee = loanFee + subFee
 
   const owedMoney = allLoans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).holderTotal, 0)
+
+  return {
+    totalFee,
+    loanCount,
+    loanFee,
+    subCount,
+    subFee,
+    owedMoney,
+    hasAnyLoans,
+    hasAnySubs
+  }
+}
+
+export const Summary = () => {
+  const {
+    loanFee,
+    subFee,
+    totalFee,
+    owedMoney,
+    hasAnyLoans,
+    hasAnySubs
+  } = useSummary()
 
   if (!hasAnyLoans && !hasAnySubs) {
     return <section className='flex flex-col gap-4 p-12'>
@@ -60,13 +87,13 @@ export const Summary = () => {
       <CardContent>
         <div className="grid grid-cols-[1fr_auto]">
           <p className="text-sm">Loans</p>
-          <p className="text-sm text-right">{euroFormatter.format(totalLoans)}/month</p>
+          <p className="text-sm text-right">{euroFormatter.format(loanFee)}/month</p>
 
           <p className="text-sm">Subscriptions</p>
-          <p className="text-sm text-right">{euroFormatter.format(totalSubs)}/month</p>
+          <p className="text-sm text-right">{euroFormatter.format(subFee)}/month</p>
 
           <p className="text-slate-800 dark:text-slate-200">Total</p>
-          <p className="text-slate-800 dark:text-slate-200 text-right">{euroFormatter.format(total)}/month</p>
+          <p className="text-slate-800 dark:text-slate-200 text-right">{euroFormatter.format(totalFee)}/month</p>
         </div>
       </CardContent>
     </Card>

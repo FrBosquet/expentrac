@@ -20,8 +20,11 @@ export const DateContext = createContext<{
   currentMonth: () => void
 }>(defaultContext)
 
+const defaultDate = new Date()
+defaultDate.setDate(1)
+
 export const DateProvider = ({ children }: Props) => {
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState(defaultDate)
 
   const offsetMonth = (date: Date, offset: number) => {
     const newDate = new Date(date)

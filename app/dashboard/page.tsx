@@ -1,4 +1,4 @@
-import { Summary } from '@components/Summary'
+import { Summary } from '@components/dashboard/summary'
 import { Header } from '@components/header'
 import { LoanSummary } from '@components/loan/summary'
 import { SubscriptionSummary } from '@components/subscription/summary'

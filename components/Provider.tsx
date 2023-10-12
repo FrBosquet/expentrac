@@ -21,7 +21,7 @@ export const RootProvider = ({ children }: Props) => {
 export const useUser = () => {
   const { data: session, status } = useSession()
   const loading = status === 'loading'
-  const user = session?.user as User || { name: 'loading' }
+  const user = session?.user as User
 
   const ownsAsset = (asset: { userId: string }) => {
     return user?.id === asset?.userId
