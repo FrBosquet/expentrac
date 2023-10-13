@@ -39,20 +39,24 @@ const useForecastData = () => {
 
     const month = monthDate.toLocaleString('default', { month: 'short', year: differentYear ? '2-digit' : undefined })
 
-    const loanFee = loans.reduce((acc, cur) => {
+    const { loanFee, owedAmount } = loans.reduce((acc, cur) => {
       if (new Date(cur.startDate) > monthDate) return acc
       if (new Date(cur.endDate) < monthDate) return acc
 
-      const { holderFee } = getLoanExtendedInformation(cur)
+      const { holderFee, owedAmount } = getLoanExtendedInformation(cur, monthDate)
 
-      return acc + holderFee
-    }, 0)
+      return {
+        loanFee: acc.loanFee + holderFee,
+        owedAmount: acc.owedAmount + owedAmount
+      }
+    }, { loanFee: 0, owedAmount: 0 })
 
     return {
       month,
       total: subFee + loanFee,
       loan: loanFee,
-      sub: subFee
+      sub: subFee,
+      owed: owedAmount
     }
   })
 
@@ -124,10 +128,12 @@ export const Forecast = ({ className }: Props) => {
               <stop offset="90%" stopColor={EXPENTRAC_ORANGE} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <XAxis dataKey="month" padding={{ left: 20 }} tick={tickStyle} tickLine={tickStyle} axisLine={tickStyle} />
+          <XAxis dataKey="month" tick={tickStyle} tickLine={tickStyle} axisLine={tickStyle} />
           <YAxis tick={tickStyle} padding={{ top: 20 }} />
+          <YAxis hide yAxisId='2' />
           <Tooltip content={TooltipContent} />
           <ReferenceLine x={now} stroke={EXPENTRAC_GREEN} label="Now" />
+          <Area type="monotone" yAxisId='2' dataKey="owed" name='Owed money' stroke='var(--theme-light)' fill='transparent' />
           <Area type="linear" dataKey="total" name="Monthly amount" stroke={EXPENTRAC_GREEN} fillOpacity={0.5} fill='url(#totalGradient)' />
           <Area type="linear" dataKey="loan" name='Loans' stroke={EXPENTRAC_CONTRAST} fill='url(#loanGradient)' />
           <Area type="linear" dataKey="sub" name='Subscriptions' stroke={EXPENTRAC_ORANGE} fill='url(#subGradient)' />
