@@ -5,12 +5,13 @@ import {
   BellRing
 } from 'lucide-react'
 import Link from 'next/link'
+import { twMerge } from 'tailwind-merge'
 import { useNotifications } from './context'
 
-export const NotificationBell = () => {
+export const NotificationBell = ({ className, onClick }: { className?: string, onClick?: () => void }) => {
   const { hasPending, pending } = useNotifications()
 
-  return <Link href='/dashboard/notifications' className='relative'>
+  return <Link href='/dashboard/notifications' className={twMerge('relative', className)} onClick={onClick}>
     {hasPending
       ? <>
         <BellRing />

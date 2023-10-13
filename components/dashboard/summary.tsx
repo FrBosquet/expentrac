@@ -41,7 +41,7 @@ export const Summary = () => {
       <CardDescription>Whats going on with your money?</CardDescription>
     </CardHeader>
     <CardContent className='relative z-20'>
-      <div className='grid grid-cols-5 gap-2'>
+      <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-2'>
         <ConceptCard hidden={owedMoney === 0} value={euroFormatter.format(owedMoney)} label="Total owed money" Icon={Coins} />
         <ConceptCard hidden={totalFee === 0} value={euroFormatter.format(totalFee)} label="Total monthly payments" Icon={Receipt} />
         <ConceptCard hidden={loanCount === 0} value={euroFormatter.format(loanFee)} label={`Total monthly loan payments, from ${loanCount} loans`} Icon={HelpingHand} />

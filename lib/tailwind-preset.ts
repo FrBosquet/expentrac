@@ -118,7 +118,8 @@ export const tailwindPreset = {
           front: 'var(--theme-front)',
           light: 'var(--theme-light)',
           accent: 'var(--theme-accent)',
-          card: 'var(--theme-card)'
+          card: 'var(--theme-card)',
+          bottom: 'var(--theme-bottom)'
         }
       },
       fontFamily: {

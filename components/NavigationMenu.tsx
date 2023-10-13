@@ -1,12 +1,14 @@
 'use client'
 
-import { CircleDollarSign, Landmark, LayoutDashboard, PencilLine, Tv } from 'lucide-react'
+import { CircleDollarSign, Cog, Landmark, LayoutDashboard, Menu, PencilLine, Tv, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
 import { useUser } from './Provider'
+import { NotificationBell } from './notifications/bell'
+import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { UserMenu } from './user/menu'
 
@@ -97,8 +99,59 @@ const Sidebar = () => {
   </aside>
 }
 
+const MobileNavigation = () => {
+  const [isClosed, setIsClosed] = useState(true)
+  const pathname = usePathname()
+
+  const close = () => {
+    setIsClosed(true)
+  }
+
+  const toggle = () => {
+    setIsClosed(v => !v)
+  }
+
+  return <div className='md:hidden w-screen bg-theme-back h-20 z-50'>
+    <menu className='
+      fixed bottom-0 h-20 w-screen bg-theme-bottom grid grid-cols-5 justify-items-center place-content-center shadow-xl border-t
+    '>
+      <Link data-selected={pathname === '/dashboard'} href='/dashboard' className='data-[selected=true]:text-expentrac-800' onClick={close}><LayoutDashboard /></Link>
+      <Link data-selected={pathname === '/dashboard/settings'} href='/dashboard/settings' className='data-[selected=true]:text-expentrac-800' onClick={close}><Cog /></Link>
+      <Link data-selected={pathname === '/dashboard/settings'} href='/dashboard/settings' className='data-[selected=true]:text-expentrac-800' onClick={close}><User /></Link>
+      <NotificationBell className={pathname === '/dashboard/notifications' ? 'text-expentrac-800' : ''} onClick={close} />
+      <Button variant='link' className='p-0 h-auto' onClick={toggle}><Menu /></Button>
+    </menu>
+    <aside data-closed={isClosed} className='fixed w-screen top-0 bottom-20 bg-theme-bottom left-0 data-[closed=true]:left-[100vw] transition-all flex flex-col justify-end pointer-events-[all]'>
+      {components.map((component, index) => {
+        if (typeof component === 'string') {
+          const key = `component${index}`
+
+          if (component === SEPARATOR) {
+            return <Separator key={key} />
+          } else {
+            return null
+          }
+        }
+
+        const { title, href, Icon } = component
+
+        if (['dashboard'].includes(title.toLowerCase())) return null
+
+        const isSelected = href === pathname
+
+        return <Link aria-disabled={isSelected} onClick={close} key={title} href={href} className={twMerge('relative py-4 px-6 transition font-semibold text-sm uppercase flex items-center gap-6', isSelected && 'bg-theme-back text-expentrac-800 dark:text-expentrac-300 pointer-events-none')}>
+          <Icon className='shrink-0' />
+          <p className='
+            h-full flex items-center text-lg
+          '>{title}</p>
+        </Link>
+      })}
+    </aside>
+  </div>
+}
+
 export function NavigationMenu({ children }: Props) {
-  return <div className='flex w-full'>
+  return <div className='flex w-full flex-col md:flex-row'>
     {/* SIDEBAR */}
     <Sidebar />
 
@@ -108,5 +161,8 @@ export function NavigationMenu({ children }: Props) {
     '>
       {children}
     </section>
+
+    {/* MOBILE NAVIGATION */}
+    <MobileNavigation />
   </div>
 }
