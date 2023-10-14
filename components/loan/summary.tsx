@@ -89,10 +89,7 @@ export const LoanSummary = () => {
               return (
                 <TableRow key={loan.id}>
                   <TableCell className="border-l-4" style={{ borderLeftColor: getAccentColor(loan.vendor?.provider) }}>
-                    {loan.vendor
-                      ? <ProviderLogo className="h-8" provider={loan.vendor?.provider} />
-                      : <CalendarCheck2 className='h-8 w-8 m-auto' />
-                    }
+                    <ProviderLogo className="h-8 w-8 m-auto" provider={loan.vendor?.provider} Default={CalendarCheck2} />
                   </TableCell>
                   <TableCell className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                     <LoanDetail key={loan.id} loan={loan} />

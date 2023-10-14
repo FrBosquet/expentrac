@@ -24,7 +24,11 @@ const ConceptCard = ({ value, label, Icon, className, hidden }: { value: string,
   </Card>
 }
 
-export const Summary = () => {
+interface Props {
+  className?: string
+}
+
+export const Summary = ({ className }: Props) => {
   const { user, loading } = useUser()
   const {
     owedMoney,
@@ -35,23 +39,30 @@ export const Summary = () => {
     subCount
   } = useSummary()
 
-  return <Card className='bg-gradient-to-l from-expentrac-800 to-background relative'>
+  const renderCards = (className: string) => {
+    return <>
+      <ConceptCard className={className} hidden={owedMoney === 0} value={euroFormatter.format(owedMoney)} label="Total owed money" Icon={Coins} />
+      <ConceptCard className={className} hidden={totalFee === 0} value={euroFormatter.format(totalFee)} label="Total monthly payments" Icon={Receipt} />
+      <ConceptCard className={className} hidden={loanCount === 0} value={euroFormatter.format(loanFee)} label={`Total monthly loan payments, from ${loanCount} loans`} Icon={HelpingHand} />
+      <ConceptCard className={className} hidden={subCount === 0} value={euroFormatter.format(subFee)} label={`Total monthly subscription payments, from ${subCount} subscriptions`} Icon={Tv} />
+    </>
+  }
+
+  return <><Card className={twMerge('bg-gradient-to-l from-expentrac-800 to-background relative', className)}>
     <CardHeader className='relative z-20 py-8'>
       <CardTitle className='text-5xl'>{loading ? '...' : `Hello ${user.name}`}</CardTitle>
       <CardDescription>Whats going on with your money?</CardDescription>
     </CardHeader>
     <CardContent className='relative z-20'>
       <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-2'>
-        <ConceptCard hidden={owedMoney === 0} value={euroFormatter.format(owedMoney)} label="Total owed money" Icon={Coins} />
-        <ConceptCard hidden={totalFee === 0} value={euroFormatter.format(totalFee)} label="Total monthly payments" Icon={Receipt} />
-        <ConceptCard hidden={loanCount === 0} value={euroFormatter.format(loanFee)} label={`Total monthly loan payments, from ${loanCount} loans`} Icon={HelpingHand} />
-        <ConceptCard hidden={subCount === 0} value={euroFormatter.format(subFee)} label={`Total monthly subscription payments, from ${subCount} subscriptions`} Icon={Tv} />
-
+        {renderCards('hidden md:block')}
       </div>
     </CardContent>
     <Image src={Grid} alt="grid layout" layout='fill' objectFit='cover' className='absolute inset-0 opacity-20' />
     <div className='absolute inset-0 overflow-hidden flex justify-end'>
-      <Image src={Money} alt="Money Icon" height={400} width={400} className='object-contain hue-rotate-180 w-[45%] xl:w-auto' />
+      <Image src={Money} alt="Expenses graphics" height={400} width={400} className='hidden md:block object-contain hue-rotate-180 w-[45%] xl:w-auto' />
     </div>
   </Card>
+    {renderCards('md:hidden block')}
+  </>
 }
