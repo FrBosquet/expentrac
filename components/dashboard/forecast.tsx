@@ -132,11 +132,11 @@ export const Forecast = ({ className }: Props) => {
           <YAxis tick={tickStyle} padding={{ top: 20 }} />
           <YAxis hide yAxisId='2' />
           <Tooltip content={TooltipContent} />
-          <ReferenceLine x={now} stroke={EXPENTRAC_GREEN} label="Now" />
           <Area type="monotone" yAxisId='2' dataKey="owed" name='Owed money' stroke='var(--theme-light)' fill='transparent' />
           <Area type="linear" dataKey="total" name="Monthly amount" stroke={EXPENTRAC_GREEN} fillOpacity={0.5} fill='url(#totalGradient)' />
           <Area type="linear" dataKey="loan" name='Loans' stroke={EXPENTRAC_CONTRAST} fill='url(#loanGradient)' />
           <Area type="linear" dataKey="sub" name='Subscriptions' stroke={EXPENTRAC_ORANGE} fill='url(#subGradient)' />
+          <ReferenceLine x={now} stroke={EXPENTRAC_GREEN} label="THIS MONTH" />
         </AreaChart>
       </ResponsiveContainer>
     </CardContent>

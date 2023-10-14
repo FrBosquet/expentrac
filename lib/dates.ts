@@ -23,3 +23,12 @@ export const monthBeetween = (startDate: Date, endDate: Date) => {
 
 export const dateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' })
 export const fullDateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', day: 'numeric' })
+
+export const isInXDays = (date: Date, offset: number) => {
+  const xDays = new Date()
+  xDays.setDate(xDays.getDate() + offset)
+  return date.toDateString() === xDays.toDateString()
+}
+
+export const isYesterday = (date: Date) => isInXDays(date, -1)
+export const isTomorrow = (date: Date) => isInXDays(date, 1)

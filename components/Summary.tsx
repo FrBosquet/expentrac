@@ -125,6 +125,7 @@ export const useSummary = () => {
     }
 
     return {
+      id: sub.id,
       sub,
       date: assetDate,
       time: getAssetTime(assetDate)
@@ -136,12 +137,13 @@ export const useSummary = () => {
     const loanStartDate = new Date(loan.startDate)
     const loanEndDate = new Date(loan.endDate)
 
-    if (loanEndDate < assetDate) return { loan, date: loanEndDate, time: TIME.PAST }
+    if (loanEndDate < assetDate) return { loan, date: loanEndDate, time: TIME.PAST, id: loan.id }
 
     const day = loanStartDate.getDate()
     assetDate.setDate(day)
 
     return {
+      id: loan.id,
       loan,
       date: assetDate,
       time: getAssetTime(assetDate)

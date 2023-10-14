@@ -139,3 +139,17 @@ export enum SELECT_OPTIONS {
   NONE = 'NONE',
   CREATE = 'CREATE'
 }
+
+export interface SubAsset {
+  id: string
+  sub: SubscriptionComplete
+  date: Date
+}
+
+export interface LoanAsset {
+  id: string
+  loan: LoanComplete
+  date: Date
+}
+
+export type AssetType = SubAsset | LoanAsset
