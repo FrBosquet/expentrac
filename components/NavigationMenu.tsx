@@ -7,6 +7,7 @@ import { useState, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
 import { useUser } from './Provider'
+import { Footer } from './footer'
 import { NotificationBell } from './notifications/bell'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
@@ -150,7 +151,7 @@ const MobileNavigation = () => {
   </div>
 }
 
-export function NavigationMenu({ children }: Props) {
+export function DashboardLayout({ children }: Props) {
   return <div className='flex w-full flex-col md:flex-row'>
     {/* SIDEBAR */}
     <Sidebar />
@@ -159,7 +160,12 @@ export function NavigationMenu({ children }: Props) {
     <section className='flex-1 min-h-screen flex flex-col
       md:pl-20 xl:pl-56
     '>
-      {children}
+      <div className="flex-1 w-full max-w-4xl xl:max-w-6xl p-6 mx-auto grid grid-cols-2
+        xl:grid-cols-4 gap-1 auto-rows-min
+      ">
+        {children}
+      </div>
+      <Footer />
     </section>
 
     {/* MOBILE NAVIGATION */}

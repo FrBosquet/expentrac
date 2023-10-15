@@ -2,14 +2,9 @@
 
 import { Button } from '@components/ui/button'
 import { dateFormater } from '@lib/dates'
+import { TIME } from '@types'
 import { ArrowLeft, ArrowRight, CalendarCheck, CalendarClock, Clock, type LucideIcon } from 'lucide-react'
 import { useDate } from './context'
-
-enum TIME {
-  PAST,
-  PRESENT,
-  FUTURE
-}
 
 const ICONS = {
   [TIME.PAST]: CalendarCheck,

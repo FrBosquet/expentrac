@@ -1,6 +1,9 @@
 import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@lib/prisma'
 
 export interface LoanExtendedInfo {
+  id: string
+  loan: LoanComplete
+
   totalAmount: number
   paidAmount: number
   owedAmount: number
@@ -19,6 +22,15 @@ export interface LoanExtendedInfo {
   holderAmount: number
   holderFee: number
   holderTotal: number
+
+  isPaidThisMonth: boolean
+  currentMonthPaymentDate: Date
+  nextPaymentDate: Date
+
+  hasStarted: boolean
+  hasEnded: boolean
+  endsThisMonth: boolean
+  startsThisMonth: boolean
 }
 
 export interface BrandExtendedInfo {
@@ -153,3 +165,9 @@ export interface LoanAsset {
 }
 
 export type AssetType = SubAsset | LoanAsset
+
+export enum TIME {
+  PAST,
+  PRESENT,
+  FUTURE
+}

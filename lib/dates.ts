@@ -32,3 +32,12 @@ export const isInXDays = (date: Date, offset: number) => {
 
 export const isYesterday = (date: Date) => isInXDays(date, -1)
 export const isTomorrow = (date: Date) => isInXDays(date, 1)
+
+export const getDateText = (date: Date) => {
+  if (isYesterday(date)) return 'Yesterday'
+  if (isTomorrow(date)) return 'Tomorrow'
+  if (isInXDays(date, 2)) return 'In two days'
+  if (isInXDays(date, -2)) return 'Two days ago'
+
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}

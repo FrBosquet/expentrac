@@ -4,7 +4,7 @@ import { useUser } from '@components/Provider'
 import { useDate } from '@components/date/context'
 import { useLoanShares } from '@components/loan-share/context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import {
   Table,
   TableBody,
@@ -16,13 +16,14 @@ import {
 import { euroFormatter } from '@lib/currency'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { getAccentColor } from '@lib/provider'
-import { type LoanComplete } from '@types'
+import { TIME, type LoanComplete, type LoanExtendedInfo } from '@types'
 import { CalendarCheck2, User } from 'lucide-react'
 import { LoanAdd } from './add'
 import { useLoans } from './context'
 import { LoanDelete } from './delete'
 import { LoanDetail } from './detail'
 import { LoanEdit } from './edit'
+import { LoanItem } from './item'
 
 // TODO: We are executing twice getLOanExtendedInformation for each loan. Refactor that
 const FeeContent = ({ loan }: { loan: LoanComplete }) => {
@@ -37,7 +38,7 @@ const FeeContent = ({ loan }: { loan: LoanComplete }) => {
   </div>
 }
 
-export const LoanSummary = () => {
+export const LoanSummaryLegacy = () => {
   const { user, ownsAsset } = useUser()
   const { date } = useDate()
   const { loans } = useLoans()
@@ -114,4 +115,51 @@ export const LoanSummary = () => {
       </CardContent>
     </Card>
   )
+}
+interface Props {
+  className?: string
+}
+
+const getDescription = (refDate: Date, month: TIME) => {
+  switch (month) {
+    case TIME.PAST: return `These where your active loans in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+    case TIME.PRESENT: return 'These are your active loans for this month'
+    case TIME.FUTURE: return `These are your active loans for ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+  }
+}
+
+export const LoanSummary = ({ className }: Props) => {
+  const { date, month } = useDate()
+  const { loans } = useLoans()
+
+  const extendedLoans = loans.reduce<LoanExtendedInfo[]>((acc, loan) => {
+    const extendedInfo = getLoanExtendedInformation(loan, date)
+
+    const { endsThisMonth, hasEnded, hasStarted, startsThisMonth } = extendedInfo
+    if (hasEnded && !endsThisMonth) return acc
+    if (!hasStarted && !startsThisMonth) return acc
+
+    return [...acc, extendedInfo]
+  }, [])
+
+  const hasAssets = extendedLoans.length > 0
+
+  return <Card className={className}>
+    <CardHeader>
+      <CardTitle>Your loan summary</CardTitle>
+      <CardDescription>
+        {getDescription(date, month)}
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      {hasAssets
+        ? <div className='flex flex-col gap-3'>
+          {extendedLoans.map((info) => <LoanItem extendedInfo={info} withDate key={info.id} />)}
+        </div>
+        : <div className='grid place-content-center gap-2 p-6 text-center'>
+          <p className='text-sm text-theme-light'>You have no subscriptions to pay today</p>
+        </div>
+      }
+    </CardContent>
+  </Card>
 }

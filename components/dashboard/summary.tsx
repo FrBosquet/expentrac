@@ -58,7 +58,7 @@ export const Summary = ({ className }: Props) => {
         {renderCards('hidden md:block')}
       </div>
     </CardContent>
-    <Image src={Grid} alt="grid layout" layout='fill' objectFit='cover' className='absolute inset-0 opacity-20' />
+    <Image src={Grid} alt="grid layout" className='absolute top-0 h-full w-full opacity-20 object-cover' />
     <div className='absolute inset-0 overflow-hidden flex justify-end'>
       <Image src={Money} alt="Expenses graphics" height={400} width={400} className='hidden md:block object-contain hue-rotate-180 w-[45%] xl:w-auto' />
     </div>

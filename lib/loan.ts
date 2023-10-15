@@ -2,6 +2,8 @@ import { type LoanComplete, type LoanExtendedInfo } from '@types'
 import { monthBeetween } from './dates'
 
 const now = new Date()
+const thisMonth = new Date()
+thisMonth.setDate(1)
 
 export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: number) => {
   const startDate = new Date(start)
@@ -24,7 +26,7 @@ export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: nu
   }
 }
 
-export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = now): LoanExtendedInfo => {
+export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = thisMonth): LoanExtendedInfo => {
   const { fee, initial, shares } = loan
 
   const {
@@ -53,7 +55,32 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
   const holderFee = fee / (holderAmount + 1)
   const holderTotal = totalAmount / (holderAmount + 1)
 
+  const loanDate = new Date(loan.startDate)
+  const currentMonthPaymentDate = new Date(loanDate)
+  currentMonthPaymentDate.setMonth(refDate.getMonth())
+  currentMonthPaymentDate.setFullYear(refDate.getFullYear())
+
+  const nextPaymentDate = new Date(currentMonthPaymentDate)
+
+  const isPaidThisMonth = now >= currentMonthPaymentDate
+
+  if (isPaidThisMonth) {
+    nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1)
+  }
+
+  const hasStarted = refDate.getTime() >= loanDate.getTime()
+  const hasEnded = refDate.getTime() >= endDate.getTime()
+  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
+  const startsThisMonth = loanDate.getMonth() === refDate.getMonth() && loanDate.getFullYear() === refDate.getFullYear()
+
+  if (loan.name === 'SuperSecretGift') {
+    console.log({ now, refDate: refDate.toLocaleDateString(), loanDate: loanDate.toLocaleDateString(), name: loan.name, hasStarted, hasEnded, endsThisMonth })
+  }
+
   return {
+    id: loan.id,
+    loan,
+
     payments,
     paymentsDone: paymentsDone + (hasInitialPayment ? 1 : 0),
     paymentsLeft,
@@ -71,6 +98,15 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = n
     hasShares,
     holderAmount,
     holderFee,
-    holderTotal
+    holderTotal,
+
+    isPaidThisMonth,
+    currentMonthPaymentDate,
+    nextPaymentDate,
+
+    hasStarted,
+    hasEnded,
+    endsThisMonth,
+    startsThisMonth
   }
 }
