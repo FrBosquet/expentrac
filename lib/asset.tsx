@@ -1,9 +1,23 @@
 'use client'
 
 import { getSubSharedFee } from '@components/Summary'
-import { getLoanExtendedInformation } from '@lib/loan'
-import { type AssetType, type SubAsset } from '@types'
+import { type Loan } from '@lib/loan'
+import { type SubscriptionComplete } from '@types'
 import { getDateText } from './dates'
+
+export interface SubAsset {
+  id: string
+  sub: SubscriptionComplete
+  date: Date
+}
+
+export interface LoanAsset {
+  id: string
+  loan: Loan
+  date: Date
+}
+
+export type AssetType = SubAsset | LoanAsset
 
 export const isSub = (asset: AssetType): asset is SubAsset => {
   return Object.hasOwnProperty.call(asset, 'sub')
@@ -19,10 +33,8 @@ export const getAssetData = (asset: AssetType) => {
 
     return { id, name, vendor, type: 'subscription', fee, dateText }
   } else {
-    const { id, name, vendor } = asset.loan
+    const { id, name, vendor, fee: { holder } } = asset.loan
 
-    const { holderFee } = getLoanExtendedInformation(asset.loan) // TODO: UNIFY FUNCTIONS TO EXTEND LOAN/SUB INFO
-
-    return { name, vendor, type: 'loan', id, fee: holderFee, dateText }
+    return { name, vendor, type: 'loan', id, fee: holder, dateText }
   }
 }

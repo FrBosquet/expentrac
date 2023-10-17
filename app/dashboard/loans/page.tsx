@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <LoanSummary className='col-span-2' />
+      <LoanSummary className='col-span-2 xl:col-span-4' />
     </>
   )
 }
