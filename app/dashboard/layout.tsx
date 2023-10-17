@@ -1,7 +1,6 @@
 import { DashboardLayout } from '@components/NavigationMenu'
 import { DateProvider } from '@components/date/context'
 import { LoanSharesProvider } from '@components/loan-share/context'
-import { LoansProvider } from '@components/loan/context'
 import { NotificationsProvider } from '@components/notifications/context'
 import { ProvidersProvider } from '@components/provider/context'
 import { SubscriptionSharesProvider } from '@components/subscription-share/context'
@@ -9,6 +8,7 @@ import { SubsProvider } from '@components/subscription/context'
 import { authOptions } from '@lib/auth'
 import { hasUser } from '@lib/session'
 import { loanSdk, loanShareSdk, notificationSdk, subscriptionSdk, subscriptionShareSdk, userProviderSdk } from '@sdk'
+import { StoreProvider } from '@store'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 
@@ -45,17 +45,17 @@ export default async function Layout({ children }: Props) {
     <LoanSharesProvider serverValue={loanShares}>
       <SubscriptionSharesProvider serverValue={subShares}>
         <ProvidersProvider serverValue={providers} >
-          <LoansProvider serverValue={loans}>
-            <SubsProvider serverValue={subs}>
-              <NotificationsProvider serverValue={notifications}>
-                <DateProvider>
-                  <DashboardLayout>
+          <SubsProvider serverValue={subs}>
+            <NotificationsProvider serverValue={notifications}>
+              <DateProvider>
+                <DashboardLayout>
+                  <StoreProvider serverLoans={loans}>
                     {children}
-                  </DashboardLayout>
-                </DateProvider>
-              </NotificationsProvider>
-            </SubsProvider>
-          </LoansProvider>
+                  </StoreProvider>
+                </DashboardLayout>
+              </DateProvider>
+            </NotificationsProvider>
+          </SubsProvider>
         </ProvidersProvider>
       </SubscriptionSharesProvider>
     </LoanSharesProvider>
