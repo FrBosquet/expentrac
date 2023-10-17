@@ -1,4 +1,4 @@
-import { type LoanComplete, type LoanExtendedInfo } from '@types'
+import { type LoanComplete, type LoanExtendedInfo, type RawLoan } from '@types'
 import { monthBeetween } from './dates'
 
 const now = new Date()
@@ -73,10 +73,6 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = t
   const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
   const startsThisMonth = loanDate.getMonth() === refDate.getMonth() && loanDate.getFullYear() === refDate.getFullYear()
 
-  if (loan.name === 'SuperSecretGift') {
-    console.log({ now, refDate: refDate.toLocaleDateString(), loanDate: loanDate.toLocaleDateString(), name: loan.name, hasStarted, hasEnded, endsThisMonth })
-  }
-
   return {
     id: loan.id,
     loan,
@@ -110,3 +106,105 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = t
     startsThisMonth
   }
 }
+
+export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
+  const { initial, shares, fee } = rawLoan
+  const startDate = new Date(rawLoan.startDate)
+  const endDate = new Date(rawLoan.endDate)
+
+  const hasInitialPayment = initial && initial > 0
+  const months = monthBeetween(startDate, endDate)
+
+  const monthBeetweenRefDate = monthBeetween(refDate, endDate)
+  const paymentsLeft = monthBeetweenRefDate < 0 ? 0 : monthBeetweenRefDate
+  const paymentsDone = months - paymentsLeft
+
+  const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
+  const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
+
+  const totalAmount = Number(rawLoan.fee) * months + (hasInitialPayment ? Number(initial) : 0)
+  const paidAmount = paymentsDone * fee + initial
+  const owedAmount = totalAmount - paidAmount
+
+  const holderAmount = 1 + sharesAccepted
+
+  const hasStarted = refDate.getTime() >= startDate.getTime()
+  const hasEnded = refDate.getTime() >= endDate.getTime()
+  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
+  const startsThisMonth = startDate.getMonth() === refDate.getMonth() && startDate.getFullYear() === refDate.getFullYear()
+
+  const currentMonthPaymentDate = new Date(startDate)
+  currentMonthPaymentDate.setMonth(refDate.getMonth())
+  currentMonthPaymentDate.setFullYear(refDate.getFullYear())
+
+  const nextPaymentDate = new Date(currentMonthPaymentDate)
+
+  const isPaidThisMonth = now >= currentMonthPaymentDate
+
+  const isOngoing = (hasStarted && !hasEnded) || startsThisMonth || endsThisMonth
+
+  const currentFee = !isOngoing
+    ? 0
+    : startsThisMonth
+      ? initial
+      : fee
+
+  const holderFee = currentFee / holderAmount
+
+  const hasShares = shares.length > 0
+  const hasAcceptedShares = sharesAccepted > 0
+
+  return {
+    rawLoan,
+    ...rawLoan,
+    startDate: new Date(rawLoan.startDate),
+    endDate: new Date(rawLoan.endDate),
+    providers: {
+      vendor: rawLoan.vendor?.provider,
+      platform: rawLoan.platform?.provider,
+      lender: rawLoan.lender?.provider
+    },
+    fee: {
+      initial: initial || 0,
+      monthly: fee,
+      holder: holderFee,
+      holderInitial: initial ? initial / holderAmount : 0,
+      current: currentFee
+    },
+    amount: {
+      total: totalAmount,
+      paid: paidAmount,
+      owed: owedAmount,
+      holderTotal: totalAmount / holderAmount,
+      holderPaid: paidAmount / holderAmount,
+      holderOwed: owedAmount / holderAmount
+    },
+    payments: {
+      total: months + (hasInitialPayment ? 1 : 0),
+      done: paymentsDone + (hasInitialPayment ? 1 : 0),
+      hasInitialPayment,
+      isPaidThisMonth
+    },
+    shares: {
+      holders: holderAmount,
+      accepted: sharesAccepted,
+      pending: sharesPending,
+      rejected: shares.length - sharesAccepted - sharesPending,
+      total: shares.length,
+      hasAny: hasShares,
+      isShared: hasAcceptedShares
+    },
+    time: {
+      duration: months,
+      isOngoing,
+      hasStarted,
+      hasEnded,
+      endsThisMonth,
+      startsThisMonth,
+      currentMonthPaymentDate,
+      nextPaymentDate
+    }
+  }
+}
+
+export type Loan = ReturnType<typeof unwrapLoan>

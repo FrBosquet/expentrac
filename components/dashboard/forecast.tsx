@@ -5,7 +5,6 @@ import { useLoans } from '@components/loan/context'
 import { useSubs } from '@components/subscription/context'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { getLoanExtendedInformation } from '@lib/loan'
 import { type FC } from 'react'
 import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
@@ -40,14 +39,12 @@ const useForecastData = () => {
     const month = monthDate.toLocaleString('default', { month: 'short', year: differentYear ? '2-digit' : undefined })
 
     const { loanFee, owedAmount } = loans.reduce((acc, cur) => {
-      if (new Date(cur.startDate) > monthDate) return acc
-      if (new Date(cur.endDate) < monthDate) return acc
-
-      const { holderFee, owedAmount } = getLoanExtendedInformation(cur, monthDate)
+      if (cur.startDate > monthDate) return acc
+      if (cur.endDate < monthDate) return acc
 
       return {
-        loanFee: acc.loanFee + holderFee,
-        owedAmount: acc.owedAmount + owedAmount
+        loanFee: acc.loanFee + cur.fee.holder,
+        owedAmount: acc.owedAmount + cur.amount.holderOwed
       }
     }, { loanFee: 0, owedAmount: 0 })
 

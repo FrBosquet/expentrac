@@ -1,9 +1,13 @@
 'use client'
 
+import { useDate } from '@components/date/context'
 import { useLoanShares } from '@components/loan-share/context'
+import { unwrapLoan } from '@lib/loan'
 import { useResourceContext } from '@lib/resourceContext'
+import { useStore } from '@store'
+import { getLoan, getLoans } from '@store/loan'
 import { type LoanComplete } from '@types'
-import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { createContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 
 interface Props {
   children: ReactNode
@@ -51,26 +55,47 @@ export const LoansProvider = ({ children, serverValue }: Props) => {
 }
 
 export const useLoans = () => {
-  const context = useContext(LoanContext)
-  if (context === undefined) {
-    throw new Error('useLoans must be used within a Provider')
-  }
+  const { date } = useDate()
+
+  const loans = useStore(getLoans(date))
+
+  const setLoans = useStore((state) => state.setLoans)
+  const addLoan = useStore((state) => state.addLoan)
+  const removeLoan = useStore((state) => state.removeLoan)
+  const updateLoan = useStore((state) => state.updateLoan)
+  const hasLoans = useStore((state) => state.loans.length > 0)
 
   const { loanShares } = useLoanShares()
 
-  const sharedLoans = loanShares.filter(share => share.accepted).map((loanShare) => loanShare.loan)
-  const allLoans = [...context.loans, ...sharedLoans]
+  const sharedLoans = loanShares.filter(share => share.accepted).map((loanShare) => unwrapLoan(loanShare.loan, date))
 
-  const hasOwnLoans = context.loans.length > 0
+  const allLoans = [...loans, ...sharedLoans]
+
+  const hasOwnLoans = loans.length > 0
   const hasSharedLoans = sharedLoans.length > 0
   const hasAnyLoans = hasOwnLoans || hasSharedLoans
 
   return {
-    ...context,
+    loans,
+    setLoans,
+    addLoan,
+    removeLoan,
+    updateLoan,
+    hasLoans,
     sharedLoans,
     allLoans,
     hasOwnLoans,
     hasSharedLoans,
     hasAnyLoans
+  }
+}
+
+export const useLoan = (id: string) => {
+  const { date } = useDate()
+
+  const loan = useStore(getLoan(date, id))
+
+  return {
+    loan
   }
 }

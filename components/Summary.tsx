@@ -1,7 +1,5 @@
 'use client'
 
-import { getLoanExtendedInformation } from '@lib/loan'
-
 import {
   Card,
   CardContent,
@@ -12,7 +10,6 @@ import {
 import { euroFormatter } from '@lib/currency'
 import { type SubscriptionComplete } from '@types'
 import Link from 'next/link'
-import { useDate } from './date/context'
 import { useLoans } from './loan/context'
 import { useSubs } from './subscription/context'
 
@@ -46,26 +43,16 @@ enum TIME {
 }
 
 export const useSummary = () => {
-  const { date } = useDate()
   const now = new Date()
   const today = now.getDate()
 
   const { allLoans, hasAnyLoans } = useLoans()
   const { allSubs, hasAnySubs } = useSubs()
 
-  const activeLoans = allLoans.filter(loan => {
-    const curStartDate = new Date(loan.startDate)
-    const curEndDate = new Date(loan.endDate)
+  const ongoingLoans = allLoans.filter(loan => loan.time.isOngoing)
 
-    return curStartDate <= date && curEndDate >= date
-  })
-
-  const loanCount = activeLoans.length
-  const loanFee = activeLoans.reduce((acc, cur) => {
-    const { holderFee } = getLoanExtendedInformation(cur)
-
-    return acc + holderFee
-  }, 0)
+  const loanCount = ongoingLoans.length
+  const loanFee = ongoingLoans.reduce((acc, cur) => acc + cur.fee.holder, 0)
 
   const subCount = allSubs.length
 
@@ -79,22 +66,13 @@ export const useSummary = () => {
 
   const totalFee = loanFee + subFee
 
-  const owedMoney = allLoans.reduce((acc, cur) => acc + getLoanExtendedInformation(cur).holderTotal, 0)
+  const owedMoney = allLoans.reduce((acc, cur) => acc + cur.amount.holderTotal, 0)
 
-  const alreadyPaidLoans = activeLoans.filter(loan => {
-    const loanDate = new Date(loan.startDate)
-    const loanDay = loanDate.getDate()
+  const alreadyPaidLoans = ongoingLoans.filter(loan => loan.payments.isPaidThisMonth)
 
-    return loanDay <= today
-  })
+  const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => acc + cur.fee.holder, 0)
 
-  const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => {
-    const { holderFee } = getLoanExtendedInformation(cur)
-
-    return acc + holderFee
-  }, 0)
-
-  const alreadyPaitSubs = allSubs.filter(sub => {
+  const alreadyPaidSubs = allSubs.filter(sub => {
     if (!sub.yearly) return false
     if (!sub.payday) return true
 
@@ -104,7 +82,7 @@ export const useSummary = () => {
     return subDay <= today
   })
 
-  const alreadyPaitSubsFee = alreadyPaitSubs.reduce((acc, cur) => {
+  const alreadyPaidSubsFee = alreadyPaidSubs.reduce((acc, cur) => {
     return acc + getSubSharedFee(cur)
   }, 0)
 
@@ -113,7 +91,7 @@ export const useSummary = () => {
     return acc + getSubSharedFee(cur)
   }, 0)
 
-  const alreadyPaidFee = alreadyPaidLoansFee + alreadyPaitSubsFee
+  const alreadyPaidFee = alreadyPaidLoansFee + alreadyPaidSubsFee
 
   const sortedSubs = allSubs.map((sub) => {
     const assetDate = new Date()
@@ -134,8 +112,8 @@ export const useSummary = () => {
 
   const sortedLoans = allLoans.map((loan) => {
     const assetDate = new Date()
-    const loanStartDate = new Date(loan.startDate)
-    const loanEndDate = new Date(loan.endDate)
+    const loanStartDate = loan.startDate
+    const loanEndDate = loan.endDate
 
     if (loanEndDate < assetDate) return { loan, date: loanEndDate, time: TIME.PAST, id: loan.id }
 
@@ -169,8 +147,8 @@ export const useSummary = () => {
     hasAnySubs,
     alreadyPaidLoans,
     alreadyPaidLoansFee,
-    alreadyPaitSubs,
-    alreadyPaitSubsFee,
+    alreadyPaidSubs,
+    alreadyPaidSubsFee,
     alreadyPaidFee,
     subsWithNoPayday,
     subsWithNoPaydayFee,

@@ -1,9 +1,8 @@
 'use client'
 
 import { ProviderLogo } from '@components/provider/ProviderLogo'
-import { getAssetData } from '@lib/asset'
+import { type AssetType, getAssetData } from '@lib/asset'
 import { euroFormatter } from '@lib/currency'
-import { type AssetType } from '@types'
 import { CalendarCheck2 } from 'lucide-react'
 
 interface Props {

@@ -1,5 +1,21 @@
-import { type Loan, type LoanShare, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@lib/prisma'
+import { type LoanShare, type Loan as PrismaLoan, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@lib/prisma'
 
+export type RawLoan = PrismaLoan & {
+  vendor?: UserProvider & { provider: Provider }
+  platform?: UserProvider & { provider: Provider }
+  lender?: UserProvider & { provider: Provider }
+  shares: LoanShareComplete[]
+  user: User
+}
+
+// TODO: This has to dissapear
+export type LoanComplete = PrismaLoan & {
+  vendor?: UserProvider & { provider: Provider }
+  platform?: UserProvider & { provider: Provider }
+  lender?: UserProvider & { provider: Provider }
+  shares: LoanShareComplete[]
+  user: User
+}
 export interface LoanExtendedInfo {
   id: string
   loan: LoanComplete
@@ -95,14 +111,6 @@ export interface Logo {
 export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
 export type ProviderUnfetched = { isFetched: false } & Pick<Provider, 'id' | 'name'>
 
-export type LoanComplete = Loan & {
-  vendor?: UserProvider & { provider: Provider }
-  platform?: UserProvider & { provider: Provider }
-  lender?: UserProvider & { provider: Provider }
-  shares: LoanShareComplete[]
-  user: User
-}
-
 export type UserProviderComplete = UserProvider & {
   provider: Provider
 }
@@ -151,20 +159,6 @@ export enum SELECT_OPTIONS {
   NONE = 'NONE',
   CREATE = 'CREATE'
 }
-
-export interface SubAsset {
-  id: string
-  sub: SubscriptionComplete
-  date: Date
-}
-
-export interface LoanAsset {
-  id: string
-  loan: LoanComplete
-  date: Date
-}
-
-export type AssetType = SubAsset | LoanAsset
 
 export enum TIME {
   PAST,
