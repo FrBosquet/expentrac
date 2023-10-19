@@ -3,20 +3,19 @@
 import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
+import { type Loan } from '@lib/loan'
 import { cn } from '@lib/utils'
 import { loanSdk } from '@sdk'
-import { type LoanComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useLoans } from './context'
 
 interface Props {
-  loan: LoanComplete
+  loan: Loan
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
-  sideEffect?: () => void
+  sideEffect?: () => Promise<void>
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
@@ -30,18 +29,17 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
   const handleDelete = async () => {
     setLoading(true)
 
-    const result = await fetch(getUrl(`/loan?id=${id}`), {
-      method: 'DELETE'
-    })
+    try {
+      const loan = await loanSdk.delete(id)
 
-    if (result.ok) {
-      sideEffect?.()
-      void loanSdk.revalidate(loan.userId)
       removeLoan(loan)
+      void loanSdk.revalidate(loan.userId)
       setOpen(false)
-    } else {
+      void sideEffect?.()
+    } catch (e) {
+      console.error(e)
+    } finally {
       setLoading(false)
-      // TODO: error toast
     }
   }
 

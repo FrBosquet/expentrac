@@ -5,6 +5,7 @@ import { Button } from '@components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import { TIME } from '@types'
 import { useState } from 'react'
+import { LoanAdd } from './add'
 import { useLoans } from './context'
 import { COLUMN, LoanFee } from './item'
 
@@ -58,6 +59,9 @@ export const LoanSummary = ({ className }: Props) => {
           <p className='text-sm text-theme-light'>You have no subscriptions to pay today</p>
         </div>
       }
+      <footer className='flex justify-end pt-8'>
+        <LoanAdd />
+      </footer>
     </CardContent>
   </Card>
 }

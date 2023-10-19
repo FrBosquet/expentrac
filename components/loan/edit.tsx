@@ -38,10 +38,10 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
 
       updateLoan(updatedLoan)
       void loanSdk.revalidate(loan.userId)
-      setLoading(false)
       setOpen(false)
     } catch (e) {
       console.error(e)
+    } finally {
       setLoading(false)
     }
   }

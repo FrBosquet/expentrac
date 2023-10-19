@@ -4,6 +4,7 @@ import { monthBeetween } from './dates'
 import { type RawProvider } from './prisma'
 
 export type LoanFormData = {
+  id?: string
   name: string
   fee: string
   initial: string
