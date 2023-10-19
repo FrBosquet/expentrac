@@ -1,5 +1,19 @@
-import { type LoanComplete, type LoanExtendedInfo, type RawLoan } from '@types'
+import { type Contract } from '@sdk/contract'
+import { type LoanComplete, type LoanExtendedInfo } from '@types'
 import { monthBeetween } from './dates'
+import { type RawProvider } from './prisma'
+
+export type LoanFormData = {
+  name: string
+  fee: string
+  initial: string
+  vendorId?: string
+  platformId?: string
+  lenderId?: string
+  startDate: string
+  endDate: string
+  link: string
+} & Record<`sharedWith:${string}`, string>
 
 const now = new Date()
 const thisMonth = new Date()
@@ -26,6 +40,7 @@ export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: nu
   }
 }
 
+// TODO: Delete this function
 export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = thisMonth): LoanExtendedInfo => {
   const { fee, initial, shares } = loan
 
@@ -107,10 +122,19 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = t
   }
 }
 
-export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
-  const { initial, shares, fee } = rawLoan
-  const startDate = new Date(rawLoan.startDate)
-  const endDate = new Date(rawLoan.endDate)
+export const unwrapLoan = (rawLoan: Contract, refDate: Date) => {
+  const { shares, fee: baseFee, periods, resources } = rawLoan
+
+  const initial = baseFee ?? 0
+
+  if (periods.length === 0) throw new Error(`Loan ${rawLoan.id} has no periods`)
+
+  const { from, to, fee } = periods[0]
+
+  if (!to) throw new Error(`Loan ${rawLoan.id} has no end date`)
+
+  const startDate = new Date(from)
+  const endDate = new Date(to)
 
   const hasInitialPayment = initial && initial > 0
   const months = monthBeetween(startDate, endDate)
@@ -122,7 +146,7 @@ export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
   const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
   const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
 
-  const totalAmount = Number(rawLoan.fee) * months + (hasInitialPayment ? Number(initial) : 0)
+  const totalAmount = Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
   const paidAmount = paymentsDone * fee + initial
   const owedAmount = totalAmount - paidAmount
 
@@ -154,15 +178,47 @@ export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
 
+  const link = resources.find(r => r.type === 'LINK')?.url
+
+  const {
+    vendor,
+    platform,
+    lender
+  } = rawLoan.providers.reduce<{
+    vendor?: RawProvider
+    platform?: RawProvider
+    lender?: RawProvider
+  }>((acc, cur) => {
+    switch (cur.as) {
+      case 'VENDOR':
+        return {
+          ...acc,
+          vendor: cur.provider
+        }
+      case 'PLATFORM':
+        return {
+          ...acc,
+          platform: cur.provider
+        }
+      case 'LENDER':
+        return {
+          ...acc,
+          lender: cur.provider
+        }
+      default:
+        return acc
+    }
+  }, {})
+
   return {
     rawLoan,
     ...rawLoan,
-    startDate: new Date(rawLoan.startDate),
-    endDate: new Date(rawLoan.endDate),
+    startDate,
+    endDate,
     providers: {
-      vendor: rawLoan.vendor?.provider,
-      platform: rawLoan.platform?.provider,
-      lender: rawLoan.lender?.provider
+      vendor,
+      platform,
+      lender
     },
     fee: {
       initial: initial || 0,
@@ -186,6 +242,7 @@ export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
       isPaidThisMonth
     },
     shares: {
+      data: shares,
       holders: holderAmount,
       accepted: sharesAccepted,
       pending: sharesPending,
@@ -203,6 +260,9 @@ export const unwrapLoan = (rawLoan: RawLoan, refDate: Date) => {
       startsThisMonth,
       currentMonthPaymentDate,
       nextPaymentDate
+    },
+    resources: {
+      link
     }
   }
 }

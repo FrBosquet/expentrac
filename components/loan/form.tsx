@@ -1,38 +1,49 @@
 'use client'
 
-import { ProviderSelect } from '@components/ProviderSelect'
-import { UserSearch } from '@components/UserSearch'
 import { useProviders } from '@components/provider/context'
+import { ProviderSelect } from '@components/ProviderSelect'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
 import { Label } from '@components/ui/label'
 import { Separator } from '@components/ui/separator'
+import { UserSearch } from '@components/UserSearch'
 import { euroFormatter } from '@lib/currency'
 import { toHTMLInputFormat } from '@lib/dates'
-import { getPaymentPlan } from '@lib/loan'
-import { type Loan, type User } from '@lib/prisma'
-import { type LoanComplete } from '@types'
+import { getPaymentPlan, type Loan, type LoanFormData } from '@lib/loan'
+import { type RawUser } from '@lib/prisma'
 import { Trash } from 'lucide-react'
 import { useMemo, useState, type ChangeEvent, type FormEventHandler } from 'react'
 import { FieldSet, FormField, Root, SubmitButton } from '../Form'
 
 interface Props {
-  loan?: LoanComplete
+  loan?: Loan
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean
 }
 
+const getFormData = (loan: Loan): LoanFormData => ({
+  name: loan.name,
+  fee: loan.fee.monthly.toString(),
+  initial: loan.fee.initial.toString(),
+  vendorId: loan.providers.vendor?.id,
+  platformId: loan.providers.platform?.id,
+  lenderId: loan.providers.lender?.id,
+  startDate: toHTMLInputFormat(loan.startDate),
+  endDate: toHTMLInputFormat(loan.endDate),
+  link: loan.resources.link ?? ''
+})
+
 export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
-  const [formState, setFormState] = useState<Partial<Loan>>(loan ?? {
-    startDate: new Date()
-  })
+  const [formState, setFormState] = useState<Partial<LoanFormData>>(loan
+    ? getFormData(loan)
+    : { startDate: toHTMLInputFormat(new Date()) }
+  )
 
-  const [sharedWith, setSharedWith] = useState<User[]>(loan?.shares?.map(({ user }) => user) ?? [])
-
+  const [sharedWith, setSharedWith] = useState<RawUser[]>(loan?.shares.data.map(({ to }) => to) ?? [])
   const { providers } = useProviders()
 
   const brandOptions = providers.map((provider) => ({
-    value: provider.id,
+    value: provider.provider.id,
     label: provider.provider.name
   }))
 
@@ -52,39 +63,39 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
 
     const { startDate, endDate, fee, initial } = formState
 
-    return getPaymentPlan(startDate as Date, endDate, fee, initial)
+    return getPaymentPlan(new Date(startDate as string), new Date(endDate), Number(fee), Number(initial))
   }, [formState])
 
-  const removeShareHolder = (user: User) => {
+  const removeShareHolder = (user: RawUser) => {
     setSharedWith(prev => prev.filter((u) => u.id !== user.id))
   }
 
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={loan?.name} name="name" label="Name" />
-      <FormField required defaultValue={loan?.fee} name="fee" label="Fee" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
-      <FormField required defaultValue={loan?.initial ?? 0} name="initial" label="Initial" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
+      <FormField required defaultValue={loan?.fee.monthly} name="fee" label="Fee" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
+      <FormField required defaultValue={loan?.fee.initial ?? 0} name="initial" label="Initial" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
 
       <div className="col-span-2 grid grid-cols-3 gap-2">
         <span className="flex flex-col gap-2">
           <Label htmlFor='vendorId' className="text-xs text-center">
             Vendor
           </Label>
-          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={loan?.vendorId} />
+          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={loan?.providers.vendor?.id} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='platformId' className="text-xs text-center">
             Platform
           </Label>
-          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={loan?.platformId} />
+          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={loan?.providers.platform?.id} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='lenderId' className="text-xs text-center">
             Lender
           </Label>
-          <ProviderSelect required name="lenderId" items={brandOptions} defaultValue={loan?.lenderId} />
+          <ProviderSelect required name="lenderId" items={brandOptions} defaultValue={loan?.providers.lender?.id} />
         </span>
 
       </div>
@@ -95,7 +106,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
           <Label htmlFor='startDate' className="text-xs">
             Start date
           </Label>
-          <Input id="startDate" name="startDate" required defaultValue={toHTMLInputFormat(formState.startDate as Date)} onChange={handleChange} type="date" />
+          <Input id="startDate" name="startDate" required defaultValue={formState.startDate} onChange={handleChange} type="date" />
         </div>
         <div className="flex flex-col gap-2 items-center">
           <Label htmlFor='endDate' className="text-xs">
@@ -132,7 +143,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
 
       <Separator className="col-span-2" />
 
-      <FormField defaultValue={loan?.link ?? ''} name="link" label="Link" />
+      <FormField defaultValue={loan?.resources.link ?? ''} name="link" label="Link" />
       <p className='text-xs col-span-2'>Direct link to this loan page</p>
 
       {calculatedFee && <>

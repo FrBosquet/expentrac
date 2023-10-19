@@ -1,11 +1,11 @@
 import { getTag, getUrl } from '@lib/api'
-import { type LoanComplete } from '@types'
+import { type Contract } from './contract'
 
 export const getUserLoans = async (userId: string) => {
   const url = getUrl(`loan?userId=${userId}`)
 
   const response = await fetch(url, { next: { tags: [`loan:${userId}`] } })
-  const loans: LoanComplete[] = await response.json()
+  const loans: Contract[] = await response.json()
 
   return loans
 }
@@ -24,7 +24,7 @@ export const updateLoan = async (body: Record<string, unknown>) => {
     body: JSON.stringify(body)
   })
 
-  const { data } = await result.json() as { data: LoanComplete }
+  const { data } = await result.json() as { data: Contract }
 
   return data
 }

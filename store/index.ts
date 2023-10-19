@@ -1,6 +1,6 @@
 'use client'
 
-import { type RawLoan } from '@types'
+import { type Contract } from '@sdk/contract'
 import { useEffect } from 'react'
 import { create } from 'zustand'
 import { createLoanSlice, type LoanSlice } from './loan'
@@ -11,7 +11,7 @@ export const useStore = create<RootState>((...a) => ({
   ...createLoanSlice(...a)
 }))
 
-export const StoreProvider = ({ children, serverLoans }: { children: React.ReactNode, serverLoans: RawLoan[] }) => {
+export const StoreProvider = ({ children, serverLoans }: { children: React.ReactNode, serverLoans: Contract[] }) => {
   const setLoans = useStore(store => store.setLoans)
 
   useEffect(() => {

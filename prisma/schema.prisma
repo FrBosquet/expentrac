@@ -116,6 +116,7 @@ model Share {
   from       User     @relation(name: "SharesSent", fields: [fromId], references: [id], onDelete: Cascade)
   toId       String
   to         User     @relation(name: "SharesReceived", fields: [toId], references: [id], onDelete: Cascade)
+  accepted   Boolean?
 }
 
 model ProvidersOnContract {
