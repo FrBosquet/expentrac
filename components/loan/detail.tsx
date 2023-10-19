@@ -1,10 +1,10 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { ProviderDetail } from '@components/ProviderDetail'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Progress } from '@components/ui/progress'
 import { Separator } from '@components/ui/separator'
+import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { getLoanExtendedInformation } from '@lib/loan'
 import { type LoanComplete } from '@types'

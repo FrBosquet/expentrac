@@ -1,8 +1,8 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { useSummary } from '@components/Summary'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
+import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { Coins, HelpingHand, Receipt, Tv, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'

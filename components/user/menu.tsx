@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { useNotifications } from '@components/notifications/context'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@components/ui/dropdown-menu'
+import { useUser } from '@components/user/hooks'
 import {
   Bell,
   BellRing,

@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
 import { useSubShares } from '@components/subscription-share/context'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
@@ -12,6 +11,7 @@ import {
   TableHeader,
   TableRow
 } from '@components/ui/table'
+import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { getAccentColor } from '@lib/provider'
 import { type SubscriptionComplete } from '@types'

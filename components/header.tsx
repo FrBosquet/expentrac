@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
-import { DarkModeTogle } from './darkmode'
+import { DarkModeTogle } from './dark-mode'
 import { DateSelector } from './date/selector'
 import { NotificationBell } from './notifications/bell'
 

@@ -1,8 +1,8 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import { useUser } from '@components/user/hooks'
 import { getUrl } from '@lib/api'
 import { loanSdk } from '@sdk'
 import { type LoanComplete } from '@types'

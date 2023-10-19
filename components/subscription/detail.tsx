@@ -1,10 +1,10 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { ProviderDetail } from '@components/ProviderDetail'
 import { SharesDetail } from '@components/common/shares-detail'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Separator } from '@components/ui/separator'
+import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { type SubscriptionComplete } from '@types'
 import { Edit, Trash } from 'lucide-react'

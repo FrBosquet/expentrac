@@ -1,18 +1,8 @@
 import { RootProvider } from '@components/Provider'
-import { DarkModeProvider } from '@components/darkmode'
+import { DarkModeProvider } from '@components/root-provider'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import localFont from 'next/font/local'
-import './globals.css'
 
-const montserrat = localFont({
-  src: [
-    { path: '../public/fonts/MontserratAlt1-SemiBold.woff2', weight: '500', style: 'normal' },
-    { path: '../public/fonts/MontserratAlt1-ExtraBold.woff2', weight: '800', style: 'normal' }
-  ],
-  variable: '--font-montserrat'
-})
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Expentrac',
@@ -27,13 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${montserrat.variable} font-sans [view-timeline-name: fall]`}>
-        <DarkModeProvider>
-          <RootProvider >
-            {children}
-          </RootProvider>
-        </DarkModeProvider>
-      </body>
+      <DarkModeProvider>
+        <RootProvider >
+          {children}
+        </RootProvider>
+      </DarkModeProvider>
     </html>
   )
 }

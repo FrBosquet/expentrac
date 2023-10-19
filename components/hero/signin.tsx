@@ -1,9 +1,9 @@
 'use client'
 
 import { AiOutlineGoogle } from '@components/Icons'
-import { useUser } from '@components/Provider'
 import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
+import { useUser } from '@components/user/hooks'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
