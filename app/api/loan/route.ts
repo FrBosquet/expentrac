@@ -1,9 +1,10 @@
 import { authOptions } from '@lib/auth'
 import { type LoanFormData } from '@lib/loan'
+import { notificationSdk } from '@lib/notification'
 import { prisma, type Prisma, type RawProvidersOnContract } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
-import { CONTRACT_TYPE } from '@sdk/contract'
-import { SELECT_OPTIONS } from '@types'
+import { CONTRACT_TYPE, type Contract } from '@sdk/contract'
+import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -50,40 +51,6 @@ export const GET = async (req: Request) => {
 
   return NextResponse.json(loans)
 }
-
-// const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
-//   for (const key in body) {
-//     if (key.startsWith('sharedWith')) {
-//       const userId = body[key]
-
-//       if (loan.shares.some(share => share.user.id === userId)) continue
-
-//       const loanShare = await prisma.loanShare.create({
-//         data: {
-//           user: {
-//             connect: {
-//               id: body[key]
-//             }
-//           },
-//           loan: {
-//             connect: {
-//               id: loan.id
-//             }
-//           }
-//         },
-//         include: {
-//           user: true
-//         }
-//       })
-
-//       await notificationSdk.createNotification(userId, true, {
-//         type: NOTIFICATION_TYPE.LOAN_SHARE,
-//         loan,
-//         loanShare
-//       })
-//     }
-//   }
-// }
 
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
@@ -154,9 +121,18 @@ export const POST = async (req: Request) => {
     include
   })
 
+  newLoan.shares.forEach(share => {
+    void notificationSdk.createNotification(share.toId, true, {
+      type: NOTIFICATION_TYPE.LOAN_SHARE,
+      loan: newLoan as Contract,
+      loanShare: share
+    })
+  })
+
   return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
 }
 
+// TODO: For consistency, this should be in loan/[id]/route.ts
 export const PATCH = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
@@ -244,6 +220,18 @@ export const PATCH = async (req: Request) => {
       }
     },
     include
+  })
+
+  keysToCreate.forEach(toId => {
+    const share = updatedLoan.shares.find(share => share.toId === toId)
+
+    if (!share) return
+
+    void notificationSdk.createNotification(share.toId, true, {
+      type: NOTIFICATION_TYPE.LOAN_SHARE,
+      loan: updatedLoan as Contract,
+      loanShare: share
+    })
   })
 
   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })

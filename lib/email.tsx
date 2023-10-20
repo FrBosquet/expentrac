@@ -1,6 +1,7 @@
 import { DailyEmail, GenericEmail, LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
-import { getLoanExtendedInformation } from '@lib/loan'
+import { unwrapLoan } from '@lib/loan'
 import { type Loan, type Subscription } from '@lib/prisma'
+import { type Contract } from '@sdk/contract'
 import { type LoanComplete, type SubscriptionComplete } from '@types'
 
 import { Resend } from 'resend'
@@ -17,15 +18,14 @@ const sendWelcome = async (email: string, username: string) => {
 }
 
 // LOAN SHARE
-const sendLoanShare = async (email: string, username: string, loan: LoanComplete) => {
-  const { paymentsLeft } = getLoanExtendedInformation(loan)
-  const { user: { name: sharer }, fee, name } = loan
+const sendLoanShare = async (email: string, username: string, loan: Contract) => {
+  const { payments: { left }, fee: { monthly }, user, name } = unwrapLoan(loan)
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: email,
-    subject: `${sharer} wants to share a loan with you`,
-    react: <LoanShareEmail username={username} sharer={sharer as string} loanAmount={fee} loanName={name} months={paymentsLeft} />
+    subject: `${user.name} wants to share a loan with you`,
+    react: <LoanShareEmail username={username} sharer={user.name as string} loanAmount={monthly} loanName={name} months={left} />
   })
 }
 

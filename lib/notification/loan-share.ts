@@ -1,22 +1,23 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type LoanShare, type User } from '@lib/prisma'
-import { NOTIFICATION_TYPE, SHARE_STATE, type LoanComplete } from '@types'
+import { prisma, type Share, type User } from '@lib/prisma'
+import { type Contract } from '@sdk/contract'
+import { NOTIFICATION_TYPE, SHARE_STATE } from '@types'
 
 export interface LoanShareNotification {
   type: NOTIFICATION_TYPE.LOAN_SHARE
-  loan: LoanComplete
-  loanShare: LoanShare
+  loan: Contract
+  loanShare: Share
 }
 
 // TODO: Adding the whole loan would flood the notification table with data. Add a cron job to clean up every week or so.
 // Also, the info is outdated. Check if we can conditionally add the loan info.
 export interface LoanShareNotificationPayload {
-  loan: LoanComplete
-  loanShare: LoanShare
+  loan: Contract
+  loanShare: Share
   state: SHARE_STATE
 }
 
-export const handleLoanShare = async (user: User, shouldEmail: boolean, loan: LoanComplete, loanShare: LoanShare) => {
+export const handleLoanShare = async (user: User, shouldEmail: boolean, loan: Contract, loanShare: Share) => {
   const payload: LoanShareNotificationPayload = {
     loan,
     loanShare,

@@ -123,7 +123,7 @@ export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = t
   }
 }
 
-export const unwrapLoan = (rawLoan: Contract, refDate: Date) => {
+export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const { shares, fee: baseFee, periods, resources } = rawLoan
 
   const initial = baseFee ?? 0
@@ -239,6 +239,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date) => {
     payments: {
       total: months + (hasInitialPayment ? 1 : 0),
       done: paymentsDone + (hasInitialPayment ? 1 : 0),
+      left: paymentsLeft,
       hasInitialPayment,
       isPaidThisMonth
     },

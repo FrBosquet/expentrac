@@ -10,4 +10,5 @@ export type Contract = RawContract & {
   providers: Array<RawProvidersOnContract & { provider: RawProvider }>
   resources: RawResource[]
   shares: Array<RawShare & { to: RawUser, from: RawUser }>
+  user: RawUser
 }
