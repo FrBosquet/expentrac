@@ -1,6 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type Share, type User } from '@lib/prisma'
-import { type Contract } from '@sdk/contract'
+import { type Contract, prisma, type Share, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE } from '@types'
 
 export interface LoanShareNotification {

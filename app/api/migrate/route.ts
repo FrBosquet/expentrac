@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
+import { CONTRACT_TYPE } from '@lib/contract'
 import { prisma } from '@lib/prisma'
-import { CONTRACT_TYPE } from '@sdk/contract'
 import { NextResponse } from 'next/server'
 
 export const GET = async () => {

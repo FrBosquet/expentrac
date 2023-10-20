@@ -1,7 +1,6 @@
-import { type Contract } from '@sdk/contract'
 import { type LoanComplete, type LoanExtendedInfo } from '@types'
 import { monthBeetween } from './dates'
-import { type RawProvider } from './prisma'
+import { type Contract, type RawProvider } from './prisma'
 
 export type LoanFormData = {
   id?: string

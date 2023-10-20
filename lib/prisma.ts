@@ -1,12 +1,40 @@
 import { PrismaClient } from '@prisma/client'
+
+import {
+  type Account as PAccount,
+  type Contract as PContract,
+  type Loan as PLoan,
+  type Period as PPeriod,
+  type Provider as PProvider,
+  type ProvidersOnContract as PProvidersOnContract,
+  type Resource as PResource,
+  type Share as PShare,
+  type User as PUser
+} from '@prisma/client'
 export * from '@prisma/client'
 
-// Evertyy type from prisma should be imported from here, agging a Raw prefix
-export {
-  type Account as RawAccount, type Contract as RawContract,
-  type Loan as RawLoan, type Period as RawPeriod, type Provider as RawProvider, type ProvidersOnContract as RawProvidersOnContract,
-  type Resource as RawResource,
-  type Share as RawShare, type User as RawUser
-} from '@prisma/client'
+export type RawAccount = PAccount
+export type RawContract = PContract
+export type RawLoan = PLoan
+export type RawPeriod = PPeriod
+export type RawProvider = PProvider
+export type RawProvidersOnContract = PProvidersOnContract
+export type RawResource = PResource
+export type RawShare = PShare
+export type RawUser = PUser
+
+export type Contract = RawContract & {
+  periods: RawPeriod[]
+  providers: Array<RawProvidersOnContract & { provider: RawProvider }>
+  resources: RawResource[]
+  shares: Array<RawShare & { to: RawUser, from: RawUser }>
+  user: RawUser
+}
+
+export type Share = RawShare & {
+  to: RawUser
+  from: RawUser
+  contract: Contract
+}
 
 export const prisma = new PrismaClient()

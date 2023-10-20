@@ -1,5 +1,5 @@
 import { unwrapLoan } from '@lib/loan'
-import { type Contract } from '@sdk/contract'
+import { type Contract } from '@lib/prisma'
 import { type StateCreator } from 'zustand'
 
 export interface LoanSlice {

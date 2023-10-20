@@ -1,8 +1,10 @@
 'use client'
 
 import { useResourceContext } from '@lib/resourceContext'
+import { useStore } from '@store'
+import { getShares } from '@store/share'
 import { type LoanShareComplete } from '@types'
-import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { createContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 
 interface Props {
   children: ReactNode
@@ -46,10 +48,9 @@ export const LoanSharesProvider = ({ children, serverValue }: Props) => {
 }
 
 export const useLoanShares = () => {
-  const context = useContext(LoanShareContext)
-  if (context === undefined) {
-    throw new Error('useLoanShares must be used within a Provider')
-  }
+  const shares = useStore(getShares)
 
-  return context
+  return {
+    shares
+  }
 }

@@ -1,6 +1,6 @@
 import { getTag, getUrl } from '@lib/api'
 import { type LoanFormData } from '@lib/loan'
-import { type Contract } from './contract'
+import { type Contract } from '@lib/prisma'
 
 export const getUserLoans = async (userId: string) => {
   const url = getUrl(`loan?userId=${userId}`)

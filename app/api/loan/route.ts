@@ -1,9 +1,9 @@
 import { authOptions } from '@lib/auth'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { type LoanFormData } from '@lib/loan'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Prisma, type RawProvidersOnContract } from '@lib/prisma'
+import { type Contract, prisma, type Prisma, type RawProvidersOnContract } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
-import { CONTRACT_TYPE, type Contract } from '@sdk/contract'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
@@ -67,7 +67,6 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  // TODO: Create notifications with the sharedWith users. Also in the update
   const keysToCreate = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([key, value]) => value as string)
 
   const newLoan = await prisma.contract.create({

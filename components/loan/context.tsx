@@ -2,6 +2,7 @@
 
 import { useDate } from '@components/date/context'
 import { useLoanShares } from '@components/loan-share/context'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { unwrapLoan } from '@lib/loan'
 import { useStore } from '@store'
 import { getLoan, getLoans } from '@store/loan'
@@ -18,9 +19,11 @@ export const useLoans = () => {
   const updateLoan = useStore((state) => state.updateLoan)
   const hasLoans = useStore((state) => state.loans.length > 0)
 
-  const { loanShares } = useLoanShares()
+  const { shares } = useLoanShares()
 
-  const sharedLoans = loanShares.filter(share => share.accepted).map((loanShare) => unwrapLoan(loanShare.loan, date))
+  const sharedLoans = shares.filter(share => {
+    return share.accepted && share.contract.type === CONTRACT_TYPE.LOAN
+  }).map((loanShare) => unwrapLoan(loanShare.contract, date))
 
   const allLoans = [...loans, ...sharedLoans]
 
