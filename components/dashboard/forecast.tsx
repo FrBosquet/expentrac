@@ -23,11 +23,7 @@ const useForecastData = () => {
   endDate.setMonth(endDate.getMonth() + 8)
 
   const subFee = subs.reduce((acc, cur) => {
-    const monthlyFee = cur.yearly ? (cur.fee / 12) : cur.fee
-    const holders = cur.shares.filter(share => share.accepted === true).length + 1
-    const fee = monthlyFee / holders
-
-    return acc + fee
+    return acc + cur.fee.holder
   }, 0)
 
   const forecastData = new Array(12).fill(0).map((_, index) => {

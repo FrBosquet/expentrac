@@ -2,7 +2,7 @@ import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { type LoanFormData } from '@lib/loan'
 import { notificationSdk } from '@lib/notification'
-import { type Contract, prisma, type Prisma, type RawProvidersOnContract } from '@lib/prisma'
+import { prisma, type Contract, type Prisma, type RawProvidersOnContract, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
@@ -124,7 +124,7 @@ export const POST = async (req: Request) => {
     void notificationSdk.createNotification(share.toId, true, {
       type: NOTIFICATION_TYPE.LOAN_SHARE,
       loan: newLoan as Contract,
-      loanShare: share
+      loanShare: share as Share
     })
   })
 
@@ -229,7 +229,7 @@ export const PATCH = async (req: Request) => {
     void notificationSdk.createNotification(share.toId, true, {
       type: NOTIFICATION_TYPE.LOAN_SHARE,
       loan: updatedLoan as Contract,
-      loanShare: share
+      loanShare: share as Share
     })
   })
 

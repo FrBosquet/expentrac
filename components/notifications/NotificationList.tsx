@@ -1,6 +1,7 @@
 'use client'
 
 import { NOTIFICATION_TYPE } from '@types'
+import { twMerge } from 'tailwind-merge'
 import { DailyNotification } from './components/daily'
 import { LoanShareNotification } from './components/loan-share'
 import { LoanShareAcceptedNotification } from './components/loan-share-accepted'
@@ -10,10 +11,14 @@ import { SubShareAcceptedNotification } from './components/sub-share-accepted'
 import { SubShareRejectedNotification } from './components/sub-share-rejected'
 import { useNotifications } from './context'
 
-export const NotificationList = () => {
+interface Props {
+  className?: string
+}
+
+export const NotificationList = ({ className }: Props) => {
   const { notifications } = useNotifications()
 
-  return <section className="flex flex-col gap-2 py-6">
+  return <section className={twMerge('flex flex-col gap-2 py-6', className)}>
     {
       notifications.length
         ? notifications.map((notification) => {

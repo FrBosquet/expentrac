@@ -1,30 +1,31 @@
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
-import { type User } from '@lib/prisma'
+import { type Loan } from '@lib/loan'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
-  asset: {
-    shares: Array<{
-      id: string
-      user: User
-      accepted: boolean | null
-    }>
-    fee: number
-    user: User
-  }
-  assetType: string
+  contract: Loan // | Subscription
 }
 
-export const SharesDetail = ({ asset: { shares, fee, user: loanUser }, assetType }: Props) => {
+export const SharesDetail = ({ contract }: Props) => {
   const { user: currentUser } = useUser()
 
-  const parts = shares.filter(share => share.accepted === true).length + 1
-  const chargeByPart = fee / parts
-  const inEuros = `${euroFormatter.format(chargeByPart)}/m`
+  const {
+    shares: {
+      data: shares
+    },
+    user: contractUser,
+    fee: {
+      holder
+    }
+  } = contract
 
-  const userOwnThis = currentUser.id === loanUser.id
+  const inEuros = `${euroFormatter.format(holder)}/m`
+
+  const userOwnThis = currentUser.id === contractUser.id
+
+  const assetType = contract.type === 'LOAN' ? 'loan' : 'subscription'
 
   return <>
     <Separator className="col-span-2" />
@@ -32,17 +33,17 @@ export const SharesDetail = ({ asset: { shares, fee, user: loanUser }, assetType
 
       <p className="text-sm">This {assetType} fee is shared by:</p>
       <article className="flex items-center gap-2">
-        <p className={twMerge('text-sm font-semibold', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${loanUser.name} (owner)`}</p>
+        <p className={twMerge('text-sm font-semibold', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${contractUser.name} (owner)`}</p>
         {
           userOwnThis
             ? null
-            : <p className="text-sm text-slate-500 flex-1">{loanUser.email}</p>
+            : <p className="text-sm text-slate-500 flex-1">{contractUser.email}</p>
         }
         <p className="text-xs">{inEuros}</p>
       </article>
       {
         shares.map((share) => {
-          const { user, accepted } = share
+          const { accepted, contract: { user } } = share
 
           const isCurrentUser = currentUser.id === user.id
 

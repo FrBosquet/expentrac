@@ -1,4 +1,3 @@
-import { type LoanComplete, type LoanExtendedInfo } from '@types'
 import { monthBeetween } from './dates'
 import { type Contract, type RawProvider } from './prisma'
 
@@ -40,88 +39,6 @@ export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: nu
   }
 }
 
-// TODO: Delete this function
-export const getLoanExtendedInformation = (loan: LoanComplete, refDate: Date = thisMonth): LoanExtendedInfo => {
-  const { fee, initial, shares } = loan
-
-  const {
-    endDate,
-    months,
-    hasInitialPayment,
-    payments,
-    totalAmount
-  } = getPaymentPlan(loan.startDate, loan.endDate, fee, initial)
-
-  const monthBeetweenRefDate = monthBeetween(refDate, endDate)
-  const paymentsLeft = monthBeetweenRefDate < 0 ? 0 : monthBeetweenRefDate
-  const paymentsDone = months - paymentsLeft
-
-  const vendor = loan.vendor?.provider
-  const platform = loan.platform?.provider
-  const lender = loan.lender?.provider
-
-  const paidAmount = paymentsDone * fee + initial
-  const owedAmount = totalAmount - paidAmount
-
-  const isOver = refDate > endDate
-  const hasShares = shares ? shares.length > 0 : false
-
-  const holderAmount = loan.shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
-  const holderFee = fee / (holderAmount + 1)
-  const holderTotal = totalAmount / (holderAmount + 1)
-
-  const loanDate = new Date(loan.startDate)
-  const currentMonthPaymentDate = new Date(loanDate)
-  currentMonthPaymentDate.setMonth(refDate.getMonth())
-  currentMonthPaymentDate.setFullYear(refDate.getFullYear())
-
-  const nextPaymentDate = new Date(currentMonthPaymentDate)
-
-  const isPaidThisMonth = now >= currentMonthPaymentDate
-
-  if (isPaidThisMonth) {
-    nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1)
-  }
-
-  const hasStarted = refDate.getTime() >= loanDate.getTime()
-  const hasEnded = refDate.getTime() >= endDate.getTime()
-  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
-  const startsThisMonth = loanDate.getMonth() === refDate.getMonth() && loanDate.getFullYear() === refDate.getFullYear()
-
-  return {
-    id: loan.id,
-    loan,
-
-    payments,
-    paymentsDone: paymentsDone + (hasInitialPayment ? 1 : 0),
-    paymentsLeft,
-
-    totalAmount,
-    paidAmount,
-    owedAmount,
-
-    vendor,
-    platform,
-    lender,
-
-    isOver,
-
-    hasShares,
-    holderAmount,
-    holderFee,
-    holderTotal,
-
-    isPaidThisMonth,
-    currentMonthPaymentDate,
-    nextPaymentDate,
-
-    hasStarted,
-    hasEnded,
-    endsThisMonth,
-    startsThisMonth
-  }
-}
-
 export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const { shares, fee: baseFee, periods, resources } = rawLoan
 
@@ -139,8 +56,13 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const hasInitialPayment = initial && initial > 0
   const months = monthBeetween(startDate, endDate)
 
+  const hasStarted = refDate.getTime() >= startDate.getTime()
+  const hasEnded = refDate.getTime() >= endDate.getTime()
+  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
+  const startsThisMonth = startDate.getMonth() === refDate.getMonth() && startDate.getFullYear() === refDate.getFullYear()
+
   const monthBeetweenRefDate = monthBeetween(refDate, endDate)
-  const paymentsLeft = monthBeetweenRefDate < 0 ? 0 : monthBeetweenRefDate
+  const paymentsLeft = endsThisMonth ? 0 : monthBeetweenRefDate
   const paymentsDone = months - paymentsLeft
 
   const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
@@ -152,18 +74,14 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
 
   const holderAmount = 1 + sharesAccepted
 
-  const hasStarted = refDate.getTime() >= startDate.getTime()
-  const hasEnded = refDate.getTime() >= endDate.getTime()
-  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
-  const startsThisMonth = startDate.getMonth() === refDate.getMonth() && startDate.getFullYear() === refDate.getFullYear()
-
   const currentMonthPaymentDate = new Date(startDate)
   currentMonthPaymentDate.setMonth(refDate.getMonth())
   currentMonthPaymentDate.setFullYear(refDate.getFullYear())
 
   const nextPaymentDate = new Date(currentMonthPaymentDate)
-
   const isPaidThisMonth = now >= currentMonthPaymentDate
+
+  if (isPaidThisMonth) nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1)
 
   const isOngoing = (hasStarted && !hasEnded) || startsThisMonth || endsThisMonth
 
@@ -179,6 +97,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const hasAcceptedShares = sharesAccepted > 0
 
   const link = resources.find(r => r.type === 'LINK')?.url
+  const isPayday = now.getDate() === startDate.getDate()
 
   const {
     vendor,
@@ -211,7 +130,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   }, {})
 
   return {
-    rawLoan,
+    contract: rawLoan,
     ...rawLoan,
     startDate,
     endDate,
@@ -255,6 +174,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
     time: {
       duration: months,
       isOngoing,
+      isPayday,
       hasStarted,
       hasEnded,
       endsThisMonth,

@@ -3,23 +3,29 @@
 import { type Contract, type Share } from '@lib/prisma'
 import { useEffect } from 'react'
 import { create } from 'zustand'
-import { createLoanSlice, type LoanSlice } from './loan'
+import { createContractsSlice, type ContractsSlice } from './contracts'
 import { createShareSlice, type ShareSlice } from './share'
 
-type RootState = LoanSlice & ShareSlice
+type RootState = ShareSlice & ContractsSlice
 
 export const useStore = create<RootState>((...a) => ({
-  ...createLoanSlice(...a),
-  ...createShareSlice(...a)
+  ...createShareSlice(...a),
+  ...createContractsSlice(...a)
 }))
 
-export const StoreProvider = ({ children, serverLoans, serverShares }: { children: React.ReactNode, serverLoans: Contract[], serverShares: Share[] }) => {
-  const setLoans = useStore(store => store.setLoans)
+interface Props {
+  children: React.ReactNode
+  contracts: Contract[]
+  shares: Share[]
+}
+
+export const StoreProvider = ({ children, shares, contracts }: Props) => {
   const setShares = useStore(store => store.setShares)
+  const setContracts = useStore(store => store.setContracts)
 
   useEffect(() => {
-    setLoans(serverLoans)
-    setShares(serverShares)
+    setShares(shares)
+    setContracts(contracts)
   }, [])
 
   return children

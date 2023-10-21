@@ -8,44 +8,11 @@ import {
   CardTitle
 } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { type SubscriptionComplete } from '@types'
 import Link from 'next/link'
 import { useLoans } from './loan/context'
 import { useSubs } from './subscription/context'
 
-const getSubGetMonthlyFee = (sub: SubscriptionComplete) => {
-  return sub.yearly ? (sub.fee / 12) : sub.fee
-}
-
-export const getSubSharedFee = (sub: SubscriptionComplete) => {
-  const monthlyFee = getSubGetMonthlyFee(sub)
-  const holders = sub.shares.filter(share => share.accepted === true).length + 1
-  const fee = monthlyFee / holders
-
-  return fee
-}
-
-const getAssetTime = (date: Date) => {
-  const today = new Date().getDate()
-  const assetDate = date.getDate()
-
-  return assetDate === today
-    ? TIME.TODAY
-    : assetDate < today
-      ? TIME.PAST
-      : TIME.FUTURE
-}
-
-enum TIME {
-  PAST,
-  TODAY,
-  FUTURE
-}
-
 export const useSummary = () => {
-  const now = new Date()
-  const today = now.getDate()
-
   const { allLoans, hasAnyLoans } = useLoans()
   const { allSubs, hasAnySubs } = useSubs()
 
@@ -57,11 +24,9 @@ export const useSummary = () => {
   const subCount = allSubs.length
 
   const subFee = allSubs.reduce((acc, cur) => {
-    const monthlyFee = cur.yearly ? (cur.fee / 12) : cur.fee
-    const holders = cur.shares.filter(share => share.accepted === true).length + 1
-    const fee = monthlyFee / holders
+    const { holder } = cur.fee
 
-    return acc + fee
+    return acc + holder
   }, 0)
 
   const totalFee = loanFee + subFee
@@ -69,72 +34,27 @@ export const useSummary = () => {
   const owedMoney = allLoans.reduce((acc, cur) => acc + cur.amount.holderTotal, 0)
 
   const alreadyPaidLoans = ongoingLoans.filter(loan => loan.payments.isPaidThisMonth)
-
   const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => acc + cur.fee.holder, 0)
 
-  const alreadyPaidSubs = allSubs.filter(sub => {
-    if (!sub.yearly) return false
-    if (!sub.payday) return true
-
-    const subDate = new Date(sub.payday)
-    const subDay = subDate.getDate()
-
-    return subDay <= today
-  })
-
+  const alreadyPaidSubs = allSubs.filter(sub => sub.payments.isPaidThisMonth)
   const alreadyPaidSubsFee = alreadyPaidSubs.reduce((acc, cur) => {
-    return acc + getSubSharedFee(cur)
+    return acc + cur.fee.holder
   }, 0)
 
-  const subsWithNoPayday = allSubs.filter(sub => !sub.payday)
+  const subsWithNoPayday = allSubs.filter(sub => !sub.time.hasPayday)
   const subsWithNoPaydayFee = subsWithNoPayday.reduce((acc, cur) => {
-    return acc + getSubSharedFee(cur)
+    return acc + cur.fee.holder
   }, 0)
 
   const alreadyPaidFee = alreadyPaidLoansFee + alreadyPaidSubsFee
 
-  const sortedSubs = allSubs.map((sub) => {
-    const assetDate = new Date()
-
-    if (sub.payday) {
-      assetDate.setDate(sub.payday)
-    } else {
-      assetDate.setDate(1)
-    }
-
-    return {
-      id: sub.id,
-      sub,
-      date: assetDate,
-      time: getAssetTime(assetDate)
-    }
+  const sortedContracts = [...allSubs, ...allLoans].sort((a, b) => {
+    return a.time.currentMonthPaymentDate.getTime() - b.time.currentMonthPaymentDate.getTime()
   })
 
-  const sortedLoans = allLoans.map((loan) => {
-    const assetDate = new Date()
-    const loanStartDate = loan.startDate
-    const loanEndDate = loan.endDate
-
-    if (loanEndDate < assetDate) return { loan, date: loanEndDate, time: TIME.PAST, id: loan.id }
-
-    const day = loanStartDate.getDate()
-    assetDate.setDate(day)
-
-    return {
-      id: loan.id,
-      loan,
-      date: assetDate,
-      time: getAssetTime(assetDate)
-    }
-  })
-
-  const sortedAssets = [...sortedSubs, ...sortedLoans].sort((a, b) => {
-    return a.date.getTime() - b.date.getTime()
-  })
-
-  const pastAssets = sortedAssets.filter(asset => asset.time === TIME.PAST)
-  const todayAssets = sortedAssets.filter(asset => asset.time === TIME.TODAY)
-  const futureAssets = sortedAssets.filter(asset => asset.time === TIME.FUTURE)
+  const pastContracts = sortedContracts.filter(asset => asset.payments.isPaidThisMonth)
+  const todayContracts = sortedContracts.filter(asset => asset.time.isPayday)
+  const futureContracts = sortedContracts.filter(asset => !asset.payments.isPaidThisMonth && !asset.time.isPayday)
 
   return {
     totalFee,
@@ -152,10 +72,10 @@ export const useSummary = () => {
     alreadyPaidFee,
     subsWithNoPayday,
     subsWithNoPaydayFee,
-    sortedAssets,
-    pastAssets,
-    todayAssets,
-    futureAssets
+    sortedContracts,
+    pastContracts,
+    todayContracts,
+    futureContracts
   }
 }
 

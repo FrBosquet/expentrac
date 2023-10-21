@@ -9,9 +9,9 @@ interface Props {
 }
 
 export const Today = ({ className }: Props) => {
-  const { todayAssets } = useSummary()
+  const { todayContracts } = useSummary()
 
-  const hasAssets = todayAssets.length > 0
+  const hasContracts = todayContracts.length > 0
 
   return <Card className={className}>
     <CardHeader>
@@ -19,12 +19,12 @@ export const Today = ({ className }: Props) => {
       <CardDescription>You are paying for:</CardDescription>
     </CardHeader>
     <CardContent>
-      {hasAssets
+      {hasContracts
         ? <div className='flex flex-col gap-3'>
-          {todayAssets.map((asset) => <Asset asset={asset} key={asset.id} />)}
+          {todayContracts.map((contract) => <Asset contract={contract} key={contract.id} />)}
         </div>
         : <div className='grid place-content-center gap-2 p-6 text-center'>
-          <p className='text-sm text-theme-light'>You have no subscriptions to pay today</p>
+          <p className='text-sm text-theme-light'>You have nothing to pay for today</p>
         </div>
       }
     </CardContent>

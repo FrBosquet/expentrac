@@ -1,8 +1,9 @@
 import { getTag, getUrl } from '@lib/api'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { type SubscriptionComplete } from '@types'
 
 export const getUserSubscriptions = async (userId: string) => {
-  const url = getUrl(`subscription?userId=${userId}`)
+  const url = getUrl(`contract?userId=${userId}&type=${CONTRACT_TYPE.SUBSCRIPTION}`)
 
   const response = await fetch(url, { next: { tags: [`subscription:${userId}`] } })
   const subscriptions: SubscriptionComplete[] = await response.json()

@@ -1,9 +1,12 @@
 'use client'
 
-import { useSubShares } from '@components/subscription-share/context'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { useResourceContext } from '@lib/resourceContext'
+import { unwrapSub, type Subscription } from '@lib/sub'
+import { useStore } from '@store'
+import { getSubs } from '@store/contracts'
 import { type SubscriptionComplete } from '@types'
-import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { createContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 
 interface Props {
   children: ReactNode
@@ -48,22 +51,28 @@ export const SubsProvider = ({ children, serverValue }: Props) => {
 }
 
 export const useSubs = () => {
-  const context = useContext(SubContext)
-  if (context === undefined) {
-    throw new Error('useSubs must be used within a Provider')
-  }
+  const subs = useStore(getSubs)
+  const addSub = useStore((state) => state.addContract)
+  const removeSub = useStore((state) => state.removeContract)
+  const updateSub = useStore((state) => state.updateContract)
+  const shares = useStore(state => state.shares)
 
-  const { subShares } = useSubShares()
+  // TODO: Move to a selector in shares store
+  const sharedSubs = shares.filter(share => {
+    return share.accepted && share.contract.type === CONTRACT_TYPE.SUBSCRIPTION
+  }).map(share => unwrapSub(share.contract))
 
-  const sharedShares = subShares.filter(share => share.accepted).map((share) => share.subscription)
-  const allSubs = [...context.subs, ...sharedShares]
+  const allSubs = [...subs, ...sharedSubs] as Subscription[]
 
-  const hasOwnSubs = context.subs.length > 0
-  const hasSharedSubs = sharedShares.length > 0
+  const hasOwnSubs = subs.length > 0
+  const hasSharedSubs = sharedSubs.length > 0
   const hasAnySubs = hasOwnSubs || hasSharedSubs
 
   return {
-    ...context,
+    subs,
+    addSub,
+    removeSub,
+    updateSub,
     allSubs,
     hasOwnSubs,
     hasSharedSubs,

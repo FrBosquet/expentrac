@@ -6,8 +6,7 @@ import { Progress } from '@components/ui/progress'
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
-import { getLoanExtendedInformation } from '@lib/loan'
-import { type LoanComplete } from '@types'
+import { type Loan } from '@lib/loan'
 import { Edit, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -16,7 +15,7 @@ import { LoanDelete } from './delete'
 import { LoanEdit } from './edit'
 
 interface Props {
-  loan: LoanComplete
+  loan: Loan
   triggerContent?: React.ReactNode
   children?: React.ReactNode
   className?: string
@@ -27,8 +26,39 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  const { startDate, endDate, fee, name, initial } = loan
-  const { paymentsDone, payments, paymentsLeft, paidAmount, totalAmount, owedAmount, hasShares, isOver } = getLoanExtendedInformation(loan)
+  const {
+    startDate,
+    endDate,
+    name,
+    fee: {
+      initial,
+      monthly
+    },
+    payments: {
+      done: paymentsDone,
+      total: payments,
+      left: paymentsLeft
+    },
+    amount: {
+      paid: paidAmount,
+      total: totalAmount,
+      owed: owedAmount
+    },
+    shares: {
+      hasAny: hasShares
+    },
+    time: {
+      hasEnded: isOver
+    },
+    providers: {
+      lender,
+      platform,
+      vendor
+    },
+    resources: {
+      link
+    }
+  } = loan
 
   const userOwnThis = ownsAsset(loan)
 
@@ -58,14 +88,14 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
         </DialogHeader>
         <section className="grid grid-cols-2 gap-4">
           <article className="grid grid-cols-3 gap-2 col-span-2">
-            <ProviderDetail provider={loan.vendor?.provider} label="Vendor" className="col-start-1" />
-            <ProviderDetail provider={loan.platform?.provider} label="Platform" className="col-start-2" />
-            <ProviderDetail provider={loan.lender?.provider} label="Lender" className="col-start-3" />
+            <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
+            <ProviderDetail provider={platform} label="Platform" className="col-start-2" />
+            <ProviderDetail provider={lender} label="Lender" className="col-start-3" />
           </article>
 
           <article className="flex flex-col gap-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
-            <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
+            <p className="text-lg text-slate-700">{euroFormatter.format(monthly)}</p>
           </article>
 
           {initial
@@ -123,15 +153,15 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
               : null
           }
           {
-            loan.link
+            link
               ? <article className="flex flex-col gap-2 col-span-2">
-                <a target='_blank' href={loan.link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Loan link</a>
+                <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Loan link</a>
               </article>
               : null
           }
 
           {
-            hasShares && <SharesDetail assetType='loan' asset={loan} />
+            hasShares && <SharesDetail contract={loan} />
           }
 
           {
