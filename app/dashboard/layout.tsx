@@ -1,5 +1,4 @@
 import { DashboardLayout } from '@components/NavigationMenu'
-import { DateProvider } from '@components/date/context'
 import { NotificationsProvider } from '@components/notifications/context'
 import { ProvidersProvider } from '@components/provider/context'
 import { SubscriptionSharesProvider } from '@components/subscription-share/context'
@@ -43,13 +42,11 @@ export default async function Layout({ children }: Props) {
     <SubscriptionSharesProvider serverValue={subShares}>
       <ProvidersProvider serverValue={providers} >
         <NotificationsProvider serverValue={notifications}>
-          <DateProvider>
-            <DashboardLayout>
-              <StoreProvider shares={shares} contracts={contracts}>
-                {children}
-              </StoreProvider>
-            </DashboardLayout>
-          </DateProvider>
+          <DashboardLayout>
+            <StoreProvider shares={shares} contracts={contracts}>
+              {children}
+            </StoreProvider>
+          </DashboardLayout>
         </NotificationsProvider>
       </ProvidersProvider>
     </SubscriptionSharesProvider>
