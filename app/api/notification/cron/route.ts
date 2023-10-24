@@ -30,7 +30,11 @@ export const GET = async () => {
     include: {
       contract: {
         include: {
-          user: true
+          user: true,
+          shares: true,
+          periods: true,
+          providers: true,
+          resources: true
         }
       }
     }

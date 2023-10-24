@@ -1,4 +1,7 @@
+import { euroFormatter } from '@lib/currency'
+import { unwrapLoan } from '@lib/loan'
 import { type Contract } from '@lib/prisma'
+import { unwrapSub } from '@lib/sub'
 import { Button } from '@react-email/button'
 import { Heading } from '@react-email/heading'
 import { Section } from '@react-email/section'
@@ -8,17 +11,16 @@ import TemplateEmail from './template'
 export interface DailyEmailProps {
   username: string
   loans: Contract[]
-  subs: Contract[]
+  subs?: Contract[]
 }
 
-// TODO: Try to get the fee info from the contracts
 export default function DailyEmail({
   username = 'Fran Bosquet',
   loans = [],
   subs = []
 }: DailyEmailProps) {
-  const loansData = loans
-  const subData = subs
+  const loansData = loans?.map((loan) => unwrapLoan(loan))
+  const subData = subs?.map((subscription) => unwrapSub(subscription))
 
   return (
     <TemplateEmail preview={'Your payments for today'}>
@@ -31,10 +33,10 @@ export default function DailyEmail({
       <Text className="text-black text-[14px] leading-[24px]">
         <ul className="list-disc list-inside">
           {loansData?.map((loan, index) => (
-            <li key={index}><strong>{loan.name}</strong></li>
+            <li key={index}><strong>{loan.name}</strong> - {euroFormatter.format(loan.fee.holder)}</li>
           ))}
           {subData?.map((sub, index) => (
-            <li key={index}><strong>{sub.name}</strong></li>
+            <li key={index}><strong>{sub.name}</strong> - {euroFormatter.format(sub.fee.holder)}</li>
           ))}
         </ul>
       </Text>
