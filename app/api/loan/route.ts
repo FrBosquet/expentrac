@@ -83,7 +83,8 @@ export const POST = async (req: Request) => {
         create: {
           to: new Date(body.endDate).toISOString(),
           from: new Date(body.startDate).toISOString(),
-          fee: Number(body.fee)
+          fee: Number(body.fee),
+          payday: body.payday ?? new Date(body.startDate).getDate()
         }
       },
       providers: {
@@ -121,10 +122,10 @@ export const POST = async (req: Request) => {
   })
 
   newLoan.shares.forEach(share => {
-    void notificationSdk.createNotification(share.toId, true, {
+    void notificationSdk.create(share.toId, true, {
       type: NOTIFICATION_TYPE.LOAN_SHARE,
-      loan: newLoan as Contract,
-      loanShare: share as Share
+      contract: newLoan as Contract,
+      share: share as Share
     })
   })
 
@@ -226,10 +227,10 @@ export const PATCH = async (req: Request) => {
 
     if (!share) return
 
-    void notificationSdk.createNotification(share.toId, true, {
+    void notificationSdk.create(share.toId, true, {
       type: NOTIFICATION_TYPE.LOAN_SHARE,
-      loan: updatedLoan as Contract,
-      loanShare: share as Share
+      contract: updatedLoan as Contract,
+      share: share as Share
     })
   })
 

@@ -25,7 +25,7 @@ export type RawUser = PUser
 
 export type Contract = RawContract & {
   periods: RawPeriod[]
-  providers: Array<RawProvidersOnContract & { provider: RawProvider }>
+  providers: ProviderOnContract[]
   resources: RawResource[]
   shares: Array<RawShare & { to: RawUser, from: RawUser, contract: Contract }>
   user: RawUser
@@ -35,6 +35,15 @@ export type Share = RawShare & {
   to: RawUser
   from: RawUser
   contract: Contract
+}
+
+export type ProviderOnContract = RawProvidersOnContract & {
+  provider: Provider
+  contract: Contract
+}
+
+export type Provider = RawProvider & {
+  providersOnContracts: ProviderOnContract[]
 }
 
 export const prisma = new PrismaClient()

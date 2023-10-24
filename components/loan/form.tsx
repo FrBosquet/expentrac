@@ -43,8 +43,8 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
   const { providers } = useProviders()
 
   const brandOptions = providers.map((provider) => ({
-    value: provider.provider.id,
-    label: provider.provider.name
+    value: provider.id,
+    label: provider.name
   }))
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -4,14 +4,14 @@ import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { getUrl } from '@lib/api'
+import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
-import { type SubscriptionComplete } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useSubs } from './context'
 
 interface Props {
-  sub: SubscriptionComplete
+  sub: Subscription
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
@@ -35,7 +35,7 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
 
     setLoading(false)
     if (result.ok) {
-      removeSub(sub)
+      removeSub(sub.contract)
       sideEffect?.()
       setOpen(false)
     }

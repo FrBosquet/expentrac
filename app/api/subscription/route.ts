@@ -1,7 +1,6 @@
 import { authOptions } from '@lib/auth'
-import { notificationSdk } from '@lib/notification'
 import { prisma, type Prisma, type Subscription } from '@lib/prisma'
-import { NOTIFICATION_TYPE, SELECT_OPTIONS, type SubscriptionComplete } from '@types'
+import { SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
 
@@ -86,39 +85,39 @@ const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
   }, {}) as T
 }
 
-const addShares = async (sub: SubscriptionComplete, body: Record<string, string>) => {
-  for (const key in body) {
-    if (key.startsWith('sharedWith')) {
-      const userId = body[key]
+// TODO: Refactor to use COntract/Shares
+// const addShares = async (sub: any, body: Record<string, string>) => {
+//   for (const key in body) {
+//     if (key.startsWith('sharedWith')) {
+// const userId = body[key]
 
-      if (sub.shares.some(sub => sub.user.id === userId)) continue
+// if (sub.shares.some(sub => sub.user.id === userId)) continue
 
-      const subShare = await prisma.subscriptionShare.create({
-        data: {
-          user: {
-            connect: {
-              id: userId
-            }
-          },
-          subscription: {
-            connect: {
-              id: sub.id
-            }
-          }
-        },
-        include: {
-          user: true
-        }
-      })
-
-      await notificationSdk.createNotification(userId, true, {
-        type: NOTIFICATION_TYPE.SUB_SHARE,
-        sub,
-        subShare
-      })
-    }
-  }
-}
+/*       // const subShare = await prisma.subscriptionShare.create({
+      //   data: {
+      //     user: {
+      //       connect: {
+      //         id: userId
+      //       }
+      //     },
+      //     subscription: {
+      //       connect: {
+      //         id: sub.id
+      //       }
+      //     }
+      //   },
+      //   include: {
+      //     user: true
+      //   }
+      // })
+ */
+// await notificationSdk.create(userId, true, {
+//   type: NOTIFICATION_TYPE.SUB_SHARE,,
+//   subShare
+// })
+//     }
+//   }
+// }
 
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
@@ -149,7 +148,7 @@ export const POST = async (req: Request) => {
 
   const newSub = await prisma.subscription.create(args)
 
-  await addShares(newSub as SubscriptionComplete, body)
+  // await addShares(newSub as SubscriptionComplete, body)
 
   const data = await prisma.subscription.findFirst({
     where: { id: newSub.id },
@@ -199,7 +198,7 @@ export const PATCH = async (req: Request) => {
     include
   }
 
-  await addShares(subscription as SubscriptionComplete, body)
+  // await addShares(subscription as SubscriptionComplete, body)
 
   const updatedSubscription = await prisma.subscription.update(args)
 

@@ -1,4 +1,4 @@
-import { Footer } from '@components/Footer'
+import { Footer } from '@components/footer'
 import { Header } from './Header'
 
 export const WebLayout = ({ children }: { children: React.ReactNode }) => {

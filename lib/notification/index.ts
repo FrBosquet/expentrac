@@ -19,7 +19,7 @@ type NotificationData =
   SubShareRejectNotification |
   DailyNotification
 
-const createNotification = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
+const create = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
   const user = await prisma.user.findUnique({
     where: {
       id: userId
@@ -35,31 +35,29 @@ const createNotification = async (userId: string, shouldEmail: boolean, data: No
       return await handleGeneric(user, shouldEmail, data)
     }
     case NOTIFICATION_TYPE.LOAN_SHARE: {
-      return await handleLoanShare(user, shouldEmail, data.loan, data.loanShare)
+      return await handleLoanShare(user, shouldEmail, data.contract, data.share)
     }
     case NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED: {
-      return await handleLoanShareAccept(user, shouldEmail, data.loan)
+      return await handleLoanShareAccept(user, shouldEmail, data.contract)
     }
     case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED: {
-      return await handleLoanShareReject(user, shouldEmail, data.loan)
+      return await handleLoanShareReject(user, shouldEmail, data.contract)
     }
     case NOTIFICATION_TYPE.SUB_SHARE: {
-      return await handleSubsShare(user, shouldEmail, data.sub, data.subShare)
+      return await handleSubsShare(user, shouldEmail, data.contract, data.share)
     }
     case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED: {
-      return await handleSubShareAccept(user, shouldEmail, data.sub)
+      return await handleSubShareAccept(user, shouldEmail, data.contract)
     }
     case NOTIFICATION_TYPE.SUB_SHARE_REJECTED: {
-      return await handleSubShareReject(user, shouldEmail, data.sub)
+      return await handleSubShareReject(user, shouldEmail, data.contract)
     }
     case NOTIFICATION_TYPE.DAILY: {
       return await handleDaily(user, shouldEmail, data)
     }
-    default:
-      throw new Error('Unknown notification type')
   }
 }
 
 export const notificationSdk = {
-  createNotification
+  create
 }

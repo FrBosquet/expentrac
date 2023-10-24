@@ -6,26 +6,25 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
-import { type SubscriptionComplete } from '@types'
-import { Edit, Trash } from 'lucide-react'
+import { type Contract } from '@lib/prisma'
+import { unwrapSub } from '@lib/sub'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { SubscriptionDelete } from './delete'
-import { SubscriptionEdit } from './edit'
 
 interface Props {
-  sub: SubscriptionComplete
+  contract: Contract
   triggerContent?: React.ReactNode
   children?: React.ReactNode
   className?: string
 }
 
-export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, className }: Props) => {
+export const SubscriptionDetail = ({ contract, triggerContent = contract.name, children, className }: Props) => {
   const { ownsAsset } = useUser()
 
   const [open, setOpen] = useState(false)
 
-  const { fee, name } = sub
+  const sub = unwrapSub(contract)
+  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, name, resources: { link }, shares: { total }, time: { isYearly } } = sub
 
   const userOwnThis = ownsAsset(sub)
 
@@ -45,44 +44,44 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
         </DialogHeader>
         <section className="grid grid-cols-2 gap-6">
           <article className="grid grid-cols-2 gap-2 col-span-2">
-            <ProviderDetail provider={sub.vendor?.provider} label="Vendor" className="col-start-1" />
-            <ProviderDetail provider={sub.platform?.provider} label="Platform" className="col-start-2" />
+            <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
+            <ProviderDetail provider={platform} label="Platform" className="col-start-2" />
           </article>
 
           {
-            sub.yearly && (
+            isYearly && (
               <article className="flex flex-col gap-2">
                 <h4 className="text-sm font-semibold">Yearly fee</h4>
-                <p className="text-lg text-slate-700">{euroFormatter.format(fee)}</p>
+                <p className="text-lg text-slate-700">{euroFormatter.format(yearly)}</p>
               </article>
             )
           }
 
           <article className="flex flex-col gap-2">
             <h4 className="text-sm font-semibold">Monthly fee</h4>
-            <p className="text-lg text-slate-700">{euroFormatter.format(sub.yearly ? fee / 12 : fee)}</p>
+            <p className="text-lg text-slate-700">{euroFormatter.format(monthly)}</p>
           </article>
           {
-            sub.payday
+            payday
               ? <article className="flex flex-col gap-2">
                 <h4 className="text-sm font-semibold">Payment day</h4>
-                <p className="text-lg text-slate-700">{sub.payday}</p>
+                <p className="text-lg text-slate-700">{payday}</p>
               </article>
               : null
           }
 
           {
-            sub.link
+            link
               ? <article className="flex flex-col gap-2 col-span-2">
-                <a target='_blank' href={sub.link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Subscription link</a>
+                <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Subscription link</a>
               </article>
               : null
           }
 
           {
-            sub.shares.length > 0 && (
+            total > 0 && (
               <>
-                <SharesDetail assetType='subscription' asset={sub} />
+                <SharesDetail contract={sub} />
               </>
             )
           }
@@ -91,8 +90,8 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
               <>
                 <Separator className="col-span-2" />
                 <menu className="col-span-2 flex gap-2 justify-end">
-                  <SubscriptionEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-                  <SubscriptionDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />
+                  {/* <SubscriptionEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} /> TODO: Refactor to use contract/sub */}
+                  {/* <SubscriptionDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} /> TODO: Refactor to use contract/sub */}
                 </menu>
               </>
             )

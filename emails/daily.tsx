@@ -1,4 +1,4 @@
-import { type Loan, type Subscription } from '@lib/prisma'
+import { type Contract } from '@lib/prisma'
 import { Button } from '@react-email/button'
 import { Heading } from '@react-email/heading'
 import { Section } from '@react-email/section'
@@ -7,24 +7,19 @@ import TemplateEmail from './template'
 
 export interface DailyEmailProps {
   username: string
-  loans: Loan[]
-  subscriptions: Subscription[]
+  loans: Contract[]
+  subs: Contract[]
 }
 
+// TODO: Try to get the fee info from the contracts
 export default function DailyEmail({
   username = 'Fran Bosquet',
-  loans = [
-    {
-      name: 'Loan 1',
-      fee: 1000
-    } as unknown as Loan
-  ],
-  subscriptions = [{
-    name: 'Subscription 1',
-    fee: 100
-  } as unknown as Subscription
-  ]
+  loans = [],
+  subs = []
 }: DailyEmailProps) {
+  const loansData = loans
+  const subData = subs
+
   return (
     <TemplateEmail preview={'Your payments for today'}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
@@ -35,11 +30,11 @@ export default function DailyEmail({
       </Text>
       <Text className="text-black text-[14px] leading-[24px]">
         <ul className="list-disc list-inside">
-          {loans.map((loan, index) => (
-            <li key={index}><strong>{loan.name}</strong> - {loan.fee}€</li>
+          {loansData?.map((loan, index) => (
+            <li key={index}><strong>{loan.name}</strong></li>
           ))}
-          {subscriptions.map((subscription, index) => (
-            <li key={index}><strong>{subscription.name}</strong> - {subscription.fee}€</li>
+          {subData?.map((sub, index) => (
+            <li key={index}><strong>{sub.name}</strong></li>
           ))}
         </ul>
       </Text>

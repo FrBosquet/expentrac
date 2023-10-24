@@ -49,7 +49,7 @@ export const POST = async (req: Request) => {
   }
 
   try {
-    const notification = await notificationSdk.createNotification(userId, email, {
+    const notification = await notificationSdk.create(userId, email, {
       type: NOTIFICATION_TYPE.GENERIC,
       message: body.message
     })

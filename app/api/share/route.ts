@@ -1,6 +1,28 @@
 import { prisma } from '@lib/prisma'
 import { NextResponse } from 'next/server'
 
+const include = {
+  to: true,
+  from: true,
+  contract: {
+    include: {
+      shares: {
+        include: {
+          to: true
+        }
+      },
+      providers: {
+        include: {
+          provider: true
+        }
+      },
+      user: true,
+      resources: true,
+      periods: true
+    }
+  }
+}
+
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get('userId')
@@ -17,28 +39,7 @@ export const GET = async (req: Request) => {
     where: {
       toId: userId
     },
-    include: {
-      to: true,
-      from: true,
-      contract: {
-        include: {
-          shares: {
-            include: {
-              to: true
-            }
-          },
-          providers: {
-            include: {
-              provider: true
-            }
-          },
-          user: true,
-          resources: true,
-          periods: true
-        }
-      }
-
-    }
+    include
   })
 
   return NextResponse.json(shares)

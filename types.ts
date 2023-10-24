@@ -1,53 +1,5 @@
-import { type LoanShare, type Loan as PrismaLoan, type Provider, type Subscription, type SubscriptionShare, type User, type UserProvider } from '@lib/prisma'
-
-export type RawLoan = PrismaLoan & {
-  vendor?: UserProvider & { provider: Provider }
-  platform?: UserProvider & { provider: Provider }
-  lender?: UserProvider & { provider: Provider }
-  shares: LoanShareComplete[]
-  user: User
-}
-
+import { type Provider } from '@lib/prisma'
 // TODO: This has to dissapear
-export type LoanComplete = PrismaLoan & {
-  vendor?: UserProvider & { provider: Provider }
-  platform?: UserProvider & { provider: Provider }
-  lender?: UserProvider & { provider: Provider }
-  shares: LoanShareComplete[]
-  user: User
-}
-export interface LoanExtendedInfo {
-  id: string
-  loan: LoanComplete
-
-  totalAmount: number
-  paidAmount: number
-  owedAmount: number
-
-  payments: number
-  paymentsDone: number
-  paymentsLeft: number
-
-  vendor?: Provider
-  platform?: Provider
-  lender?: Provider
-
-  isOver: boolean
-
-  hasShares: boolean
-  holderAmount: number
-  holderFee: number
-  holderTotal: number
-
-  isPaidThisMonth: boolean
-  currentMonthPaymentDate: Date
-  nextPaymentDate: Date
-
-  hasStarted: boolean
-  hasEnded: boolean
-  endsThisMonth: boolean
-  startsThisMonth: boolean
-}
 
 export interface BrandExtendedInfo {
   name: string
@@ -110,27 +62,6 @@ export interface Logo {
 
 export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
 export type ProviderUnfetched = { isFetched: false } & Pick<Provider, 'id' | 'name'>
-
-export type UserProviderComplete = UserProvider & {
-  provider: Provider
-}
-
-export type SubscriptionComplete = Subscription & {
-  vendor?: UserProvider & { provider: Provider }
-  platform?: UserProvider & { provider: Provider }
-  shares: SubscriptionShareComplete[]
-  user: User
-}
-
-export type LoanShareComplete = LoanShare & {
-  loan: LoanComplete
-  user: User
-}
-
-export type SubscriptionShareComplete = SubscriptionShare & {
-  subscription: SubscriptionComplete
-  user: User
-}
 
 export enum NOTIFICATION_TYPE {
   GENERIC = 'GENERIC',

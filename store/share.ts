@@ -32,6 +32,7 @@ export const createShareSlice: StateCreator<ShareSlice> = (set) => ({
 })
 
 export const getSharesSetter = (state: ShareSlice) => state.setShares
+export const getShareUpdater = (state: ShareSlice) => state.updateShare
 
 export const getShares = (state: ShareSlice) => {
   const { shares } = state

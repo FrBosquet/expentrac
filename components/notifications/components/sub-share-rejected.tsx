@@ -6,11 +6,11 @@ import { NotificationWrapper } from './wrapper'
 
 export const SubShareRejectedNotification = ({ notification }: { notification: NotificationType }) => {
   const { id, ack, createdAt } = notification
-  const { sub, shareHolder } = JSON.parse(notification.payload as string) as SubShareAcceptNotificationPayload
+  const { contract, user } = JSON.parse(notification.payload as string) as SubShareAcceptNotificationPayload
 
   const { loading } = useAutoAck(notification)
 
   return <NotificationWrapper date={createdAt} key={id} loading={loading} acknowledged={ack}>
-    <p className='w-full'>{shareHolder.name} refused to share <SubscriptionDetail sub={sub} className='font-semibold hover:text-primary-800' /> with you</p>
+    <p className='w-full'>{user.name} refused to share <SubscriptionDetail contract={contract} className='font-semibold hover:text-primary-800' /> with you</p>
   </NotificationWrapper>
 }

@@ -1,5 +1,5 @@
 import { monthBeetween } from './dates'
-import { type Contract, type RawProvider } from './prisma'
+import { type Provider, type Contract } from './prisma'
 
 export type LoanFormData = {
   id?: string
@@ -104,9 +104,9 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
     platform,
     lender
   } = rawLoan.providers.reduce<{
-    vendor?: RawProvider
-    platform?: RawProvider
-    lender?: RawProvider
+    vendor?: Provider
+    platform?: Provider
+    lender?: Provider
   }>((acc, cur) => {
     switch (cur.as) {
       case 'VENDOR':

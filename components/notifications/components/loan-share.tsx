@@ -1,49 +1,46 @@
-import { LoanDetail } from '@components/loan/detail'
 import { useNotifications } from '@components/notifications/context'
-import { euroFormatter } from '@lib/currency'
 import { type LoanShareNotificationPayload } from '@lib/notification/loan-share'
-import { type Notification as NotificationType } from '@lib/prisma'
-import { updateLoanShare } from '@sdk/loanShare'
+import { type Share, type Notification as NotificationType } from '@lib/prisma'
 import { ackNotification } from '@sdk/notifications'
-import { NOTIFICATION_TYPE, SHARE_STATE, type LoanShareComplete, type NotificationBase } from '@types'
+import { NOTIFICATION_TYPE, SHARE_STATE, type NotificationBase } from '@types'
 import { useState, type ReactNode } from 'react'
-import { useLoanShares } from '../../loan-share/context'
 import { NotificationWrapper } from './wrapper'
 
 export type NotificationLoanShare = NotificationBase & {
   type: NOTIFICATION_TYPE.LOAN_SHARE
-  meta: LoanShareComplete
+  meta: Share
 }
 
-export const getLoanShareNotification = (loanShare: LoanShareComplete): NotificationLoanShare => ({
+export const getLoanShareNotification = (share: Share): NotificationLoanShare => ({
   type: NOTIFICATION_TYPE.LOAN_SHARE,
-  meta: loanShare,
-  ack: loanShare.accepted !== null,
-  createdAt: new Date(loanShare.createdAt)
+  meta: share,
+  ack: share.accepted !== null,
+  createdAt: new Date(share.createdAt)
 })
 
 const Content = ({ payload }: { payload: LoanShareNotificationPayload }): ReactNode => {
-  const { loan, state } = payload
+  const { state } = payload
 
-  const { fee } = loan
+  // const { fee } = loan
 
-  const part = fee / (loan.shares.filter(share => share.accepted === true).length + 1)
+  // const part = fee / (loan.shares.filter(share => share.accepted === true).length + 1)
 
-  const monthlyFee = `${euroFormatter.format(part)}/mo`
+  // const monthlyFee = `${euroFormatter.format(part)}/mo`
 
+  // TODO: Notification should be created with a contract link, then use the loan detail component to show it here
   switch (true) {
     case state === SHARE_STATE.ACCEPTED:
-      return <p className='w-full'>You accepted the share request by {loan.user.name} for <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' /> ({monthlyFee})</p>
+      return <p className='w-full'>You accepted the share request by WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
     case state === SHARE_STATE.REJECTED:
-      return <p className='w-full'>You rejected the share request by {loan.user.name} for <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+      return <p className='w-full'>You rejected the share request by WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
     default:
-      return <p className='w-full'>{loan.user.name} wants to share <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' />({monthlyFee})</p>
+      return <p className='w-full'>LOAN.USER.NAME wants to share WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
   }
 }
 
 export const LoanShareNotification = ({ notification }: { notification: NotificationType }) => {
   const [loading, setLoading] = useState(false)
-  const { updateShare } = useLoanShares()
+  // const { updateShare } = useLoanShares()
   const { updateNotification } = useNotifications()
   const { id, ack, createdAt } = notification
   const payload = JSON.parse(notification.payload as string) as LoanShareNotificationPayload
@@ -51,10 +48,10 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
   const handleAccept = async () => {
     setLoading(true)
 
-    const updatedShare = await updateLoanShare(payload.loanShare.id, true)
+    // const updatedShare = await updateLoanShare(payload.loanShare.id, true)
     const updatedNotification = await ackNotification(id, SHARE_STATE.ACCEPTED)
 
-    updateShare(updatedShare)
+    // updateShare(updatedShare)
     updateNotification(updatedNotification)
 
     setLoading(false)
@@ -63,10 +60,10 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
   const handleReject = async () => {
     setLoading(true)
 
-    const updatedShare = await updateLoanShare(payload.loanShare.id, false)
+    // const updatedShare = await updateLoanShare(payload.loanShare.id, false)
     const updatedNotification = await ackNotification(id, SHARE_STATE.REJECTED)
 
-    updateShare(updatedShare)
+    // updateShare(updatedShare)
     updateNotification(updatedNotification)
 
     setLoading(false)

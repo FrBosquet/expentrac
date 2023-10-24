@@ -5,7 +5,7 @@ import { NotificationWrapper } from './wrapper'
 
 export const DailyNotification = ({ notification }: { notification: NotificationType }) => {
   const { id, ack, createdAt } = notification
-  const { subscriptions, loans } = JSON.parse(notification.payload as string) as DailyNotificationPayload
+  const { subs, loans } = JSON.parse(notification.payload as string) as DailyNotificationPayload
 
   const { loading } = useAutoAck(notification)
 
@@ -13,7 +13,7 @@ export const DailyNotification = ({ notification }: { notification: Notification
     <p className='w-full'>Today, you are paying for:</p>
     <ul className='w-full flex gap-2 p-1'>
       {loans.map((loan, index) => <li className='text-xs' key={index}><strong>{loan.name}</strong> (loan) - {loan.fee}€</li>)}
-      {subscriptions.map((subscription, index) => <li className='text-xs' key={index}><strong>{subscription.name}</strong> (subscription) - {subscription.fee}€</li>)}
+      {subs.map((sub, index) => <li className='text-xs' key={index}><strong>{sub.name}</strong> (subscription) - {sub.fee}€</li>)}
     </ul>
   </NotificationWrapper>
 }

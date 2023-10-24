@@ -1,10 +1,9 @@
 import { DailyEmail, GenericEmail, LoanShareAcceptEmail, LoanShareEmail, LoanShareRejectEmail, SubShareAcceptEmail, SubShareEmail, SubShareRejectEmail, WelcomeEmail } from '@emails'
 import { unwrapLoan } from '@lib/loan'
-import { type Loan, type Subscription } from '@lib/prisma'
-import { type Contract } from '@sdk/contract'
-import { type LoanComplete, type SubscriptionComplete } from '@types'
+import { type Contract } from '@lib/prisma'
 
 import { Resend } from 'resend'
+import { unwrapSub } from './sub'
 
 const resend = new Resend(process.env.RESEND_KEY)
 
@@ -18,8 +17,8 @@ const sendWelcome = async (email: string, username: string) => {
 }
 
 // LOAN SHARE
-const sendLoanShare = async (email: string, username: string, loan: Contract) => {
-  const { payments: { left }, fee: { monthly }, user, name } = unwrapLoan(loan)
+const sendLoanShare = async (email: string, username: string, contact: Contract) => {
+  const { payments: { left }, fee: { monthly }, user, name } = unwrapLoan(contact)
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
@@ -29,8 +28,8 @@ const sendLoanShare = async (email: string, username: string, loan: Contract) =>
   })
 }
 
-const sendLoanShareAcceptance = async (username: string, loan: LoanComplete) => {
-  const { user: { name: sharer, email }, name } = loan
+const sendLoanShareAcceptance = async (username: string, contract: Contract) => {
+  const { user: { name: sharer, email }, name } = contract
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
@@ -40,8 +39,8 @@ const sendLoanShareAcceptance = async (username: string, loan: LoanComplete) => 
   })
 }
 
-const sendLoanShareRejection = async (username: string, loan: LoanComplete) => {
-  const { user: { name: sharer, email }, name } = loan
+const sendLoanShareRejection = async (username: string, contract: Contract) => {
+  const { user: { name: sharer, email }, name } = contract
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
@@ -52,19 +51,19 @@ const sendLoanShareRejection = async (username: string, loan: LoanComplete) => {
 }
 
 // SUB SHARE
-const sendSubShare = async (email: string, username: string, sub: SubscriptionComplete) => {
-  const { user: { name: sharer }, fee, name } = sub
+const sendSubShare = async (email: string, username: string, contract: Contract) => {
+  const { user: { name: sharer }, fee: { monthly }, name } = unwrapSub(contract)
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: email,
     subject: `${sharer} wants to share a subscription with you`,
-    react: <SubShareEmail username={username} sharer={sharer as string} subAmount={fee} subName={name} />
+    react: <SubShareEmail username={username} sharer={sharer as string} subAmount={monthly} subName={name} />
   })
 }
 
-const sendSubShareAcceptance = async (username: string, sub: SubscriptionComplete) => {
-  const { user: { name: sharer, email }, name } = sub
+const sendSubShareAcceptance = async (username: string, contract: Contract) => {
+  const { user: { name: sharer, email }, name } = contract
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
@@ -74,8 +73,8 @@ const sendSubShareAcceptance = async (username: string, sub: SubscriptionComplet
   })
 }
 
-const sendSubShareRejection = async (username: string, sub: SubscriptionComplete) => {
-  const { user: { name: sharer, email }, name } = sub
+const sendSubShareRejection = async (username: string, contract: Contract) => {
+  const { user: { name: sharer, email }, name } = contract
 
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
@@ -96,12 +95,12 @@ const sendGenericEmail = async (direction: string, username: string, message: st
 }
 
 // DAILY
-const sendDailyEmail = async (direction: string, username: string, loans: Loan[], subs: Subscription[]) => {
+const sendDailyEmail = async (direction: string, username: string, loans: Contract[], subs: Contract[]) => {
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: direction,
     subject: 'Your payments for today',
-    react: <DailyEmail username={username} loans={loans} subscriptions={subs} />
+    react: <DailyEmail username={username} loans={loans} subs={subs} />
   })
 }
 

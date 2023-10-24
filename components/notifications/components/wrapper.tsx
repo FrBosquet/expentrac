@@ -34,7 +34,7 @@ const getDateString = (date: Date) => {
 export const NotificationWrapper = ({ children, accept, reject, loading, acknowledged, date }: Props) => {
   const dateString = getDateString(new Date(date))
 
-  return <div className={twMerge('p-2 flex shadow-md gap-4 bg-theme-bottom rounded-md', acknowledged && 'opacity-40')}>
+  return <div className={twMerge('p-2 lg:p-4 flex shadow-md gap-4 bg-theme-bottom rounded-md', acknowledged && 'opacity-40')}>
     <p className='text-xs flex items-center'>
       {dateString}
     </p>

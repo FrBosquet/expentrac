@@ -145,6 +145,19 @@ model Provider {
   ProvidersOnContract ProvidersOnContract[]
 }
 
+model Notification {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  type      String
+  payload   Json?
+  ack       Boolean  @default(false)
+}
+
+// TO REMOVE ONCE dashboard-ui is merged
 model UserProvider {
   createdAt               DateTime       @default(now())
   updatedAt               DateTime       @updatedAt
@@ -160,19 +173,6 @@ model UserProvider {
   subscriptionsAsPlatform Subscription[] @relation(name: "SubscriptionPlatformRelation")
 }
 
-model Notification {
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      DateTime
-  type      String
-  payload   Json?
-  ack       Boolean  @default(false)
-}
-
-// TO REMOVE
 model Loan {
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt

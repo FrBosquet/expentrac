@@ -6,20 +6,21 @@ import { Plus, Search } from 'lucide-react'
 import { useMemo, useState, type ChangeEvent } from 'react'
 import { ProviderAdd } from './add'
 import { UserProviderCard } from './card'
-import { useProvidersComplete } from './context'
+import { useProviders } from './context'
 
 export const UserProviderSummary = () => {
   const [nameFilter, setNameFilter] = useState('')
   const [type, setType] = useState<null | string>(null)
 
-  const { providers } = useProvidersComplete()
+  const { providers } = useProviders()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNameFilter(e.target.value)
   }
 
-  const filteredProviders = useMemo(() => providers.filter(({ provider, roles }) => {
-    return provider.name.toLowerCase().includes(nameFilter.toLowerCase()) && (type === null || roles.includes(type))
+  const filteredProviders = useMemo(() => providers.filter(({ name }) => {
+    // Recover filter by type
+    return name.toLowerCase().includes(nameFilter.toLowerCase())
   }), [nameFilter, providers])
 
   return <div className='flex flex-col gap-4'>
@@ -37,7 +38,7 @@ export const UserProviderSummary = () => {
     </section>
     <section className="grid grid-cols-3 gap-4">
       {filteredProviders.map((userProvider) => {
-        return <UserProviderCard key={userProvider.id} userProvider={userProvider} />
+        return <UserProviderCard key={userProvider.id} provider={userProvider} />
       })}
     </section>
   </div>

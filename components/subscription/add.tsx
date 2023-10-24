@@ -2,13 +2,16 @@
 
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
-import { type SubscriptionComplete } from '@types'
+import { useUser } from '@components/user/hooks'
+import { type SubFormData } from '@lib/sub'
+import { subscriptionSdk } from '@sdk'
 import { useState, type FormEventHandler } from 'react'
 import { useSubs } from './context'
 import { SubscriptionForm } from './form'
 
 export const SubscriptionAdd = () => {
+  const { user } = useUser()
+
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { addSub } = useSubs()
@@ -18,19 +21,13 @@ export const SubscriptionAdd = () => {
     setLoading(true)
 
     try {
-      const result = await fetch(getUrl('/subscription'), {
-        method: 'POST',
-        body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
-      })
+      const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as SubFormData
+      const sub = await subscriptionSdk.create(formData)
 
-      const { data } = await result.json() as { data: SubscriptionComplete }
-
-      if (result.ok) {
-        setOpen(false)
-        addSub(data)
-      }
+      void subscriptionSdk.revalidate(user.id)
+      setOpen(false)
+      addSub(sub)
     } catch (e) {
-      alert('Failed to add subscription') // TODO: THIS SHOULD BE A TOAST
       console.error(e)
     } finally {
       setLoading(false)

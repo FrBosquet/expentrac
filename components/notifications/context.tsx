@@ -2,10 +2,11 @@
 
 import { type Notification } from '@lib/prisma'
 import { useResourceContext } from '@lib/resourceContext'
+import { useStore } from '@store'
+import { getPendingNotifications } from '@store/notification'
 
 import {
   createContext,
-  useContext,
   type Dispatch,
   type ReactNode,
   type SetStateAction
@@ -65,9 +66,15 @@ export const NotificationsProvider = ({ children, serverValue }: Props) => {
 }
 
 export const useNotifications = () => {
-  const context = useContext(NotificationContext)
-  if (context === undefined) {
-    throw new Error('useNotifications must be used within a Notification')
+  const notifications = useStore(state => state.notifications)
+  const updateNotification = useStore(state => state.updateNotification)
+
+  const pendingNotifications = useStore(getPendingNotifications)
+
+  return {
+    notifications,
+    updateNotification,
+    hasPending: pendingNotifications.length > 0,
+    pending: pendingNotifications.length
   }
-  return context
 }

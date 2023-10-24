@@ -1,5 +1,20 @@
 import { type Contract, type Period, type Provider } from './prisma'
 
+export type SubFormData = {
+  id?: string
+  name: string
+  fee: string
+  initial: string
+  vendorId?: string
+  platformId?: string
+  startDate: string
+  endDate: string
+  link: string
+  isYearly: boolean
+  payday?: string
+  paymonth?: string
+} & Record<`sharedWith:${string}`, string>
+
 const now = new Date()
 const nowDate = now.getDate()
 const nowMonth = now.getMonth()

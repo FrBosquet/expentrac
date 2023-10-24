@@ -2,10 +2,11 @@ import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { type Loan } from '@lib/loan'
+import { type Subscription } from '@lib/sub'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
-  contract: Loan // | Subscription
+  contract: Loan | Subscription
 }
 
 export const SharesDetail = ({ contract }: Props) => {

@@ -5,32 +5,28 @@ import { SubscriptionDetail } from '@components/subscription/detail'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Separator } from '@components/ui/separator'
 import { euroFormatter } from '@lib/currency'
+import { type Provider } from '@lib/prisma'
 import { cn } from '@lib/utils'
-import { type UserProviderComplete } from '@types'
-import { Trash } from 'lucide-react'
 import { useState } from 'react'
-import { ProviderDelete } from './delete'
 import { useProviderExtendedInfo } from './hooks'
 
 interface Props {
-  userProvider: UserProviderComplete
+  provider: Provider
   children: React.ReactNode
 }
 
 const Item = ({ children }: { children: React.ReactNode }) => <span className="block w-full text-xs font-light whitespace-nowrap overflow-hidden overflow-ellipsis text-left">{children}</span>
 
-export const ProviderDetail = ({ userProvider, children }: Props) => {
+export const ProviderDetail = ({ provider, children }: Props) => {
   const [open, setOpen] = useState(false)
 
   const {
-    provider,
     url,
     fromLoans,
     fromSubs,
     lengths,
-    totals,
-    hasAnyItem
-  } = useProviderExtendedInfo(userProvider)
+    totals
+  } = useProviderExtendedInfo(provider)
 
   if (!provider.isFetched) return null
 
@@ -66,7 +62,7 @@ export const ProviderDetail = ({ userProvider, children }: Props) => {
             }
             {
               fromSubs.asVendor.map((item) => {
-                return <SubscriptionDetail sub={item} key={item.id}>
+                return <SubscriptionDetail contract={item.contract} key={item.id}>
                   <Item>{item.name}</Item>
                 </SubscriptionDetail>
               })
@@ -86,7 +82,7 @@ export const ProviderDetail = ({ userProvider, children }: Props) => {
             {fromLoans.asPlatform.length > 0 && fromSubs.asPlatform.length > 0 && <Separator />}
             {
               fromSubs.asPlatform.map((item) => {
-                return <SubscriptionDetail sub={item} key={item.id}>
+                return <SubscriptionDetail contract={item.contract} key={item.id}>
                   <Item>{item.name}</Item>
                 </SubscriptionDetail>
               })
@@ -104,12 +100,6 @@ export const ProviderDetail = ({ userProvider, children }: Props) => {
               })
             }
           </article>
-
-          <Separator className="col-span-3" />
-
-          <menu className="col-span-3 flex gap-2 justify-end">
-            <ProviderDelete disabled={hasAnyItem} userProvider={userProvider} triggerDecorator={<span className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</span>} />
-          </menu>
         </section>
       </DialogContent>
     </Dialog>

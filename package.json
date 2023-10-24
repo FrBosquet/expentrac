@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run prisma:generate && next build",
+    "build:dev": "next build",
     "start": "next start",
     "lint": "next lint",
     "vercel:env_pull": "npx vercel env pull .env.local",
