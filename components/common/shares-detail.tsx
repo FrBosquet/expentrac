@@ -1,3 +1,4 @@
+import { Avatar } from '@components/avatar'
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
@@ -34,23 +35,27 @@ export const SharesDetail = ({ contract }: Props) => {
 
       <p className="text-sm">This {assetType} fee is shared by:</p>
       <article className="flex items-center gap-2">
-        <p className={twMerge('text-sm font-semibold', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${contractUser.name} (owner)`}</p>
+        <Avatar className={'w-6 h-6'} user={userOwnThis ? currentUser : contractUser} />
+        <p className={twMerge('text-sm font-semibold whitespace-nowrap', userOwnThis && 'flex-1')}>{userOwnThis ? 'You' : `${contractUser.name} (owner)`}</p>
         {
           userOwnThis
             ? null
-            : <p className="text-sm text-slate-500 flex-1">{contractUser.email}</p>
+            : <p className="text-sm text-slate-500 flex-1 overflow-hidden text-ellipsis">{contractUser.email}</p>
         }
         <p className="text-xs">{inEuros}</p>
       </article>
       {
         shares.map((share) => {
-          const { accepted, contract: { user } } = share
+          const { accepted, toId, to } = share
 
-          const isCurrentUser = currentUser.id === user.id
+          const isCurrentUser = currentUser.id === toId
+
+          console.log({ to })
 
           return <article key={share.id} className="flex items-center gap-2">
-            <p className={twMerge('text-sm font-semibold', isCurrentUser && 'flex-1')}>{isCurrentUser ? 'You' : user.name}</p>
-            {!isCurrentUser ? <p className="text-sm text-slate-500 flex-1">{user.email}{ }</p> : null}
+            <Avatar className={'w-6 h-6'} user={to} />
+            <p className={twMerge('text-sm font-semibold', isCurrentUser && 'flex-1')}>{isCurrentUser ? 'You' : to.name}</p>
+            {!isCurrentUser ? <p className="text-sm text-slate-500 flex-1">{to.email}{ }</p> : null}
             {
               accepted === true
                 ? <p className='text-xs'>{inEuros}</p>

@@ -22,7 +22,9 @@ export const useLoans = () => {
     return share.accepted && share.contract.type === CONTRACT_TYPE.LOAN
   }).map((loanShare) => unwrapLoan(loanShare.contract, date))
 
-  const allLoans = [...loans, ...sharedLoans]
+  console.log('sharedLoans', sharedLoans)
+
+  const allLoans = [...loans, ...sharedLoans].sort((a, b) => a.time.payday - b.time.payday)
 
   const hasOwnLoans = loans.length > 0
   const hasSharedLoans = sharedLoans.length > 0

@@ -5,9 +5,9 @@ import { Button } from '@components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import { TIME } from '@types'
 import { useState } from 'react'
-import { LoanAdd } from './add'
-import { useLoans } from './context'
-import { COLUMN, LoanFee } from './item'
+import { LoanAdd } from '../add'
+import { useLoans } from '../context'
+import { COLUMN, LoanFee } from '../item'
 
 interface Props {
   className?: string
@@ -23,10 +23,10 @@ const getDescription = (refDate: Date, month: TIME) => {
 
 export const LoanSummary = ({ className }: Props) => {
   const { date, month } = useDate()
-  const { loans } = useLoans()
+  const { allLoans } = useLoans()
   const [activeColumn, setActiveColumn] = useState(COLUMN.FEE)
 
-  const ongoingLoans = loans.filter((loan) => {
+  const ongoingLoans = allLoans.filter((loan) => {
     return loan.time.isOngoing
   })
 
@@ -56,7 +56,7 @@ export const LoanSummary = ({ className }: Props) => {
           {ongoingLoans.map((loan) => <LoanFee loan={loan} activeColumn={activeColumn} key={loan.id} />)}
         </div>
         : <div className='grid place-content-center gap-2 p-6 text-center'>
-          <p className='text-sm text-theme-light'>You have no subscriptions to pay today</p>
+          <p className='text-sm text-theme-light'>You have no loans going on in the selected month</p>
         </div>
       }
       <footer className='flex justify-end pt-8'>

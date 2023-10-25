@@ -2,7 +2,7 @@
 
 import { LoanAdd } from './add'
 import { useLoans } from './context'
-import { LoanSummary } from './summary'
+import { LoanSummary } from './dashboard/summary'
 
 export const LoanDashboard = () => {
   const { hasAnyLoans } = useLoans()

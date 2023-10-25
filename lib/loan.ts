@@ -1,5 +1,5 @@
 import { monthBeetween } from './dates'
-import { type Provider, type Contract } from './prisma'
+import { type Contract, type Provider } from './prisma'
 
 export type LoanFormData = {
   id?: string
@@ -97,7 +97,8 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const hasAcceptedShares = sharesAccepted > 0
 
   const link = resources.find(r => r.type === 'LINK')?.url
-  const isPayday = now.getDate() === startDate.getDate()
+  const payday = startDate.getDate()
+  const isPayday = now.getDate() === payday
 
   const {
     vendor,
@@ -180,7 +181,8 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
       endsThisMonth,
       startsThisMonth,
       currentMonthPaymentDate,
-      nextPaymentDate
+      nextPaymentDate,
+      payday
     },
     resources: {
       link

@@ -58,18 +58,10 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
     })
   }
 
-  if (session.user.id !== share?.contract.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
-  }
-
   const body: { accepted: boolean } = await req.json()
   const { accepted } = body
 
-  await prisma.share.update({ where: { id }, data: { accepted } })
+  const updatedShare = await prisma.share.update({ where: { id }, data: { accepted }, include })
 
   await notificationSdk.create(
     share.fromId,
@@ -80,5 +72,5 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
     }
   )
 
-  return NextResponse.json({ message: 'Updated', data: share }, { status: 200 })
+  return NextResponse.json({ message: 'Updated', data: updatedShare }, { status: 200 })
 }

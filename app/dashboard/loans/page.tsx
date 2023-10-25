@@ -1,5 +1,5 @@
 import { Header } from '@components/header'
-import { LoanSummary } from '@components/loan/summary'
+import { LoanSummary } from '@components/loan/dashboard/summary'
 
 export default function Page() {
   return (

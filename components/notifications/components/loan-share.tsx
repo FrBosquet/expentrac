@@ -1,7 +1,12 @@
+import { LoanDetail } from '@components/loan/detail'
 import { useNotifications } from '@components/notifications/context'
+import { useShares } from '@components/share/hooks'
+import { euroFormatter } from '@lib/currency'
+import { unwrapLoan } from '@lib/loan'
 import { type LoanShareNotificationPayload } from '@lib/notification/loan-share'
-import { type Share, type Notification as NotificationType } from '@lib/prisma'
-import { ackNotification } from '@sdk/notifications'
+import { type Notification as NotificationType, type Share } from '@lib/prisma'
+import { notificationSdk } from '@sdk/notifications'
+import { shareSdk } from '@sdk/share'
 import { NOTIFICATION_TYPE, SHARE_STATE, type NotificationBase } from '@types'
 import { useState, type ReactNode } from 'react'
 import { NotificationWrapper } from './wrapper'
@@ -19,28 +24,23 @@ export const getLoanShareNotification = (share: Share): NotificationLoanShare =>
 })
 
 const Content = ({ payload }: { payload: LoanShareNotificationPayload }): ReactNode => {
-  const { state } = payload
+  const { state, contract } = payload
+  const loan = unwrapLoan(contract)
 
-  // const { fee } = loan
-
-  // const part = fee / (loan.shares.filter(share => share.accepted === true).length + 1)
-
-  // const monthlyFee = `${euroFormatter.format(part)}/mo`
-
-  // TODO: Notification should be created with a contract link, then use the loan detail component to show it here
+  const { user } = loan
   switch (true) {
     case state === SHARE_STATE.ACCEPTED:
-      return <p className='w-full'>You accepted the share request by WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
+      return <p className='w-full'>You accepted the share request for <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
     case state === SHARE_STATE.REJECTED:
-      return <p className='w-full'>You rejected the share request by WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
+      return <p className='w-full'>You rejected the share request for <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
     default:
-      return <p className='w-full'>LOAN.USER.NAME wants to share WE NEED THE NOTIFICATION TO HAVE THE LOAN CONTENT</p>
+      return <p className='w-full'><strong>{user.name}</strong> wants to share <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> with you ({euroFormatter.format(loan.fee.monthly)}/month)</p>
   }
 }
 
 export const LoanShareNotification = ({ notification }: { notification: NotificationType }) => {
   const [loading, setLoading] = useState(false)
-  // const { updateShare } = useLoanShares()
+  const { updateShare } = useShares()
   const { updateNotification } = useNotifications()
   const { id, ack, createdAt } = notification
   const payload = JSON.parse(notification.payload as string) as LoanShareNotificationPayload
@@ -49,9 +49,10 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
     setLoading(true)
 
     // const updatedShare = await updateLoanShare(payload.loanShare.id, true)
-    const updatedNotification = await ackNotification(id, SHARE_STATE.ACCEPTED)
+    const updatedShare = await shareSdk.update(payload.share.id, true)
+    const updatedNotification = await notificationSdk.ack(id, SHARE_STATE.ACCEPTED)
 
-    // updateShare(updatedShare)
+    updateShare(updatedShare)
     updateNotification(updatedNotification)
 
     setLoading(false)
@@ -60,10 +61,10 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
   const handleReject = async () => {
     setLoading(true)
 
-    // const updatedShare = await updateLoanShare(payload.loanShare.id, false)
-    const updatedNotification = await ackNotification(id, SHARE_STATE.REJECTED)
+    const updatedShare = await shareSdk.update(payload.share.id, true)
+    const updatedNotification = await notificationSdk.ack(id, SHARE_STATE.REJECTED)
 
-    // updateShare(updatedShare)
+    updateShare(updatedShare)
     updateNotification(updatedNotification)
 
     setLoading(false)
