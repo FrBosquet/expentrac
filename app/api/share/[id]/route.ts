@@ -38,6 +38,8 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
     })
   }
 
+  const userId = session.user.id
+
   const id = params.id
 
   if (!id) {
@@ -64,7 +66,7 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
   const updatedShare = await prisma.share.update({ where: { id }, data: { accepted }, include })
 
   await notificationSdk.create(
-    share.fromId,
+    userId,
     true,
     {
       type: accepted ? NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED : NOTIFICATION_TYPE.LOAN_SHARE_REJECTED,
