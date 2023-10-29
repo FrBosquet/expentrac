@@ -1,4 +1,5 @@
 import { Button } from '@components/ui/button'
+import { Spinner } from '@components/ui/spinner'
 import { Check, X } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
@@ -44,10 +45,12 @@ export const NotificationWrapper = ({ children, accept, reject, loading, acknowl
     {
       acknowledged
         ? null
-        : <>
-          {accept ? <Button disabled={loading} variant='default' className={'p-2 h-auto'} onClick={accept}><Check size={14} /></Button> : null}
-          {reject ? <Button disabled={loading} variant='destructive' className={'p-2 h-auto'} onClick={reject}><X size={14} /></Button> : null}
-        </>
+        : loading
+          ? <Spinner size={14} />
+          : <>
+            {accept ? <Button disabled={loading} variant='default' className={'p-2 h-auto'} onClick={accept}><Check size={14} /></Button> : null}
+            {reject ? <Button disabled={loading} variant='destructive' className={'p-2 h-auto'} onClick={reject}><X size={14} /></Button> : null}
+          </>
     }
   </div>
 }
