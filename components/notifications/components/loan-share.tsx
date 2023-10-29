@@ -61,7 +61,7 @@ export const LoanShareNotification = ({ notification }: { notification: Notifica
   const handleReject = async () => {
     setLoading(true)
 
-    const updatedShare = await shareSdk.update(payload.share.id, true)
+    const updatedShare = await shareSdk.update(payload.share.id, false)
     const updatedNotification = await notificationSdk.ack(id, SHARE_STATE.REJECTED)
 
     updateShare(updatedShare)
