@@ -8,6 +8,7 @@ import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { type Loan } from '@lib/loan'
 import { Edit, Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { SharesDetail } from '../common/shares-detail'
@@ -22,14 +23,38 @@ interface Props {
 }
 
 export const LoanDetail = ({ loan, triggerContent = loan.name, children, className }: Props) => {
-  const { ownsAsset } = useUser()
   const [open, setOpen] = useState(false)
+  const { name } = loan
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button className={twMerge('hover:text-primary', className)}>{children ?? triggerContent}</button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
+        e.preventDefault()
+      }}>
+        <DialogHeader>
+          <DialogTitle>{name}</DialogTitle>
+          <DialogDescription>
+            Loan details
+          </DialogDescription>
+        </DialogHeader>
+        <LoanDetailContent loan={loan} />
+      </DialogContent>
+    </Dialog >
+  )
+}
+
+export const LoanDetailContent = ({ loan, className }: { loan: Loan, className?: string }) => {
+  const { push } = useRouter()
+  const { ownsResource } = useUser()
   const [progress, setProgress] = useState(0)
+  const userOwnThis = ownsResource(loan)
 
   const {
     startDate,
     endDate,
-    name,
     fee: {
       initial,
       monthly
@@ -60,8 +85,6 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
     }
   } = loan
 
-  const userOwnThis = ownsAsset(loan)
-
   useEffect(() => {
     if (!open) {
       setProgress(0)
@@ -72,111 +95,97 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
     }
   }, [open, payments, paymentsDone])
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className={twMerge('hover:text-primary', className)}>{children ?? triggerContent}</button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => {
-        e.preventDefault()
-      }}>
-        <DialogHeader>
-          <DialogTitle>{name}</DialogTitle>
-          <DialogDescription>
-            Loan details
-          </DialogDescription>
-        </DialogHeader>
-        <section className="grid grid-cols-2 gap-4">
-          <article className="grid grid-cols-3 gap-2 col-span-2">
-            <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
-            <ProviderDetail provider={platform} label="Platform" className="col-start-2" />
-            <ProviderDetail provider={lender} label="Lender" className="col-start-3" />
-          </article>
+  return <section className={twMerge('grid grid-cols-2 gap-4', className)}>
+    {
+      link
+        ? <article className="flex flex-col gap-2 col-span-2">
+          <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition text-expentrac-800" rel="noreferrer">Loan link</a>
+        </article>
+        : null
+    }
 
+    <article className="grid grid-cols-3 gap-2 col-span-2">
+      <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
+      <ProviderDetail provider={platform} label="Platform" className="col-start-2" />
+      <ProviderDetail provider={lender} label="Lender" className="col-start-3" />
+    </article>
+
+    <article className="flex flex-col gap-2">
+      <h4 className="text-sm font-semibold">Monthly fee</h4>
+      <p className="text-lg text-foreground">{euroFormatter.format(monthly)}</p>
+    </article>
+
+    {initial
+      ? <article className="flex flex-col gap-2">
+        <h4 className="text-sm font-semibold">Initial payment</h4>
+        <p className="text-lg text-foreground">{euroFormatter.format(initial)}</p>
+      </article>
+      : null}
+
+    <article className="flex flex-col gap-2 col-start-1">
+      <h4 className="text-xs font-semibold">Total amount</h4>
+      <p className="text-sm text-theme-light">{euroFormatter.format(totalAmount)}</p>
+    </article>
+    {
+      !isOver
+        ? <article className="flex flex-col gap-2">
+          <h4 className="text-xs font-semibold">Already paid</h4>
+          <p className="text-sm text-theme-light">{euroFormatter.format(paidAmount)}</p>
+        </article>
+        : null
+    }
+
+    <article className="flex flex-col gap-2 col-span-2">
+      <Progress value={progress} />
+    </article>
+
+    <Separator className="col-span-2" />
+
+    <article className="flex flex-col gap-2">
+      <h4 className="text-xs font-semibold">Started</h4>
+      <p className="text-sm text-theme-light">{new Date(startDate).toLocaleDateString()}</p>
+    </article>
+    <article className="flex flex-col gap-2">
+      <h4 className="text-xs font-semibold">{isOver ? 'Finished' : 'Ends'}</h4>
+      <p className="text-sm text-theme-light">{new Date(endDate).toLocaleDateString()}</p>
+    </article>
+
+    {
+      !isOver
+        ? <>
           <article className="flex flex-col gap-2">
-            <h4 className="text-sm font-semibold">Monthly fee</h4>
-            <p className="text-lg text-slate-700">{euroFormatter.format(monthly)}</p>
+            <h4 className="text-xs font-semibold">Payments done</h4>
+            <p className="text-sm text-theme-light">{paymentsDone}/{payments}</p>
+          </article>
+          <article className="flex flex-col gap-2">
+            <h4 className="text-xs font-semibold">Payments left</h4>
+            <p className="text-sm text-theme-light">{paymentsLeft}</p>
+          </article>
+          <article className="flex flex-col gap-2">
+            <h4 className="text-xs font-semibold">You still owe</h4>
+            <p className="text-sm text-theme-light">{euroFormatter.format(owedAmount)}</p>
           </article>
 
-          {initial
-            ? <article className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold">Initial payment</h4>
-              <p className="text-lg text-slate-700">{euroFormatter.format(initial)}</p>
-            </article>
-            : null}
+        </>
+        : null
+    }
 
-          <article className="flex flex-col gap-2 col-start-1">
-            <h4 className="text-xs font-semibold">Total amount</h4>
-            <p className="text-sm text-slate-500">{euroFormatter.format(totalAmount)}</p>
-          </article>
-          {
-            !isOver
-              ? <article className="flex flex-col gap-2">
-                <h4 className="text-xs font-semibold">Already paid</h4>
-                <p className="text-sm text-slate-500">{euroFormatter.format(paidAmount)}</p>
-              </article>
-              : null
-          }
+    {
+      hasShares && <SharesDetail contract={loan} />
+    }
 
-          <article className="flex flex-col gap-2 col-span-2">
-            <Progress value={progress} />
-          </article>
-
+    {
+      userOwnThis
+        ? <>
           <Separator className="col-span-2" />
-
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">Started</h4>
-            <p className="text-sm text-slate-500">{new Date(startDate).toLocaleDateString()}</p>
-          </article>
-          <article className="flex flex-col gap-2">
-            <h4 className="text-xs font-semibold">{isOver ? 'Finished' : 'Ends'}</h4>
-            <p className="text-sm text-slate-500">{new Date(endDate).toLocaleDateString()}</p>
-          </article>
-
-          {
-            !isOver
-              ? <>
-                <article className="flex flex-col gap-2">
-                  <h4 className="text-xs font-semibold">Payments done</h4>
-                  <p className="text-sm text-slate-500">{paymentsDone}/{payments}</p>
-                </article>
-                <article className="flex flex-col gap-2">
-                  <h4 className="text-xs font-semibold">Payments left</h4>
-                  <p className="text-sm text-slate-500">{paymentsLeft}</p>
-                </article>
-                <article className="flex flex-col gap-2">
-                  <h4 className="text-xs font-semibold">You still owe</h4>
-                  <p className="text-sm text-slate-500">{euroFormatter.format(owedAmount)}</p>
-                </article>
-
-              </>
-              : null
-          }
-          {
-            link
-              ? <article className="flex flex-col gap-2 col-span-2">
-                <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Loan link</a>
-              </article>
-              : null
-          }
-
-          {
-            hasShares && <SharesDetail contract={loan} />
-          }
-
-          {
-            userOwnThis
-              ? <>
-                <Separator className="col-span-2" />
-                <menu className="col-span-2 flex gap-2 justify-end" >
-                  <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-                  <LoanDelete triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
-                </menu>
-              </>
-              : null
-          }
-        </section>
-      </DialogContent>
-    </Dialog >
-  )
+          <menu className="col-span-2 flex gap-2 justify-end" >
+            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+            <LoanDelete sideEffect={async () => {
+              push('/dashboard/loans')
+            }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
+          </menu>
+        </>
+        : null
+    }
+  </section>
 }

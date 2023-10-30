@@ -6,9 +6,14 @@ export const useUser = () => {
   const loading = status === 'loading'
   const user = session?.user as RawUser
 
+  // TODO: Remove this in favour of own resource
   const ownsAsset = (asset: { userId: string }) => {
     return user?.id === asset?.userId
   }
 
-  return { user, loading, ownsAsset, name: loading ? '...' : user?.name }
+  const ownsResource = (asset: { userId: string }) => {
+    return user?.id === asset?.userId
+  }
+
+  return { user, loading, ownsAsset, ownsResource, name: loading ? '...' : user?.name }
 }

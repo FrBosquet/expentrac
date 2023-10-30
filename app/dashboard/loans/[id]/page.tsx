@@ -1,12 +1,10 @@
 'use client'
 
 import { useLoan } from '@components/loan/context'
-import { LoanDelete } from '@components/loan/delete'
-import { LoanEdit } from '@components/loan/edit'
-import { useParams, useRouter } from 'next/navigation'
+import { LoanDetailContent } from '@components/loan/detail'
+import { useParams } from 'next/navigation'
 
 export default function Page() {
-  const { push } = useRouter()
   const params = useParams()
   const id = params.id
   const { loan } = useLoan(id as string)
@@ -14,10 +12,7 @@ export default function Page() {
   if (!loan) return null
 
   return <>
-    <h1>{loan.name}</h1>
-    <LoanEdit loan={loan} />
-    <LoanDelete sideEffect={async () => {
-      push('/dashboard/loans')
-    }} loan={loan} />
+    <h1 className='col-span-2 text-5xl pb-8'>{loan.name}</h1>
+    <LoanDetailContent loan={loan} className='col-span-2' />
   </>
 }
