@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge'
 import { Logo } from './Logo'
 import { useUser } from './Provider'
 import { Footer } from './footer'
+import { Header } from './header'
 import { NotificationBell } from './notifications/bell'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
@@ -163,6 +164,7 @@ export function DashboardLayout({ children }: Props) {
       <div className="flex-1 w-full max-w-4xl xl:max-w-6xl p-6 mx-auto grid grid-cols-2
         xl:grid-cols-4 gap-1 auto-rows-min
       ">
+        <Header />
         {children}
       </div>
       <Footer />
