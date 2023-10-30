@@ -1,3 +1,4 @@
+import { useLoan } from '@components/loan/context'
 import { LoanDetail } from '@components/loan/detail'
 import { useNotifications } from '@components/notifications/context'
 import { useShares } from '@components/share/hooks'
@@ -27,12 +28,14 @@ const Content = ({ payload }: { payload: LoanShareNotificationPayload }): ReactN
   const { state, contract } = payload
   const loan = unwrapLoan(contract)
 
+  const { loan: cachedLoan } = useLoan(loan.id)
+
   const { user } = loan
   switch (true) {
     case state === SHARE_STATE.ACCEPTED:
-      return <p className='w-full'>You accepted the share request for <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
+      return <p className='w-full'>You accepted the share request for <LoanDetail loan={cachedLoan ?? loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
     case state === SHARE_STATE.REJECTED:
-      return <p className='w-full'>You rejected the share request for <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
+      return <p className='w-full'>You rejected the share request for <LoanDetail loan={cachedLoan ?? loan} className='font-semibold text-expentrac-800' /> by <strong>{user.name}</strong></p>
     default:
       return <p className='w-full'><strong>{user.name}</strong> wants to share <LoanDetail loan={loan} className='font-semibold text-expentrac-800' /> with you ({euroFormatter.format(loan.fee.monthly)}/month)</p>
   }

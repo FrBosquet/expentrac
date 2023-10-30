@@ -13,8 +13,6 @@ export const DailyNotification = ({ notification }: { notification: Notification
 
   const { loading } = useAutoAck(notification)
 
-  console.log({ subs, loans })
-
   return <NotificationWrapper date={createdAt} key={id} loading={loading} acknowledged={ack}>
     <p className='w-full'>Today, you are paying for:</p>
     <ul className='w-full flex flex-col gap-2 p-1'>

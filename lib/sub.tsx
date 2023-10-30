@@ -153,8 +153,8 @@ export const unwrapSub = (rawSub: Contract) => {
       monthly: monthlyFee,
       holder: isYearly ? yearlyHolderFee : monthlyHolderFee,
       yearly: yearlyFee,
-      montlyHolder: monthlyHolderFee,
-      yearlyHolder: yearlyHolderFee
+      holderMonthly: monthlyHolderFee,
+      holderYearly: yearlyHolderFee
     },
     payments: {
       isPaidThisMonth

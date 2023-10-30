@@ -92,6 +92,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
       : fee
 
   const holderFee = currentFee / holderAmount
+  const holderMonthlyFee = fee / holderAmount
 
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
@@ -144,6 +145,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
       initial: initial || 0,
       monthly: fee,
       holder: holderFee,
+      holderMonthly: holderMonthlyFee,
       holderInitial: initial ? initial / holderAmount : 0,
       current: currentFee
     },

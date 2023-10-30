@@ -19,11 +19,11 @@ export const SharesDetail = ({ contract }: Props) => {
     },
     user: contractUser,
     fee: {
-      holder
+      holderMonthly
     }
   } = contract
 
-  const inEuros = `${euroFormatter.format(holder)}/m`
+  const inEuros = `${euroFormatter.format(holderMonthly)}/m`
 
   const userOwnThis = currentUser.id === contractUser.id
 
@@ -49,8 +49,6 @@ export const SharesDetail = ({ contract }: Props) => {
           const { accepted, toId, to } = share
 
           const isCurrentUser = currentUser.id === toId
-
-          console.log({ to })
 
           return <article key={share.id} className="flex items-center gap-2">
             <Avatar className={'w-6 h-6'} user={to} />
