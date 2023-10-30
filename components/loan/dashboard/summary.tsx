@@ -3,7 +3,7 @@
 import { useDate } from '@components/date/context'
 import { Button } from '@components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
-import { TIME } from '@types'
+import { getTimeDescription } from '@lib/dates'
 import { useState } from 'react'
 import { LoanAdd } from '../add'
 import { useLoans } from '../context'
@@ -11,14 +11,6 @@ import { COLUMN, LoanFee } from '../item'
 
 interface Props {
   className?: string
-}
-
-const getDescription = (refDate: Date, month: TIME) => {
-  switch (month) {
-    case TIME.PAST: return `These where the loan fees you paid in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
-    case TIME.PRESENT: return 'These are the loan fees you are paying for this month'
-    case TIME.FUTURE: return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
-  }
 }
 
 export const LoanSummary = ({ className }: Props) => {
@@ -36,7 +28,7 @@ export const LoanSummary = ({ className }: Props) => {
     <CardHeader>
       <CardTitle>Your loan summary</CardTitle>
       <CardDescription>
-        {getDescription(date, month)}
+        {getTimeDescription(date, month, 'loan')}
       </CardDescription>
     </CardHeader>
     <CardContent>

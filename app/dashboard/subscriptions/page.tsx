@@ -1,7 +1,7 @@
-import { SubsDashboard } from '@components/subscription/dashboard'
+import { SubscriptionSummary } from '@components/subscription/summary'
 
 export default function page() {
-  return <section className="flex-1 w-screen max-w-3xl p-12 mx-auto">
-    <SubsDashboard />
-  </section>
+  return <>
+    <SubscriptionSummary className='col-span-2' />
+  </>
 }

@@ -1,3 +1,5 @@
+import { TIME } from '@types'
+
 export const toHTMLInputFormat = (d: Date) => {
   const date = new Date(d)
   const year = date.getFullYear()
@@ -40,4 +42,12 @@ export const getDateText = (date: Date) => {
   if (isInXDays(date, -2)) return 'Two days ago'
 
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+export const getTimeDescription = (refDate: Date, month: TIME, type: string) => {
+  switch (month) {
+    case TIME.PAST: return `These where the ${type} fees you paid in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+    case TIME.PRESENT: return `These are the ${type} fees you are paying for this month`
+    case TIME.FUTURE: return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+  }
 }

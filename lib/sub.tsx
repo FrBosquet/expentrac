@@ -93,6 +93,8 @@ export const unwrapSub = (rawSub: Contract) => {
 
   const holderAmount = sharesAccepted + 1
 
+  const startDate = new Date(activePeriod.from)
+
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
 
@@ -143,6 +145,7 @@ export const unwrapSub = (rawSub: Contract) => {
 
   return {
     contract: rawSub,
+    startDate,
     ...rawSub,
     providers: {
       vendor,
