@@ -13,6 +13,7 @@ export type SubFormData = {
   isYearly: boolean
   payday?: string
   paymonth?: string
+  periodicity?: string
 } & Record<`sharedWith:${string}`, string>
 
 const now = new Date()

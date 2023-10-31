@@ -1,18 +1,22 @@
+/* eslint-disable @typescript-eslint/indent */
 import { authOptions } from '@lib/auth'
-import { type LoanFormData } from '@lib/loan'
 import { notificationSdk } from '@lib/notification'
 import { prisma, type Contract, type Prisma, type RawProvidersOnContract, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
+import { type SubFormData } from '@lib/sub'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { include } from '../include'
+
 interface Query {
   params: {
     id: string
   }
 }
 
+// TODO: This looks almost exactly the same as loan patch. Can we combine them into Contract?
+// Only difference is the Lender and that means nothing in terms of DB structure. Just using the patch from loan should work almost OOB
 export const PATCH = async (req: Request, { params }: Query) => {
   const session = await getServerSession(authOptions)
 
@@ -36,19 +40,19 @@ export const PATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = await req.json() as LoanFormData
+  const body = await req.json() as SubFormData
 
-  const loan = await prisma.contract.findUnique({ where: { id }, include })
+  const sub = await prisma.contract.findUnique({ where: { id }, include })
 
-  if (!loan) {
+  if (!sub) {
     return NextResponse.json({
-      message: 'loan not found'
+      message: 'sub not found'
     }, {
       status: 404
     })
   }
 
-  if (userId !== loan?.userId) {
+  if (userId !== sub?.userId) {
     return NextResponse.json({
       message: 'user does not own this resource'
     }, {
@@ -57,9 +61,11 @@ export const PATCH = async (req: Request, { params }: Query) => {
   }
 
   // SHARES
-  const sharedWithKeys = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value)
-  const keysToDelete = loan.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
-  const keysToCreate = sharedWithKeys.filter(id => !loan.shares.some(share => share.toId === id))
+  const sharedWithKeys = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value as string)
+  const keysToDelete = sub.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
+  const keysToCreate = sharedWithKeys.filter(id => !sub.shares.some(share => share.toId === id))
+
+  console.log(sub.resources)
 
   const updatedLoan = await prisma.contract.update({
     where: {
@@ -71,16 +77,17 @@ export const PATCH = async (req: Request, { params }: Query) => {
       periods: {
         updateMany: {
           where: {
-            id: loan.periods[0].id
+            id: sub.periods[0].id
           },
           data: {
-            to: new Date(body.endDate).toISOString(),
-            from: new Date(body.startDate).toISOString(),
-            fee: Number(body.fee)
+            fee: Number(body.fee),
+            payday: body.payday ? Number(body.payday) : undefined,
+            paymonth: body.paymonth ? Number(body.paymonth) : undefined,
+            periodicity: body.periodicity
           }
         }
       },
-      providers: getProviderUpdateArgs(loan, body),
+      providers: getProviderUpdateArgs(sub, body),
       shares: {
         createMany: {
           data: keysToCreate.map(toId => ({
@@ -92,22 +99,31 @@ export const PATCH = async (req: Request, { params }: Query) => {
           OR: keysToDelete
         }
       },
-      resources: {
-        upsert: {
-          where: {
-            id: loan.resources.find(resource => resource.type === 'LINK')?.id,
-            type: 'LINK'
-          },
-          update: {
-            url: body.link
-          },
+      resources: sub.resources.length === 0
+        // THIS IS A FIX FOR THE CARRYOVER OF SUBSCRIPTIONS TO CONTRACTS NOT HAVING LINKS
+        ? {
           create: {
             name: 'link',
             type: 'LINK',
             url: body.link
           }
         }
-      }
+        : {
+          upsert: {
+            where: {
+              id: sub.resources.find(resource => resource.type === 'LINK')?.id,
+              type: 'LINK'
+            },
+            update: {
+              url: body.link
+            },
+            create: {
+              name: 'link',
+              type: 'LINK',
+              url: body.link
+            }
+          }
+        }
     },
     include
   })
@@ -127,10 +143,9 @@ export const PATCH = async (req: Request, { params }: Query) => {
   return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
 }
 
-const getProviderUpdateArgs = (loan: { providers: RawProvidersOnContract[] }, body: LoanFormData) => {
-  const vendorProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.VENDOR)
-  const platformProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.PLATFORM)
-  const lenderProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.LENDER)
+const getProviderUpdateArgs = (sub: { providers: RawProvidersOnContract[] }, body: SubFormData) => {
+  const vendorProvider = sub.providers.find(provider => provider.as === PROVIDER_TYPE.VENDOR)
+  const platformProvider = sub.providers.find(provider => provider.as === PROVIDER_TYPE.PLATFORM)
 
   const getUpdate = (providerOnContract: RawProvidersOnContract | undefined, providerId: string | undefined) => {
     if (!providerOnContract) return undefined
@@ -145,8 +160,7 @@ const getProviderUpdateArgs = (loan: { providers: RawProvidersOnContract[] }, bo
 
   const updateMany = [
     getUpdate(vendorProvider, body.vendorId),
-    getUpdate(platformProvider, body.platformId),
-    getUpdate(lenderProvider, body.lenderId)
+    getUpdate(platformProvider, body.platformId)
   ].filter(Boolean) as Prisma.ProvidersOnContractUpdateArgs[]
 
   const deleteMany = [
@@ -155,9 +169,6 @@ const getProviderUpdateArgs = (loan: { providers: RawProvidersOnContract[] }, bo
       : undefined,
     platformProvider && body.platformId === SELECT_OPTIONS.NONE
       ? { id: platformProvider.id }
-      : undefined,
-    lenderProvider && body.lenderId === SELECT_OPTIONS.NONE
-      ? { id: lenderProvider.id }
       : undefined
   ].filter(Boolean) as Prisma.ProvidersOnContractWhereUniqueInput[]
 
@@ -168,9 +179,6 @@ const getProviderUpdateArgs = (loan: { providers: RawProvidersOnContract[] }, bo
         : undefined,
       !platformProvider && body.platformId !== SELECT_OPTIONS.NONE
         ? { as: PROVIDER_TYPE.PLATFORM, providerId: body.platformId }
-        : undefined,
-      !lenderProvider && body.lenderId !== SELECT_OPTIONS.NONE
-        ? { as: PROVIDER_TYPE.LENDER, providerId: body.lenderId }
         : undefined
     ].filter(Boolean) as Prisma.ProvidersOnContractCreateManyInput[]
   }

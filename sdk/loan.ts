@@ -28,8 +28,8 @@ export const createLoan = async (body: LoanFormData) => {
   return data
 }
 
-export const updateLoan = async (body: LoanFormData) => {
-  const result = await fetch(getUrl('/loan'), {
+const update = async (id: string, body: LoanFormData) => {
+  const result = await fetch(getUrl(`/loan/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(body)
   })
@@ -38,8 +38,8 @@ export const updateLoan = async (body: LoanFormData) => {
   return data
 }
 
-export const removeLoan = async (id: string) => {
-  const result = await fetch(getUrl(`/loan/${id}`), {
+const deleteLoan = async (id: string) => {
+  const result = await fetch(getUrl(`/contract/${id}`), {
     method: 'DELETE'
   })
 
@@ -51,6 +51,6 @@ export const loanSdk = {
   get: getUserLoans,
   create: createLoan,
   revalidate: revalidateUserLoans,
-  delete: removeLoan,
-  update: updateLoan
+  delete: deleteLoan,
+  update
 }

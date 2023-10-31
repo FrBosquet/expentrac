@@ -12,7 +12,7 @@ export default function Page() {
   if (!loan) return null
 
   return <>
-    <h1 className='col-span-2 text-5xl pb-8'>{loan.name}</h1>
-    <LoanDetailContent loan={loan} className='col-span-2' />
+    <h1 className='col-span-2 lg:col-span-4 text-5xl pb-8'>{loan.name}</h1>
+    <LoanDetailContent loan={loan} className='col-span-2 lg:col-span-4' />
   </>
 }

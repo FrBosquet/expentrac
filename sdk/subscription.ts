@@ -12,7 +12,7 @@ export const getUserSubscriptions = async (userId: string) => {
   return subscriptions
 }
 
-export const create = async (body: SubFormData) => {
+const create = async (body: SubFormData) => {
   const result = await fetch(getUrl('/subscription'), {
     method: 'POST',
     body: JSON.stringify(body)
@@ -30,14 +30,22 @@ export const revalidateUserSubscriptions = async (userId: string) => {
   return response
 }
 
-export const updateSubscription = async (body: Record<string, unknown>) => {
-  const result = await fetch(getUrl('/subscription'), {
+const update = async (id: string, body: SubFormData) => {
+  const result = await fetch(getUrl(`/subscription/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(body)
   })
 
   const { data } = await result.json() as { data: Contract }
+  return data
+}
 
+const deleteSub = async (id: string) => {
+  const result = await fetch(getUrl(`/contract/${id}`), {
+    method: 'DELETE'
+  })
+
+  const { data } = await result.json() as { data: Contract }
   return data
 }
 
@@ -45,5 +53,6 @@ export const subscriptionSdk = {
   get: getUserSubscriptions,
   create,
   revalidate: revalidateUserSubscriptions,
-  update: updateSubscription
+  update,
+  delete: deleteSub
 }

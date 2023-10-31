@@ -3,7 +3,7 @@
 import { CONTRACT_TYPE } from '@lib/contract'
 import { unwrapSub, type Subscription } from '@lib/sub'
 import { useStore } from '@store'
-import { getSubs } from '@store/contracts'
+import { getSub, getSubs } from '@store/contracts'
 
 export const useSubs = () => {
   const subs = useStore(getSubs)
@@ -32,5 +32,23 @@ export const useSubs = () => {
     hasOwnSubs,
     hasSharedSubs,
     hasAnySubs
+  }
+}
+
+export const useSub = (id: string) => {
+  const shares = useStore(state => state.shares)
+
+  let sub = useStore(getSub(id))
+
+  if (!sub) {
+    const share = shares.find(share => share.contract.id === id)
+
+    if (share) {
+      sub = unwrapSub(share.contract)
+    }
+  }
+
+  return {
+    sub
   }
 }

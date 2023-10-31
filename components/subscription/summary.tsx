@@ -5,6 +5,7 @@ import { Button } from '@components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import { getTimeDescription } from '@lib/dates'
 import { useState } from 'react'
+import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
 import { COLUMN, SubItem } from './item'
 
@@ -15,7 +16,13 @@ interface Props {
 export const SubscriptionSummary = ({ className }: Props) => {
   const { date, month } = useDate()
   const [activeColumn, setActiveColumn] = useState(COLUMN.FEE)
-  const { allSubs, hasAnySubs } = useSubs()
+  const { allSubs } = useSubs()
+
+  const ongoingSubs = allSubs.filter((sub) => {
+    return sub.time.isOngoing
+  })
+
+  const hasSubs = ongoingSubs.length > 0
 
   return (
     <Card className={className}>
@@ -37,14 +44,17 @@ export const SubscriptionSummary = ({ className }: Props) => {
           <p className='uppercase text-xs text-theme-light text-center'>paid</p>
           <p className='uppercase text-xs text-theme-light text-right'>fee</p>
         </header>
-        {hasAnySubs
+        {hasSubs
           ? <div className='flex flex-col gap-3'>
-            {allSubs.map((sub) => <SubItem sub={sub} activeColumn={activeColumn} key={sub.id} />)}
+            {ongoingSubs.map((sub) => <SubItem sub={sub} activeColumn={activeColumn} key={sub.id} />)}
           </div>
           : <div className='grid place-content-center gap-2 p-6 text-center'>
             <p className='text-sm text-theme-light'>You have no loans going on in the selected month</p>
           </div>
         }
+        <footer className='flex justify-end pt-8'>
+          <SubscriptionAdd />
+        </footer>
       </CardContent>
     </Card>
   )

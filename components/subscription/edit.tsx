@@ -2,7 +2,7 @@
 
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { type Subscription } from '@lib/sub'
+import { type SubFormData, type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
 import { subscriptionSdk } from '@sdk'
 import { Edit } from 'lucide-react'
@@ -19,37 +19,7 @@ interface Props {
 
 const TRIGGER_DECORATOR = <Edit size={12} />
 
-// const hasSubscriptionChanged = (subscription: SubscriptionComplete, formData: Record<string, FormDataEntryValue>) => {
-//   const ignoredKeys = ['id', 'shares', 'vendor', 'platform', 'lender', 'userId']
-
-//   for (const key in subscription) {
-//     if (ignoredKeys.includes(key)) continue
-
-//     const value = subscription[key as keyof SubscriptionComplete]
-//     const formValue = formData[key]
-
-//     switch (key) {
-//       case 'fee':
-//         if (value !== Number(formValue)) return true
-//         break
-//       case 'vendorId':
-//       case 'platformId':
-//         if (!value && formValue === 'NONE') break
-//         if (value !== formValue) return true
-//         break
-//       case 'payday':
-//         if (Number(formValue) !== value) return true
-//         break
-//       default:
-//         if (value !== formValue) return true
-//         break
-//     }
-//   }
-
-//   return false
-// }
-
-export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
+export const SubEdit = ({ sub, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { updateSub } = useSubs()
@@ -59,45 +29,19 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
     setLoading(true)
 
     try {
-      // const { shares } = sub
-      const formData = Object.fromEntries(new FormData(e.currentTarget))
+      const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as SubFormData
 
-      // const sharedWith = Object.keys(formData).reduce<string[]>((acc, key) => {
-      //   if (key.startsWith('sharedWith')) {
-      //     return [...acc, formData[key] as string]
-      //   }
-      //   return acc
-      // }, [])
+      const updatedSub = await subscriptionSdk.update(
+        sub.id,
+        formData
+      )
 
-      // const sharesToRemove = shares.filter((share) => !sharedWith.includes(share.userId))
-      // const sharesToAdd = sharedWith.filter((userId) => !shares.some((share) => share.userId === userId))
-
-      // TODO: This should happen in the backend
-      // for (const share of sharesToRemove) {
-      //   await subscriptionShareSdk.delete(share.id)
-      // }
-
-      // if (hasSubscriptionChanged(sub, formData) || sharesToAdd.length) {
-      const data = await subscriptionSdk.update({
-        id: sub.id,
-        ...formData
-      })
-
-      updateSub(data as any)
-      // } else {
-      //   const updatedLoan = {
-      //     ...sub,
-      //     shares: shares.filter((share) => sharedWith.includes(share.userId))
-      //   }
-
-      //   updateSub(updatedLoan)
-      // }
-
+      updateSub(updatedSub)
       void subscriptionSdk.revalidate(sub.userId)
-      setLoading(false)
       setOpen(false)
     } catch (e) {
       console.error(e)
+    } finally {
       setLoading(false)
     }
   }
@@ -119,3 +63,5 @@ export const SubscriptionEdit = ({ sub, className, variant = 'outline', triggerD
     </Dialog>
   )
 }
+
+export const SubscriptionEdit = SubEdit

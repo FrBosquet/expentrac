@@ -1,17 +1,12 @@
 import { authOptions } from '@lib/auth'
-import { prisma, type Prisma, type Subscription } from '@lib/prisma'
-import { SELECT_OPTIONS } from '@types'
+import { CONTRACT_TYPE } from '@lib/contract'
+import { notificationSdk } from '@lib/notification'
+import { prisma, type Contract, type Prisma, type Share } from '@lib/prisma'
+import { PROVIDER_TYPE } from '@lib/provider'
+import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
-
-const include = {
-  vendor: { include: { provider: true } },
-  platform: { include: { provider: true } },
-  shares: {
-    include: { user: true }
-  },
-  user: true
-}
+import { include } from './include'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -25,8 +20,11 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const subs = await prisma.subscription.findMany({
-    where: { userId },
+  const subs = await prisma.contract.findMany({
+    where: {
+      userId,
+      type: CONTRACT_TYPE.SUBSCRIPTION
+    },
     orderBy: [
       {
         name: 'asc'
@@ -37,87 +35,6 @@ export const GET = async (req: Request) => {
 
   return NextResponse.json(subs)
 }
-
-const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
-  return Object.entries(body).reduce((acc, [key, value]) => {
-    let parsedValue: any = value
-    let parsedKey = key
-
-    if (key.startsWith('sharedWith')) return acc
-
-    switch (key) {
-      case 'fee':
-        parsedValue = Number(value)
-        break
-      case 'yearly':
-        parsedValue = value === 'on'
-        break
-      case 'payday':
-        parsedValue = value === '0' ? null : Number(value)
-        break
-      case 'vendorId':
-      case 'platformId':
-      case 'lenderId':
-        if (value === SELECT_OPTIONS.CREATE) return acc
-        if (isCreate && value === SELECT_OPTIONS.NONE) return acc
-
-        parsedKey = key.slice(0, -2)
-
-        if (value === SELECT_OPTIONS.NONE) {
-          parsedValue = {
-            disconnect: true
-          }
-        } else {
-          parsedValue = {
-            connect: {
-              id: value
-            }
-          }
-        }
-
-        break
-    }
-
-    return {
-      ...acc,
-      [parsedKey]: parsedValue
-    }
-  }, {}) as T
-}
-
-// TODO: Refactor to use COntract/Shares
-// const addShares = async (sub: any, body: Record<string, string>) => {
-//   for (const key in body) {
-//     if (key.startsWith('sharedWith')) {
-// const userId = body[key]
-
-// if (sub.shares.some(sub => sub.user.id === userId)) continue
-
-/*       // const subShare = await prisma.subscriptionShare.create({
-      //   data: {
-      //     user: {
-      //       connect: {
-      //         id: userId
-      //       }
-      //     },
-      //     subscription: {
-      //       connect: {
-      //         id: sub.id
-      //       }
-      //     }
-      //   },
-      //   include: {
-      //     user: true
-      //   }
-      // })
- */
-// await notificationSdk.create(userId, true, {
-//   type: NOTIFICATION_TYPE.SUB_SHARE,,
-//   subShare
-// })
-//     }
-//   }
-// }
 
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
@@ -134,118 +51,68 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  const args: Prisma.SubscriptionCreateArgs = {
+  const keysToCreate = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value as string)
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const newSub = await prisma.contract.create({
     data: {
-      ...parseBody<Omit<Subscription, 'userId' | 'vendorId' | 'platformId'>>(body, true),
       user: {
         connect: {
           id: userId
         }
+      },
+      type: CONTRACT_TYPE.SUBSCRIPTION,
+      name: body.name,
+      fee: Number(body.initial),
+      periods: {
+        create: {
+          from: today,
+          fee: Number(body.fee),
+          payday: body.payday ? Number(body.payday) : undefined,
+          paymonth: body.paymonth ? Number(body.paymonth) : undefined,
+          periodicity: body.periodicity
+        }
+      },
+      providers: {
+        createMany: {
+          data: [
+            body.vendorId !== SELECT_OPTIONS.NONE
+              ? { as: PROVIDER_TYPE.VENDOR, providerId: body.vendorId }
+              : undefined,
+            body.platformId !== SELECT_OPTIONS.NONE
+              ? { as: PROVIDER_TYPE.PLATFORM, providerId: body.platformId }
+              : undefined
+          ].filter(Boolean) as Prisma.ProvidersOnContractCreateManyInput[]
+        }
+      },
+      shares: {
+        createMany: {
+          data: keysToCreate.map(toId => ({
+            fromId: userId,
+            toId
+          }))
+        }
+      },
+      resources: {
+        create: {
+          name: 'link',
+          type: 'LINK',
+          url: body.link
+        }
       }
     },
     include
-  }
-
-  const newSub = await prisma.subscription.create(args)
-
-  // await addShares(newSub as SubscriptionComplete, body)
-
-  const data = await prisma.subscription.findFirst({
-    where: { id: newSub.id },
-    include
   })
 
-  return NextResponse.json({ message: 'success', data }, { status: 201 })
-}
-
-export const PATCH = async (req: Request) => {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
+  newSub.shares.forEach(share => {
+    void notificationSdk.create(share.toId, true, {
+      type: NOTIFICATION_TYPE.SUB_SHARE,
+      contract: newSub as Contract,
+      share: share as Share
     })
-  }
+  })
 
-  const userId = session.user.id
-
-  const body = await req.json()
-  const subscription = await prisma.subscription.findUnique({ where: { id: body.id }, include })
-
-  if (!subscription) {
-    return NextResponse.json({
-      message: 'subscription not found'
-    }, {
-      status: 404
-    })
-  }
-
-  if (userId !== subscription?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
-  }
-
-  const args: Prisma.SubscriptionUpdateArgs = {
-    data: parseBody<Subscription>(body),
-    where: {
-      id: body.id
-    },
-    include
-  }
-
-  // await addShares(subscription as SubscriptionComplete, body)
-
-  const updatedSubscription = await prisma.subscription.update(args)
-
-  return NextResponse.json({ message: 'success', data: updatedSubscription }, { status: 200 })
-}
-
-export const DELETE = async (req: Request) => {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({
-      message: 'forbidden'
-    }, {
-      status: 403
-    })
-  }
-
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get('id')
-
-  if (!id) {
-    return NextResponse.json({
-      message: 'id is required'
-    }, {
-      status: 400
-    })
-  }
-
-  const sub = await prisma.subscription.findUnique({ where: { id } })
-
-  if (!sub) {
-    return NextResponse.json({
-      message: 'subscription not found'
-    }, {
-      status: 404
-    })
-  }
-
-  if (session.user.id !== sub?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
-  }
-
-  await prisma.subscription.delete({ where: { id } })
-
-  return NextResponse.json({ message: 'DELETED' }, { status: 200 })
+  return NextResponse.json({ message: 'success', data: newSub }, { status: 201 })
 }

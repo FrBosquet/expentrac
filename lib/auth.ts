@@ -1,11 +1,11 @@
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@lib/prisma'
+import { prisma } from '@lib/prisma'
 import { type AuthOptions } from 'next-auth'
 import { type Adapter } from 'next-auth/adapters'
 import GoogleProvider from 'next-auth/providers/google'
 import { emailSdk } from './email'
 
-const adapter = PrismaAdapter(new PrismaClient()) as Adapter
+const adapter = PrismaAdapter(prisma) as Adapter
 
 export const authOptions: AuthOptions = {
   adapter,

@@ -3,7 +3,7 @@
 import { ProviderLogo } from '@components/provider/ProviderLogo'
 import { PaidIcon, ShareIcon } from '@components/state-icon'
 import { euroFormatter } from '@lib/currency'
-import { getDateText, monthBeetween } from '@lib/dates'
+import { monthBeetween } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { CalendarCheck2 } from 'lucide-react'
 import Link from 'next/link'
@@ -19,10 +19,8 @@ interface Props {
   activeColumn: COLUMN
 }
 
-const getDateString = ({ startDate }: Subscription) => {
-  const dateText = getDateText(new Date(startDate))
-
-  return `Started ${dateText}`
+const getDateString = ({ time: { payday } }: Subscription) => {
+  return `Payd on the ${payday}`
 }
 
 export const SubItem = ({ sub, activeColumn }: Props) => {

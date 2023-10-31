@@ -3,9 +3,9 @@
 import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
+import { subscriptionSdk } from '@sdk'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useSubs } from './context'
@@ -29,15 +29,18 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
   const handleDelete = async () => {
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription?id=${id}`), {
-      method: 'DELETE'
-    })
+    try {
+      const result = await subscriptionSdk.delete(id)
 
-    setLoading(false)
-    if (result.ok) {
-      removeSub(sub.contract)
-      sideEffect?.()
+      removeSub(result)
+      void subscriptionSdk.revalidate(sub.userId)
+
       setOpen(false)
+      void sideEffect?.()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 

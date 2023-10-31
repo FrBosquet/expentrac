@@ -31,10 +31,10 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
     try {
       const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as LoanFormData
 
-      const updatedLoan = await loanSdk.update({
-        id: loan.id,
-        ...formData
-      })
+      const updatedLoan = await loanSdk.update(
+        loan.id,
+        formData
+      )
 
       updateLoan(updatedLoan)
       void loanSdk.revalidate(loan.userId)

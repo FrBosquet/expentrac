@@ -1,7 +1,7 @@
 import { CONTRACT_TYPE } from '@lib/contract'
 import { unwrapLoan } from '@lib/loan'
 import { type Contract } from '@lib/prisma'
-import { unwrapSub } from '@lib/sub'
+import { unwrapSub, type Subscription } from '@lib/sub'
 import { type StateCreator } from 'zustand'
 
 export interface ContractsSlice {
@@ -73,10 +73,26 @@ export const getHasLoans = (state: ContractsSlice) => {
   return contracts.some(contract => contract.type === CONTRACT_TYPE.LOAN)
 }
 
-export const getSubs = (state: ContractsSlice) => {
+export const getSubs = (state: ContractsSlice): Subscription[] => {
   const { contracts } = state
 
   return contracts
     .filter(contract => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
     .map(contract => unwrapSub(contract))
+}
+
+export const getSub = (id: string) => (state: ContractsSlice) => {
+  const { contracts } = state
+
+  const contract = contracts.find(contract => contract.id === id)
+
+  if (!contract || contract.type !== CONTRACT_TYPE.SUBSCRIPTION) return null
+
+  return unwrapSub(contract)
+}
+
+export const getHasSubs = (state: ContractsSlice) => {
+  const { contracts } = state
+
+  return contracts.some(contract => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
 }
