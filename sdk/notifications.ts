@@ -2,7 +2,7 @@ import { getUrl } from '@lib/api'
 import { type Notification } from '@lib/prisma'
 import { type SHARE_STATE } from '@types'
 
-export const getUserNotifications = async (userId: string) => {
+const get = async (userId: string) => {
   const url = getUrl(`notification?userId=${userId}`)
 
   const response = await fetch(url, { next: { tags: [`notification:${userId}`] } })
@@ -11,7 +11,7 @@ export const getUserNotifications = async (userId: string) => {
   return notifications
 }
 
-export const ackNotification = async (id: string, state?: SHARE_STATE) => {
+const ack = async (id: string, state?: SHARE_STATE) => {
   const url = getUrl(`notification/${id}`)
 
   const response = await fetch(url, {
@@ -28,6 +28,6 @@ export const ackNotification = async (id: string, state?: SHARE_STATE) => {
 }
 
 export const notificationSdk = {
-  get: getUserNotifications,
-  ack: ackNotification
+  get,
+  ack
 }

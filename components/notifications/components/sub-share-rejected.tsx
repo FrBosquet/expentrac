@@ -1,6 +1,7 @@
 import { SubscriptionDetail } from '@components/subscription/detail'
 import { type SubShareAcceptNotificationPayload } from '@lib/notification/sub-share-accept'
 import { type Notification as NotificationType } from '@lib/prisma'
+import { unwrapSub } from '@lib/sub'
 import { useAutoAck } from './hooks'
 import { NotificationWrapper } from './wrapper'
 
@@ -11,6 +12,6 @@ export const SubShareRejectedNotification = ({ notification }: { notification: N
   const { loading } = useAutoAck(notification)
 
   return <NotificationWrapper date={createdAt} key={id} loading={loading} acknowledged={ack}>
-    <p className='w-full'>{user.name} refused to share <SubscriptionDetail contract={contract} className='font-semibold hover:text-primary-800' /> with you</p>
+    <p className='w-full'>{user.name} refused to share <SubscriptionDetail sub={unwrapSub(contract)} className='text-expentrac-800' /> with you</p>
   </NotificationWrapper>
 }

@@ -6,7 +6,7 @@ import { DailyNotification } from './components/daily'
 import { LoanShareNotification } from './components/loan-share'
 import { LoanShareAcceptedNotification } from './components/loan-share-accepted'
 import { LoanShareRejectedNotification } from './components/loan-share-rejected'
-import { SubscriptionShareNotification } from './components/sub-share'
+import { SubShareNotification } from './components/sub-share'
 import { SubShareAcceptedNotification } from './components/sub-share-accepted'
 import { SubShareRejectedNotification } from './components/sub-share-rejected'
 import { useNotifications } from './context'
@@ -32,7 +32,7 @@ export const NotificationList = ({ className }: Props) => {
             case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED:
               return <LoanShareRejectedNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE:
-              return <SubscriptionShareNotification key={id} notification={notification} />
+              return <SubShareNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED:
               return <SubShareAcceptedNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE_REJECTED:

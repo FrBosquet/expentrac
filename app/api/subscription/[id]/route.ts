@@ -65,9 +65,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
   const keysToDelete = sub.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
   const keysToCreate = sharedWithKeys.filter(id => !sub.shares.some(share => share.toId === id))
 
-  console.log(sub.resources)
-
-  const updatedLoan = await prisma.contract.update({
+  const updatedSub = await prisma.contract.update({
     where: {
       id
     },
@@ -129,18 +127,18 @@ export const PATCH = async (req: Request, { params }: Query) => {
   })
 
   keysToCreate.forEach(toId => {
-    const share = updatedLoan.shares.find(share => share.toId === toId)
+    const share = updatedSub.shares.find(share => share.toId === toId)
 
     if (!share) return
 
     void notificationSdk.create(share.toId, true, {
-      type: NOTIFICATION_TYPE.LOAN_SHARE,
-      contract: updatedLoan as Contract,
+      type: NOTIFICATION_TYPE.SUB_SHARE,
+      contract: updatedSub as Contract,
       share: share as Share
     })
   })
 
-  return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
+  return NextResponse.json({ message: 'success', data: updatedSub }, { status: 200 })
 }
 
 const getProviderUpdateArgs = (sub: { providers: RawProvidersOnContract[] }, body: SubFormData) => {

@@ -1,4 +1,5 @@
 import { authOptions } from '@lib/auth'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk } from '@lib/notification'
 import { prisma, type Contract } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
@@ -25,6 +26,16 @@ const include = {
       periods: true
     }
   }
+}
+
+const getType = (contractType: string, accepted: boolean) => {
+  if (contractType === CONTRACT_TYPE.LOAN) {
+    return accepted ? NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED : NOTIFICATION_TYPE.LOAN_SHARE_REJECTED
+  } else if (contractType === CONTRACT_TYPE.SUBSCRIPTION) {
+    return accepted ? NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED : NOTIFICATION_TYPE.SUB_SHARE_REJECTED
+  }
+
+  throw new Error(`Invalid base type for share acceptance/rejection ${contractType}`)
 }
 
 export const PATCH = async (req: Request, { params }: { params: { id: string } }) => {
@@ -69,7 +80,7 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
     userId,
     true,
     {
-      type: accepted ? NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED : NOTIFICATION_TYPE.LOAN_SHARE_REJECTED,
+      type: getType(share.contract.type, accepted),
       contract: share.contract as Contract
     }
   )

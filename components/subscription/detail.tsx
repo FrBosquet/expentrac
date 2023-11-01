@@ -21,8 +21,10 @@ interface Props {
   className?: string
 }
 
-export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, className }: Props) => {
+export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, className }: Props) => {
   const [open, setOpen] = useState(false)
+
+  if (!sub) return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -46,11 +48,11 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub.name, children, c
 
 export const SubDetailContent = ({ sub, className }: { sub: Subscription, className?: string }) => {
   const { push } = useRouter()
-  const { ownsAsset } = useUser()
+  const { ownsResource } = useUser()
 
   const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly } } = sub
 
-  const userOwnThis = ownsAsset(sub)
+  const userOwnThis = ownsResource(sub)
 
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
     <article className="grid grid-cols-2 gap-2 col-span-2">
