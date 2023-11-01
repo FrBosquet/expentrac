@@ -67,7 +67,7 @@ export const LoanFee = ({ loan, activeColumn }: Props) => {
 
   const dateText = getDateString(loan, time)
 
-  return <Link href={`/dashboard/loans/${id}`} className='grid grid-rows-[auto_auto] grid-cols-[auto_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-x-2' key={id}>
+  return <Link href={`/dashboard/loans/${id}`} className='grid grid-rows-[auto_auto] grid-cols-[auto_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-x-2 hover:bg-theme-back p-1 rounded-md' key={id}>
     <ProviderLogo className="w-8 h-8 row-span-2 self-center" provider={vendor} Default={CalendarCheck2} />
     <h3 className='lg:col-span-3 whitespace-nowrap overflow-hidden text-ellipsis'>{name}</h3>
     <p className='text-xs text-theme-light text-right uppercase lg:col-start-5' >{dateText}</p>

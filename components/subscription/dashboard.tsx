@@ -3,7 +3,7 @@
 import { DateSelector } from '@components/date/selector'
 import { SubscriptionAdd } from './add'
 import { useSubs } from './context'
-import { SubscriptionSummary } from './summary'
+import { SubscriptionSummary } from './dashboard/summary'
 
 // a subscription is a payment that you do every month or every year to a service that you use (like netflix, spotify, etc) or a service that you need (like a gym membership, a phone plan, etc)
 

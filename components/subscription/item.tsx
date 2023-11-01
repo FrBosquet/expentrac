@@ -20,7 +20,7 @@ interface Props {
 }
 
 const getDateString = ({ time: { payday } }: Subscription) => {
-  return `Payd on the ${payday}`
+  return `Paid on the ${payday}`
 }
 
 export const SubItem = ({ sub, activeColumn }: Props) => {
@@ -35,11 +35,15 @@ export const SubItem = ({ sub, activeColumn }: Props) => {
       isPaidThisMonth
     },
     fee: {
-      holder: fee
+      holderMonthly,
+      holderYearly
     },
     shares: {
       hasAny,
       isShared
+    },
+    time: {
+      isYearly
     }
   } = sub
 
@@ -47,7 +51,9 @@ export const SubItem = ({ sub, activeColumn }: Props) => {
 
   const monthsActive = monthBeetween(startDate, new Date())
 
-  return <Link href={`/dashboard/subscriptions/${id}`} className='grid grid-rows-[auto_auto] grid-cols-[auto_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-x-2' key={id}>
+  const fee = isYearly ? holderYearly : holderMonthly
+
+  return <Link href={`/dashboard/subscriptions/${id}`} className='grid grid-rows-[auto_auto] grid-cols-[auto_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_1fr] gap-x-2 hover:bg-theme-back p-1 rounded-md' key={id}>
     <ProviderLogo className="w-8 h-8 row-span-2 self-center" provider={vendor} Default={CalendarCheck2} />
     <h3 className='lg:col-span-3 whitespace-nowrap overflow-hidden text-ellipsis'>{name}</h3>
     <p className='text-xs text-theme-light text-right uppercase lg:col-start-5' >{dateText}</p>

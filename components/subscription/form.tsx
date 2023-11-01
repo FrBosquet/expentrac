@@ -34,10 +34,14 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
     label: provider.name
   }))
 
+  const defaultFee = sub
+    ? sub.time.isYearly ? sub.fee.yearly.toFixed(2) : sub.fee.monthly.toFixed(2)
+    : ''
+
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={sub?.name} name="name" label="Name" />
-      <FormField required defaultValue={sub?.fee.monthly} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
+      <FormField required defaultValue={defaultFee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
 
       <section className="flex justify-end items-center col-span-2 gap-2">
         <Switch id="yearly" name='yearly' defaultChecked={sub?.time.isYearly} />

@@ -37,14 +37,14 @@ export const LoanSummary = ({ className }: Props) => {
         <Button size='sm' disabled={activeColumn === COLUMN.AMOUNT} variant='secondary' onClick={() => { setActiveColumn(COLUMN.AMOUNT) }}>AMOUNT</Button>
         <Button size='sm' disabled={activeColumn === COLUMN.FEE} variant='secondary' onClick={() => { setActiveColumn(COLUMN.FEE) }}>FEES</Button>
       </header>
-      <header className='hidden lg:grid grid-cols-[2rem_1fr_1fr_1fr_1fr] gap-2 pb-4'>
+      <header className='hidden lg:grid grid-cols-[2rem_1fr_1fr_1fr_1fr] gap-2 px-1 pb-4'>
         <p className='uppercase text-xs text-theme-light text-left col-start-2'>name</p>
         <p className='uppercase text-xs text-theme-light text-center'>start/ends</p>
         <p className='uppercase text-xs text-theme-light text-center'>paid/total</p>
         <p className='uppercase text-xs text-theme-light text-right'>fee</p>
       </header>
       {hasLoans
-        ? <div className='flex flex-col gap-3'>
+        ? <div className='flex flex-col gap-3 max-h-[500px] overflow-y-auto'>
           {ongoingLoans.map((loan) => <LoanFee loan={loan} activeColumn={activeColumn} key={loan.id} />)}
         </div>
         : <div className='grid place-content-center gap-2 p-6 text-center'>

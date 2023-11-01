@@ -1,4 +1,4 @@
-import { SubscriptionSummary } from '@components/subscription/summary'
+import { SubscriptionSummary } from '@components/subscription/dashboard/summary'
 
 export default function page() {
   return <>
