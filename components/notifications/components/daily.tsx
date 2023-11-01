@@ -28,7 +28,7 @@ export const DailyNotification = ({ notification }: { notification: Notification
 
         const sub = unwrapSub(contract)
 
-        return <li className='text-xs' key={index}><SubscriptionDetail contract={contract} /> - {sub.fee.holder}€</li>
+        return <li className='text-xs' key={index}><SubscriptionDetail sub={sub} /> - {sub.fee.holder}€</li>
       })}
     </ul>
   </NotificationWrapper>

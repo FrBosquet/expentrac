@@ -19,8 +19,9 @@ interface Props {
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
+// TODO: trigger decorator should be a children
 
-export const SubscriptionDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
+export const SubDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
   const { id, name } = sub
   const { removeSub } = useSubs()
   const [open, setOpen] = useState(false)

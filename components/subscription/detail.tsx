@@ -11,7 +11,7 @@ import { Edit, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { SubscriptionDelete } from './delete'
+import { SubDelete } from './delete'
 import { SubscriptionEdit } from './edit'
 
 interface Props {
@@ -23,6 +23,9 @@ interface Props {
 
 export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, className }: Props) => {
   const [open, setOpen] = useState(false)
+  const { ownsResource } = useUser()
+  const { push } = useRouter()
+  const userOwnThis = ownsResource(sub)
 
   if (!sub) return null
 
@@ -41,18 +44,26 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, 
           </DialogDescription>
         </DialogHeader>
         <SubDetailContent sub={sub} />
+        {
+          userOwnThis && (
+            <>
+              <Separator className="col-span-2" />
+              <menu className="col-span-2 flex gap-2 justify-end">
+                <SubscriptionEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+                <SubDelete sideEffect={() => {
+                  push('/dashboard/subscriptions')
+                }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />
+              </menu>
+            </>
+          )
+        }
       </DialogContent>
     </Dialog>
   )
 }
 
 export const SubDetailContent = ({ sub, className }: { sub: Subscription, className?: string }) => {
-  const { push } = useRouter()
-  const { ownsResource } = useUser()
-
   const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly } } = sub
-
-  const userOwnThis = ownsResource(sub)
 
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
     <article className="grid grid-cols-2 gap-2 col-span-2">
@@ -94,19 +105,6 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
       total > 0 && (
         <>
           <SharesDetail contract={sub} />
-        </>
-      )
-    }
-    {
-      userOwnThis && (
-        <>
-          <Separator className="col-span-2" />
-          <menu className="col-span-2 flex gap-2 justify-end">
-            <SubscriptionEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-            <SubscriptionDelete sideEffect={() => {
-              push('/dashboard/subscriptions')
-            }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />
-          </menu>
         </>
       )
     }

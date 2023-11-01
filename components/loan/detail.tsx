@@ -23,8 +23,11 @@ interface Props {
 }
 
 export const LoanDetail = ({ loan, triggerContent = loan.name, children, className }: Props) => {
+  const { push } = useRouter()
+  const { ownsResource } = useUser()
   const [open, setOpen] = useState(false)
   const { name } = loan
+  const userOwnThis = ownsResource(loan)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -41,16 +44,26 @@ export const LoanDetail = ({ loan, triggerContent = loan.name, children, classNa
           </DialogDescription>
         </DialogHeader>
         <LoanDetailContent loan={loan} />
+        {
+          userOwnThis
+            ? <>
+              <Separator />
+              <menu className="flex gap-2 justify-end" >
+                <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+                <LoanDelete sideEffect={async () => {
+                  push('/dashboard/loans')
+                }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
+              </menu>
+            </>
+            : null
+        }
       </DialogContent>
     </Dialog >
   )
 }
 
 export const LoanDetailContent = ({ loan, className }: { loan: Loan, className?: string }) => {
-  const { push } = useRouter()
-  const { ownsResource } = useUser()
   const [progress, setProgress] = useState(0)
-  const userOwnThis = ownsResource(loan)
 
   const {
     startDate,
@@ -174,18 +187,5 @@ export const LoanDetailContent = ({ loan, className }: { loan: Loan, className?:
       hasShares && <SharesDetail contract={loan} />
     }
 
-    {
-      userOwnThis
-        ? <>
-          <Separator className="col-span-2" />
-          <menu className="col-span-2 flex gap-2 justify-end" >
-            <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-            <LoanDelete sideEffect={async () => {
-              push('/dashboard/loans')
-            }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
-          </menu>
-        </>
-        : null
-    }
   </section>
 }

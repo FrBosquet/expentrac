@@ -62,7 +62,7 @@ export const ProviderDetail = ({ provider, children }: Props) => {
             }
             {
               fromSubs.asVendor.map((item) => {
-                return <SubscriptionDetail contract={item.contract} key={item.id}>
+                return <SubscriptionDetail sub={item} key={item.id}>
                   <Item>{item.name}</Item>
                 </SubscriptionDetail>
               })
@@ -82,7 +82,7 @@ export const ProviderDetail = ({ provider, children }: Props) => {
             {fromLoans.asPlatform.length > 0 && fromSubs.asPlatform.length > 0 && <Separator />}
             {
               fromSubs.asPlatform.map((item) => {
-                return <SubscriptionDetail contract={item.contract} key={item.id}>
+                return <SubscriptionDetail sub={item} key={item.id}>
                   <Item>{item.name}</Item>
                 </SubscriptionDetail>
               })

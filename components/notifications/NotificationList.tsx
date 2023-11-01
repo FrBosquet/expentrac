@@ -21,7 +21,7 @@ export const NotificationList = ({ className }: Props) => {
   return <section className={twMerge('flex flex-col gap-2 py-6', className)}>
     {
       notifications.length
-        ? notifications.map((notification) => {
+        ? notifications.toReversed().map((notification) => {
           const { id, type } = notification
 
           switch (type) {

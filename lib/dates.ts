@@ -1,5 +1,10 @@
 import { TIME } from '@types'
 
+export enum PERIODICITY {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY'
+}
+
 export const toHTMLInputFormat = (d: Date) => {
   const date = new Date(d)
   const year = date.getFullYear()

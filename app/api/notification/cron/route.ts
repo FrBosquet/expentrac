@@ -1,11 +1,14 @@
+import { CONTRACT_TYPE } from '@lib/contract'
+import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
 import { prisma, type Contract, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 
 export const GET = async () => {
+  const now = Date.now()
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setHours(12, 0, 0, 0)
   const date = new Date().getDate()
 
   const users: Record<string, User & { loans: Contract[], subs: Contract[] }> = {}
@@ -41,14 +44,16 @@ export const GET = async () => {
   })
 
   periods.forEach(period => {
-    const { contract } = period
+    const { contract, periodicity, paymonth } = period
     const { userId, type } = contract
+
+    if (periodicity === PERIODICITY.YEARLY && new Date().getMonth() !== paymonth) return
 
     if (!users[userId]) {
       users[userId] = { ...contract.user, loans: [], subs: [] }
     }
 
-    const target = type === 'LOAN' ? users[userId].loans : users[userId].subs
+    const target = type === CONTRACT_TYPE.LOAN ? users[userId].loans : users[userId].subs
 
     target.push(contract as Contract)
   })
@@ -78,7 +83,7 @@ export const GET = async () => {
 
   // done
   return NextResponse.json({
-    message: 'Job finished',
+    message: `Job finished in ${Date.now() - now} ms`,
     users
   }, {
     status: 200
