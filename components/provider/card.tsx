@@ -28,9 +28,9 @@ export const UserProviderCard = ({ provider }: Props) => {
   // fetched
   return <ProviderDetail provider={provider}>
     {
-      <Card className={twMerge('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8')} style={{ borderBottomColor: accentColor }}>
+      <Card className={twMerge('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-l-4')} style={{ borderLeftColor: accentColor }}>
         <ProviderLogo provider={provider} />
-        <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-slate-600">
+        <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-foreground">
           <a target="_blank" href={`https://${extendedData.domain}`} rel="noreferrer">{extendedData.name}</a>
         </h3>
       </Card>

@@ -18,7 +18,7 @@ interface Props {
 export const NotificationList = ({ className }: Props) => {
   const { notifications } = useNotifications()
 
-  return <section className={twMerge('flex flex-col gap-2 py-6', className)}>
+  return <section className={twMerge('flex flex-col gap-2', className)}>
     {
       notifications.length
         ? notifications.toReversed().map((notification) => {
