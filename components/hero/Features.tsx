@@ -31,7 +31,7 @@ export const Feature = ({ title, description, image, alt }: {
 }) => {
   return <>
     <Image src={image} alt={alt} width={300} height={300} className='hidden md:block shadow-lg row-start-2 rounded-full scroll-anim-rise' />
-    <h3 className='text-secondary text-4xl uppercase tracking-wider text-center scroll-anim-rise md:row-start-3 '>{title}</h3>
+    <h3 className='text-theme-accent text-4xl uppercase tracking-wider text-center scroll-anim-rise md:row-start-3 whitespace-nowrap'>{title}</h3>
     <p className='text-slate-300 text-center scroll-anim-rise md:row-start-4'>{description}</p>
   </>
 }
@@ -45,7 +45,7 @@ export const Features = () => {
       grid-cols-1 md:grid-cols-3
       grid-rows-[auto_auto_auto_1fr]
     '>
-      <h1 className='text-6xl pb-10 w-full text-left scroll-anim-fall
+      <h1 className='text-6xl text-theme pb-10 w-full text-left scroll-anim-fall
       col-span-1 md:col-span-3
       '><Combine size={36} className='inline h-12' /> Complex where you need it</h1>
       <Feature title={connected.title} description={connected.description} image={connected.image} alt={connected.alt} />

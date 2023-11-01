@@ -1,16 +1,14 @@
 'use client'
 
-import { DateSelector } from '@components/date/selector'
 import { LoanAdd } from './add'
 import { useLoans } from './context'
-import { LoanSummary } from './summary'
+import { LoanSummary } from './dashboard/summary'
 
 export const LoanDashboard = () => {
   const { hasAnyLoans } = useLoans()
 
   return hasAnyLoans
     ? <>
-      <DateSelector />
       <LoanSummary />
     </>
     : <section className='flex flex-col gap-4 p-12 items-center'>

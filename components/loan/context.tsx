@@ -1,76 +1,62 @@
 'use client'
 
-import { useLoanShares } from '@components/loan-share/context'
-import { useResourceContext } from '@lib/resourceContext'
-import { type LoanComplete } from '@types'
-import { createContext, useContext, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { useDate } from '@components/date/context'
+import { CONTRACT_TYPE } from '@lib/contract'
+import { unwrapLoan } from '@lib/loan'
+import { useStore } from '@store'
+import { getHasLoans, getLoan, getLoans } from '@store/contracts'
 
-interface Props {
-  children: ReactNode
-  serverValue: LoanComplete[]
-}
-
-const defaultContextValue = {
-  loans: [],
-  setLoans: () => null,
-  addLoan: () => null,
-  removeLoan: () => null,
-  updateLoan: () => null,
-  hasLoans: false
-}
-
-export const LoanContext = createContext<{
-  loans: LoanComplete[]
-  setLoans: Dispatch<SetStateAction<LoanComplete[]>>
-  addLoan: (loan: LoanComplete) => void
-  removeLoan: (loan: LoanComplete) => void
-  updateLoan: (loan: LoanComplete) => void
-  hasLoans: boolean
-}>(defaultContextValue)
-
-export const LoansProvider = ({ children, serverValue }: Props) => {
-  const {
-    resource: loans,
-    setResource: setLoans,
-    add: addLoan,
-    remove: removeLoan,
-    update: updateLoan
-  } = useResourceContext<LoanComplete>(
-    serverValue,
-    (a, b) => {
-      if (a.startDate === b.startDate) return a.name.localeCompare(b.name)
-      return a.startDate > b.startDate ? -1 : 1
-    }
-  )
-
-  return (
-    <LoanContext.Provider value={{ loans, setLoans, addLoan, removeLoan, updateLoan, hasLoans: loans.length > 0 }}>
-      {children}
-    </LoanContext.Provider>
-  )
-}
-
+// TODO: rename this file to hooks or move to lib
 export const useLoans = () => {
-  const context = useContext(LoanContext)
-  if (context === undefined) {
-    throw new Error('useLoans must be used within a Provider')
-  }
+  const { date } = useDate()
 
-  const { loanShares } = useLoanShares()
+  const loans = useStore(getLoans(date))
 
-  const sharedLoans = loanShares.filter(share => share.accepted).map((loanShare) => loanShare.loan)
-  const allLoans = [...context.loans, ...sharedLoans]
+  const addLoan = useStore((state) => state.addContract)
+  const removeLoan = useStore((state) => state.removeContract)
+  const updateLoan = useStore((state) => state.updateContract)
+  const hasLoans = useStore(getHasLoans)
+  const shares = useStore(state => state.shares)
 
-  const hasOwnLoans = context.loans.length > 0
+  const sharedLoans = shares.filter(share => {
+    return share.accepted && share.contract.type === CONTRACT_TYPE.LOAN
+  }).map((loanShare) => unwrapLoan(loanShare.contract, date))
+
+  const allLoans = [...loans, ...sharedLoans].sort((a, b) => a.time.payday - b.time.payday)
+
+  const hasOwnLoans = loans.length > 0
   const hasSharedLoans = sharedLoans.length > 0
   const hasAnyLoans = hasOwnLoans || hasSharedLoans
 
   return {
-    ...context,
+    loans,
+    addLoan,
+    removeLoan,
+    updateLoan,
+    hasLoans,
     sharedLoans,
     allLoans,
     hasOwnLoans,
     hasSharedLoans,
     hasAnyLoans
+  }
+}
+
+export const useLoan = (id: string) => {
+  const { date } = useDate()
+  const shares = useStore(state => state.shares)
+
+  let loan = useStore(getLoan(date, id))
+
+  if (!loan) {
+    const share = shares.find(share => share.contract.id === id)
+
+    if (share) {
+      loan = unwrapLoan(share.contract, date)
+    }
+  }
+
+  return {
+    loan
   }
 }

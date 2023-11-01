@@ -1,6 +1,12 @@
 import { type Provider } from '@lib/prisma'
 import { type BrandExtendedInfo, type ProviderFetched, type ProviderUnfetched } from '@types'
 
+export enum PROVIDER_TYPE {
+  VENDOR = 'VENDOR',
+  PLATFORM = 'PLATFORM',
+  LENDER = 'LENDER'
+}
+
 export const isFetchedProvider = (provider: ProviderFetched | ProviderUnfetched): provider is ProviderFetched => {
   return provider.isFetched
 }

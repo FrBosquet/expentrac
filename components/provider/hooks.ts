@@ -1,25 +1,25 @@
 import { useLoans } from '@components/loan/context'
 import { useSubs } from '@components/subscription/context'
-import { type BrandExtendedInfo, type UserProviderComplete } from '@types'
+import { type Provider } from '@lib/prisma'
+import { type BrandExtendedInfo } from '@types'
 
-export const useProviderExtendedInfo = (userProvider: UserProviderComplete) => {
+export const useProviderExtendedInfo = (provider: Provider) => {
   const { loans } = useLoans()
   const { subs } = useSubs()
 
-  const { provider } = userProvider
   const extendedData = provider.rawContent as unknown as BrandExtendedInfo
 
   const url = `https://${extendedData.domain}`
 
   const fromLoans = {
-    asVendor: loans.filter((item) => item.vendorId === userProvider.id),
-    asPlatform: loans.filter((item) => item.platformId === userProvider.id),
-    asLender: loans.filter((item) => item.lenderId === userProvider.id)
+    asVendor: loans.filter((item) => item.providers.vendor?.id === provider.id),
+    asPlatform: loans.filter((item) => item.providers.platform?.id === provider.id),
+    asLender: loans.filter((item) => item.providers.lender?.id === provider.id)
   }
 
   const fromSubs = {
-    asVendor: subs.filter((item) => item.vendorId === userProvider.id),
-    asPlatform: subs.filter((item) => item.platformId === userProvider.id)
+    asVendor: subs.filter((item) => item.providers.vendor?.id === provider.id),
+    asPlatform: subs.filter((item) => item.providers.platform?.id === provider.id)
   }
 
   const lengths = {
@@ -35,16 +35,15 @@ export const useProviderExtendedInfo = (userProvider: UserProviderComplete) => {
   ].filter(Boolean)
 
   const totals = {
-    asVendor: fromLoans.asVendor.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asVendor.reduce((acc, item) => acc + item.fee, 0),
-    asPlatform: fromLoans.asPlatform.reduce((acc, item) => acc + item.fee, 0) + fromSubs.asPlatform.reduce((acc, item) => acc + item.fee, 0),
-    asLender: fromLoans.asLender.reduce((acc, item) => acc + item.fee, 0)
+    asVendor: fromLoans.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0) + fromSubs.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0),
+    asPlatform: fromLoans.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0) + fromSubs.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0),
+    asLender: fromLoans.asLender.reduce((acc, item) => acc + item.fee.monthly, 0)
   }
 
   const hasAnyItem = lengths.asVendor > 0 || lengths.asPlatform > 0 || lengths.asLender > 0
 
   return {
-    ...userProvider,
-    provider,
+    ...provider,
     url,
     fromLoans,
     fromSubs,

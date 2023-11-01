@@ -1,0 +1,4 @@
+export enum CONTRACT_TYPE {
+  LOAN = 'LOAN',
+  SUBSCRIPTION = 'SUBSCRIPTION'
+}

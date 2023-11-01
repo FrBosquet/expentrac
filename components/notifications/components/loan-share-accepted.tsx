@@ -1,4 +1,5 @@
 import { LoanDetail } from '@components/loan/detail'
+import { unwrapLoan } from '@lib/loan'
 import { type LoanShareAcceptNotificationPayload } from '@lib/notification/loan-share-accept'
 import { type Notification as NotificationType } from '@lib/prisma'
 import { useAutoAck } from './hooks'
@@ -6,11 +7,12 @@ import { NotificationWrapper } from './wrapper'
 
 export const LoanShareAcceptedNotification = ({ notification }: { notification: NotificationType }) => {
   const { id, ack, createdAt } = notification
-  const { loan, shareHolder } = JSON.parse(notification.payload as string) as LoanShareAcceptNotificationPayload
+  const { shareHolder, contract } = JSON.parse(notification.payload as string) as LoanShareAcceptNotificationPayload
 
   const { loading } = useAutoAck(notification)
 
+  // TODO: Notification should be created with a contract link, then use the loan detail component to show it here
   return <NotificationWrapper date={createdAt} key={id} loading={loading} acknowledged={ack}>
-    <p className='w-full'>{shareHolder.name} accepted to share <LoanDetail loan={loan} className='font-semibold hover:text-primary-800' /> with you</p>
+    <p className='w-full'>{shareHolder.name} accepted to share <LoanDetail className='text-semibold text-expentrac-800' loan={unwrapLoan(contract)} /> with you</p>
   </NotificationWrapper>
 }

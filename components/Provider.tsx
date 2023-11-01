@@ -1,8 +1,7 @@
 'use client'
 
 import { type User } from '@lib/prisma'
-import { SessionProvider, useSession } from 'next-auth/react'
-import { TooltipProvider } from './ui/tooltip'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   children: React.ReactNode
@@ -10,11 +9,7 @@ interface Props {
 
 export const RootProvider = ({ children }: Props) => {
   return (
-    <SessionProvider>
-      <TooltipProvider delayDuration={75}>
-        {children}
-      </TooltipProvider>
-    </SessionProvider>
+    children
   )
 }
 
@@ -27,5 +22,5 @@ export const useUser = () => {
     return user?.id === asset?.userId
   }
 
-  return { user, loading, ownsAsset }
+  return { user, loading, ownsAsset, name: loading ? '...' : user?.name }
 }

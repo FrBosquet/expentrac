@@ -1,57 +1,29 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { useStore } from '@store'
+import { getMonthTime, getTime } from '@store/date'
 
-interface Props {
-  children: ReactNode
-}
-
-const defaultContext = {
-  date: new Date(),
-  nextMonth: () => { },
-  prevMonth: () => { },
-  currentMonth: () => { }
-}
-
-export const DateContext = createContext<{
-  date: Date
-  nextMonth: () => void
-  prevMonth: () => void
-  currentMonth: () => void
-}>(defaultContext)
-
-export const DateProvider = ({ children }: Props) => {
-  const [date, setDate] = useState(new Date())
-
-  const offsetMonth = (date: Date, offset: number) => {
-    const newDate = new Date(date)
-    newDate.setMonth(newDate.getMonth() + offset)
-    return newDate
-  }
-
-  const nextMonth = () => {
-    setDate((prev) => offsetMonth(prev, 1))
-  }
-
-  const prevMonth = () => {
-    setDate((prev) => offsetMonth(prev, -1))
-  }
-
-  const currentMonth = () => {
-    setDate(new Date())
-  }
-
-  return (
-    <DateContext.Provider value={{ date, nextMonth, prevMonth, currentMonth }}>
-      {children}
-    </DateContext.Provider>
-  )
-}
+const defaultDate = new Date()
+defaultDate.setDate(1)
 
 export const useDate = () => {
-  const context = useContext(DateContext)
-  if (context === undefined) {
-    throw new Error('useDate must be used within a Provider')
+  const date = useStore(state => state.date)
+  const nextMonth = useStore(state => state.nextMonth)
+  const prevMonth = useStore(state => state.prevMonth)
+  const setDate = useStore(state => state.setDate)
+  const time = useStore(getTime)
+  const month = useStore(getMonthTime)
+
+  const currentMonth = () => {
+    setDate(defaultDate)
   }
-  return context
+
+  return {
+    date,
+    nextMonth,
+    prevMonth,
+    currentMonth,
+    month,
+    time
+  }
 }

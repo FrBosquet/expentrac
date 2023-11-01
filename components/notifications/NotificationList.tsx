@@ -1,22 +1,27 @@
 'use client'
 
 import { NOTIFICATION_TYPE } from '@types'
+import { twMerge } from 'tailwind-merge'
 import { DailyNotification } from './components/daily'
 import { LoanShareNotification } from './components/loan-share'
 import { LoanShareAcceptedNotification } from './components/loan-share-accepted'
 import { LoanShareRejectedNotification } from './components/loan-share-rejected'
-import { SubscriptionShareNotification } from './components/sub-share'
+import { SubShareNotification } from './components/sub-share'
 import { SubShareAcceptedNotification } from './components/sub-share-accepted'
 import { SubShareRejectedNotification } from './components/sub-share-rejected'
 import { useNotifications } from './context'
 
-export const NotificationList = () => {
+interface Props {
+  className?: string
+}
+
+export const NotificationList = ({ className }: Props) => {
   const { notifications } = useNotifications()
 
-  return <section className="flex flex-col gap-2 py-6">
+  return <section className={twMerge('flex flex-col gap-2', className)}>
     {
       notifications.length
-        ? notifications.map((notification) => {
+        ? notifications.toReversed().map((notification) => {
           const { id, type } = notification
 
           switch (type) {
@@ -27,7 +32,7 @@ export const NotificationList = () => {
             case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED:
               return <LoanShareRejectedNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE:
-              return <SubscriptionShareNotification key={id} notification={notification} />
+              return <SubShareNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED:
               return <SubShareAcceptedNotification key={id} notification={notification} />
             case NOTIFICATION_TYPE.SUB_SHARE_REJECTED:

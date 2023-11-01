@@ -1,27 +1,27 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type User } from '@lib/prisma'
-import { NOTIFICATION_TYPE, type SubscriptionComplete } from '@types'
+import { type Contract, prisma, type User } from '@lib/prisma'
+import { NOTIFICATION_TYPE } from '@types'
 
 export interface SubShareRejectNotification {
   type: NOTIFICATION_TYPE.SUB_SHARE_REJECTED
-  sub: SubscriptionComplete
+  contract: Contract
 }
 
 export interface SubShareRejectNotificationPayload {
-  sub: SubscriptionComplete
-  shareHolder: User
+  contract: Contract
+  user: User
 }
 
-export const handleSubShareReject = async (user: User, shouldEmail: boolean, sub: SubscriptionComplete) => {
+export const handleSubShareReject = async (user: User, shouldEmail: boolean, contract: Contract) => {
   const payload: SubShareRejectNotificationPayload = {
-    sub,
-    shareHolder: user
+    contract,
+    user
   }
 
   const notification = await prisma.notification.create({
     data: {
       user: {
-        connect: { id: sub.user.id }
+        connect: { id: contract.user.id }
       },
       payload: JSON.stringify(payload),
       type: NOTIFICATION_TYPE.SUB_SHARE_REJECTED,
@@ -31,7 +31,7 @@ export const handleSubShareReject = async (user: User, shouldEmail: boolean, sub
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendSubShareRejection(user.name as string, sub)
+    await emailSdk.sendSubShareRejection(user.name as string, contract)
   }
 
   return notification

@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { AiOutlineGoogle } from 'react-icons/ai'
 import { twMerge } from 'tailwind-merge'
 
+// TODO: Hamburger is not sticky because the wheels perspective prevents that. Rework the wheel to stop the perspective bullshit
 export const HambugerMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
 

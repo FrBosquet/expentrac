@@ -1,7 +1,9 @@
-import { LoanDashboard } from '@components/loan/dashboard'
+import { LoanSummary } from '@components/loan/dashboard/summary'
 
-export default function page() {
-  return <section className="flex-1 bg-white w-screen max-w-3xl p-12 mx-auto">
-    <LoanDashboard />
-  </section>
+export default function Page() {
+  return (
+    <>
+      <LoanSummary className='col-span-2 xl:col-span-4' />
+    </>
+  )
 }

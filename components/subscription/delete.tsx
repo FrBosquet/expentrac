@@ -3,15 +3,15 @@
 import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
+import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
-import { type SubscriptionComplete } from '@types'
+import { subscriptionSdk } from '@sdk'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useSubs } from './context'
 
 interface Props {
-  sub: SubscriptionComplete
+  sub: Subscription
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
   triggerDecorator?: React.ReactNode
@@ -19,8 +19,9 @@ interface Props {
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
+// TODO: trigger decorator should be a children
 
-export const SubscriptionDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
+export const SubDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
   const { id, name } = sub
   const { removeSub } = useSubs()
   const [open, setOpen] = useState(false)
@@ -29,15 +30,18 @@ export const SubscriptionDelete = ({ sub, className, variant = 'destructive', tr
   const handleDelete = async () => {
     setLoading(true)
 
-    const result = await fetch(getUrl(`/subscription?id=${id}`), {
-      method: 'DELETE'
-    })
+    try {
+      const result = await subscriptionSdk.delete(id)
 
-    setLoading(false)
-    if (result.ok) {
-      removeSub(sub)
-      sideEffect?.()
+      removeSub(result)
+      void subscriptionSdk.revalidate(sub.userId)
+
       setOpen(false)
+      void sideEffect?.()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 

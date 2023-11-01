@@ -9,13 +9,13 @@ import { Label } from '@components/ui/label'
 import { Separator } from '@components/ui/separator'
 import { Switch } from '@components/ui/switch'
 import { type User } from '@lib/prisma'
-import { type SubscriptionComplete } from '@types'
+import { type Subscription } from '@lib/sub'
 import { Trash } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
 import { FieldSet, FormField, Root, SubmitButton } from '../Form'
 
 interface Props {
-  sub?: SubscriptionComplete
+  sub?: Subscription
   onSubmit: FormEventHandler<HTMLFormElement>
   disabled?: boolean
 }
@@ -23,7 +23,7 @@ interface Props {
 export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => {
   const { providers } = useProviders()
 
-  const [sharedWith, setSharedWith] = useState<User[]>(sub?.shares?.map(({ user }) => user) ?? [])
+  const [sharedWith, setSharedWith] = useState<User[]>(sub?.shares.data.map(({ to }) => to) ?? [])
 
   const removeShareHolder = (user: User) => {
     setSharedWith(prev => prev.filter((u) => u.id !== user.id))
@@ -31,16 +31,20 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
 
   const brandOptions = providers.map((provider) => ({
     value: provider.id,
-    label: provider.provider.name
+    label: provider.name
   }))
+
+  const defaultFee = sub
+    ? sub.time.isYearly ? sub.fee.yearly.toFixed(2) : sub.fee.monthly.toFixed(2)
+    : ''
 
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
       <FormField required defaultValue={sub?.name} name="name" label="Name" />
-      <FormField required defaultValue={sub?.fee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
+      <FormField required defaultValue={defaultFee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
 
       <section className="flex justify-end items-center col-span-2 gap-2">
-        <Switch id="yearly" name='yearly' defaultChecked={sub?.yearly} />
+        <Switch id="yearly" name='yearly' defaultChecked={sub?.time.isYearly} />
         <Label htmlFor="yearly" className='font-semibold'>Paid yearly?</Label>
       </section>
 
@@ -49,14 +53,14 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
           <Label htmlFor='vendorId' className="text-xs text-center">
             Vendor
           </Label>
-          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={sub?.vendorId} />
+          <ProviderSelect required name="vendorId" items={brandOptions} defaultValue={sub?.providers.vendor?.id} />
         </span>
 
         <span className="flex flex-col gap-2">
           <Label htmlFor='platformId' className="text-xs text-center">
             Platform
           </Label>
-          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={sub?.platformId} />
+          <ProviderSelect required name="platformId" items={brandOptions} defaultValue={sub?.providers.platform?.id} />
         </span>
       </section>
 
@@ -64,11 +68,11 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
         <Label htmlFor='payday' className="text-center font-semibold text-sm selft-end">
           Payday (optional)
         </Label>
-        <DaySelect className='w-auto min-w-[8rem]' name="payday" defaultValue={sub?.payday} />
+        <DaySelect className='w-auto min-w-[8rem]' name="payday" defaultValue={sub?.time.payday} />
       </section>
 
       <Separator className="col-span-2" />
-      <FormField defaultValue={sub?.link ?? ''} name="link" label="Link" />
+      <FormField defaultValue={sub?.resources.link ?? ''} name="link" label="Link" />
       <p className='text-xs col-span-2'>Direct link to this subscription page</p>
 
       <Separator className="col-span-2" />

@@ -1,19 +1,12 @@
 import { authOptions } from '@lib/auth'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Loan, type Prisma } from '@lib/prisma'
-import { NOTIFICATION_TYPE, SELECT_OPTIONS, type LoanComplete } from '@types'
+import { prisma, type Contract, type Prisma, type Share } from '@lib/prisma'
+import { PROVIDER_TYPE } from '@lib/provider'
+import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
-
-const include = {
-  vendor: { include: { provider: true } },
-  platform: { include: { provider: true } },
-  lender: { include: { provider: true } },
-  shares: {
-    include: { user: true }
-  },
-  user: true
-}
+import { include } from './include'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -27,10 +20,12 @@ export const GET = async (req: Request) => {
     })
   }
 
-  const loans = await prisma.loan.findMany({
-    where: { userId },
+  const loans = await prisma.contract.findMany({
+    where: {
+      userId,
+      type: CONTRACT_TYPE.LOAN
+    },
     orderBy: [
-      { startDate: 'desc' },
       {
         name: 'asc'
       }
@@ -39,86 +34,6 @@ export const GET = async (req: Request) => {
   })
 
   return NextResponse.json(loans)
-}
-
-const parseBody = <T>(body: Record<string, string>, isCreate?: boolean) => {
-  return Object.entries(body).reduce((acc, [key, value]) => {
-    let parsedValue: any = value
-    let parsedKey = key
-
-    if (key.startsWith('sharedWith')) return acc
-
-    switch (key) {
-      case 'fee':
-      case 'initial':
-        parsedValue = Number(value)
-        break
-      case 'startDate':
-      case 'endDate':
-        parsedValue = new Date(value).toISOString()
-        break
-      case 'vendorId':
-      case 'platformId':
-      case 'lenderId':
-        if (value === SELECT_OPTIONS.CREATE) return acc
-        if (isCreate && value === SELECT_OPTIONS.NONE) return acc
-
-        parsedKey = key.slice(0, -2)
-
-        if (value === SELECT_OPTIONS.NONE) {
-          parsedValue = {
-            disconnect: true
-          }
-        } else {
-          parsedValue = {
-            connect: {
-              id: value
-            }
-          }
-        }
-
-        break
-    }
-
-    return {
-      ...acc,
-      [parsedKey]: parsedValue
-    }
-  }, {}) as T
-}
-
-const addShares = async (loan: LoanComplete, body: Record<string, string>) => {
-  for (const key in body) {
-    if (key.startsWith('sharedWith')) {
-      const userId = body[key]
-
-      if (loan.shares.some(share => share.user.id === userId)) continue
-
-      const loanShare = await prisma.loanShare.create({
-        data: {
-          user: {
-            connect: {
-              id: body[key]
-            }
-          },
-          loan: {
-            connect: {
-              id: loan.id
-            }
-          }
-        },
-        include: {
-          user: true
-        }
-      })
-
-      await notificationSdk.createNotification(userId, true, {
-        type: NOTIFICATION_TYPE.LOAN_SHARE,
-        loan,
-        loanShare
-      })
-    }
-  }
 }
 
 export const POST = async (req: Request) => {
@@ -136,118 +51,67 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  const args: Prisma.LoanCreateArgs = {
+  const keysToCreate = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value as string)
+
+  const newLoan = await prisma.contract.create({
     data: {
-      ...parseBody<Omit<Loan, 'userId' | 'lenderId' | 'vendorId' | 'platformId'>>(body, true),
       user: {
         connect: {
           id: userId
         }
+      },
+      type: CONTRACT_TYPE.LOAN,
+      name: body.name,
+      fee: Number(body.initial),
+      periods: {
+        create: {
+          to: new Date(body.endDate).toISOString(),
+          from: new Date(body.startDate).toISOString(),
+          fee: Number(body.fee),
+          payday: body.payday ?? new Date(body.startDate).getDate()
+        }
+      },
+      providers: {
+        createMany: {
+          data: [
+            body.vendorId !== SELECT_OPTIONS.NONE
+              ? { as: PROVIDER_TYPE.VENDOR, providerId: body.vendorId }
+              : undefined,
+            body.platformId !== SELECT_OPTIONS.NONE
+              ? { as: PROVIDER_TYPE.PLATFORM, providerId: body.platformId }
+              : undefined,
+            body.lenderId !== SELECT_OPTIONS.NONE
+              ? { as: PROVIDER_TYPE.LENDER, providerId: body.lenderId }
+              : undefined
+          ].filter(Boolean) as Prisma.ProvidersOnContractCreateManyInput[]
+        }
+      },
+      shares: {
+        createMany: {
+          data: keysToCreate.map(toId => ({
+            fromId: userId,
+            toId
+          }))
+        }
+      },
+      resources: {
+        create: {
+          name: 'link',
+          type: 'LINK',
+          url: body.link
+        }
       }
     },
     include
-  }
-
-  const newLoan = await prisma.loan.create(args)
-
-  await addShares(newLoan as LoanComplete, body)
-
-  const data = await prisma.loan.findFirst({
-    where: { id: newLoan.id },
-    include
   })
 
-  return NextResponse.json({ message: 'success', data }, { status: 201 })
-}
-
-export const PATCH = async (req: Request) => {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
+  newLoan.shares.forEach(share => {
+    void notificationSdk.create(share.toId, true, {
+      type: NOTIFICATION_TYPE.LOAN_SHARE,
+      contract: newLoan as Contract,
+      share: share as Share
     })
-  }
+  })
 
-  const userId = session.user.id
-
-  const body = await req.json()
-  const loan = await prisma.loan.findUnique({ where: { id: body.id }, include })
-
-  if (!loan) {
-    return NextResponse.json({
-      message: 'loan not found'
-    }, {
-      status: 404
-    })
-  }
-
-  if (userId !== loan?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
-  }
-
-  const args: Prisma.LoanUpdateArgs = {
-    data: parseBody<Loan>(body),
-    where: {
-      id: body.id
-    },
-    include
-  }
-
-  await addShares(loan as LoanComplete, body)
-
-  const updatedLoan = await prisma.loan.update(args)
-
-  return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
-}
-
-export const DELETE = async (req: Request) => {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    return NextResponse.json({
-      message: 'forbidden'
-    }, {
-      status: 403
-    })
-  }
-
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get('id')
-
-  if (!id) {
-    return NextResponse.json({
-      message: 'id is required'
-    }, {
-      status: 400
-    })
-  }
-
-  const loan = await prisma.loan.findUnique({ where: { id } })
-
-  if (!loan) {
-    return NextResponse.json({
-      message: 'loan not found'
-    }, {
-      status: 404
-    })
-  }
-
-  if (session.user.id !== loan?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
-  }
-
-  await prisma.loan.delete({ where: { id } })
-
-  return NextResponse.json({ message: 'DELETED' }, { status: 200 })
+  return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
 }

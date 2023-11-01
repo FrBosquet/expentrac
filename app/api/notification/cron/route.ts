@@ -1,61 +1,71 @@
+import { CONTRACT_TYPE } from '@lib/contract'
+import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Loan, type Subscription, type User } from '@lib/prisma'
-import { NOTIFICATION_TYPE, type LoanComplete } from '@types'
+import { prisma, type Contract, type User } from '@lib/prisma'
+import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 
 export const revalidate = 0
 export const GET = async () => {
+  const now = Date.now()
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setHours(12, 0, 0, 0)
   const date = new Date().getDate()
 
-  const users: Record<string, User & { loans: Loan[], subs: Subscription[] }> = {}
+  const users: Record<string, User & { loans: Contract[], subs: Contract[] }> = {}
 
-  // loans
-  const loans = await prisma.$queryRaw<LoanComplete[]>`
-    SELECT l.*, to_json(u) "user"
-    FROM "Loan" l 
-    INNER JOIN "User" u ON l."userId" = u.id
-    WHERE date_part('day', l."startDate") = ${date} AND l."endDate" > CURRENT_DATE;
-  `
-  loans.forEach(loan => {
-    const { userId } = loan
-    if (!users[userId]) {
-      users[userId] = { ...loan.user, loans: [], subs: [] }
-    }
-
-    users[userId].loans.push(loan)
-  })
-
-  // subscriptions
-  const subscriptions = await prisma.subscription.findMany({
+  const periods = await prisma.period.findMany({
     where: {
-      payday: date
+      payday: date,
+      from: {
+        lte: today
+      },
+      OR: [
+        {
+          to: null
+        },
+        {
+          to: {
+            gte: today
+          }
+        }
+      ]
     },
     include: {
-      user: true,
-      shares: true
+      contract: {
+        include: {
+          user: true,
+          shares: true,
+          periods: true,
+          providers: true,
+          resources: true
+        }
+      }
     }
   })
 
-  subscriptions.forEach(subscription => {
-    const { userId } = subscription
+  periods.forEach(period => {
+    const { contract, periodicity, paymonth } = period
+    const { userId, type } = contract
+
+    if (periodicity === PERIODICITY.YEARLY && new Date().getMonth() !== paymonth) return
+
     if (!users[userId]) {
-      users[userId] = { ...subscription.user, loans: [], subs: [] }
+      users[userId] = { ...contract.user, loans: [], subs: [] }
     }
 
-    users[userId].subs.push(subscription)
+    const target = type === CONTRACT_TYPE.LOAN ? users[userId].loans : users[userId].subs
+
+    target.push(contract as Contract)
   })
 
-  // email
-  await Promise.all(Object.keys(users).map(async userId => {
-    const { loans, subs } = users[userId]
+  await Promise.all(Object.values(users).map(async user => {
+    const { loans, subs } = user
 
-    // send email
-    await notificationSdk.createNotification(userId, true, {
+    await notificationSdk.create(user.id, true, {
       type: NOTIFICATION_TYPE.DAILY,
       loans,
-      subscriptions: subs
+      subs
     })
   }))
 
@@ -74,7 +84,7 @@ export const GET = async () => {
 
   // done
   return NextResponse.json({
-    message: 'Job finished',
+    message: `Job finished in ${Date.now() - now} ms`,
     users
   }, {
     status: 200

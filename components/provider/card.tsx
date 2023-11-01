@@ -1,20 +1,19 @@
 'use client'
 
+import { Card } from '@components/ui/card'
 import { getAccentColor } from '@lib/provider'
-import { cn } from '@lib/utils'
-import { type BrandExtendedInfo, type UserProviderComplete } from '@types'
+import { type ProviderWithContracts } from '@store/provider-on-contract'
+import { type BrandExtendedInfo } from '@types'
 import { HelpCircle } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 import { ProviderLogo } from './ProviderLogo'
 import { ProviderDetail } from './detail'
-import { useProviderExtendedInfo } from './hooks'
 
 interface Props {
-  userProvider: UserProviderComplete
+  provider: ProviderWithContracts
 }
 
-export const UserProviderCard = ({ userProvider }: Props) => {
-  const { provider, hasAnyItem } = useProviderExtendedInfo(userProvider)
-
+export const UserProviderCard = ({ provider }: Props) => {
   // Unfetched
   if (!provider.isFetched) {
     return <article className="shadow-md border rounded-md p-2 flex flex-col justify-center gap-2 items-center border-b-8 border-b-slate-500">
@@ -27,14 +26,14 @@ export const UserProviderCard = ({ userProvider }: Props) => {
   const accentColor = getAccentColor(provider)
 
   // fetched
-  return <ProviderDetail userProvider={userProvider}>
+  return <ProviderDetail provider={provider}>
     {
-      <article className={cn('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-b-8', !hasAnyItem && 'opacity-40')} style={{ borderBottomColor: accentColor }}>
+      <Card className={twMerge('shadow-md border rounded-md p-4 flex flex-col justify-center gap-2 items-center border-l-4')} style={{ borderLeftColor: accentColor }}>
         <ProviderLogo provider={provider} />
-        <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-slate-600">
+        <h3 className="text-md whitespace-nowrap overflow-hidden overflow-ellipsis max-w-full text-foreground">
           <a target="_blank" href={`https://${extendedData.domain}`} rel="noreferrer">{extendedData.name}</a>
         </h3>
-      </article>
+      </Card>
     }
   </ProviderDetail>
 }

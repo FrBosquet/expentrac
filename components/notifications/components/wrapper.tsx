@@ -1,4 +1,5 @@
 import { Button } from '@components/ui/button'
+import { Spinner } from '@components/ui/spinner'
 import { Check, X } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
@@ -34,8 +35,8 @@ const getDateString = (date: Date) => {
 export const NotificationWrapper = ({ children, accept, reject, loading, acknowledged, date }: Props) => {
   const dateString = getDateString(new Date(date))
 
-  return <div className={twMerge('p-2 flex shadow-md gap-4 bg-slate-100 rounded-md', acknowledged && 'opacity-40')}>
-    <p className='text-xs flex items-center'>
+  return <div className={twMerge('p-2 lg:p-4 flex shadow-md gap-4 bg-theme-bottom rounded-md', acknowledged && 'opacity-40')}>
+    <p className='text-xs flex items-center justify-center w-14'>
       {dateString}
     </p>
     <section className={twMerge('flex-1 w-full', loading && 'opacity-20')}>
@@ -44,10 +45,12 @@ export const NotificationWrapper = ({ children, accept, reject, loading, acknowl
     {
       acknowledged
         ? null
-        : <>
-          {accept ? <Button disabled={loading} variant='default' className={'p-2 h-auto'} onClick={accept}><Check size={14} /></Button> : null}
-          {reject ? <Button disabled={loading} variant='destructive' className={'p-2 h-auto'} onClick={reject}><X size={14} /></Button> : null}
-        </>
+        : loading
+          ? <Spinner size={14} />
+          : <>
+            {accept ? <Button disabled={loading} variant='default' className={'p-2 h-auto'} onClick={accept}><Check size={14} /></Button> : null}
+            {reject ? <Button disabled={loading} variant='destructive' className={'p-2 h-auto'} onClick={reject}><X size={14} /></Button> : null}
+          </>
     }
   </div>
 }

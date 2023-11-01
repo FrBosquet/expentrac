@@ -36,7 +36,7 @@ export const ToggleSelect = ({ options, className, type, setType }: Props) => {
   }
 
   return (
-    <div className={cn('flex border p-1 border-slate-200 rounded-md', className)}>
+    <div className={cn('flex border p-1 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-md', className)}>
       {
         options.map(({ tooltip, value }) => {
           const Icon = icons[value]

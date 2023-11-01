@@ -3,13 +3,13 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 const Card = React.forwardRef<
-HTMLDivElement,
-React.HTMLAttributes<HTMLDivElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      'rounded-lg border border-slate-200 bg-white text-slate-950 shadow-md dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50',
+      'rounded-lg border border-slate-200 bg-white text-slate-950 shadow-md dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50',
       className
     )}
     {...props}
@@ -18,8 +18,8 @@ React.HTMLAttributes<HTMLDivElement>
 Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<
-HTMLDivElement,
-React.HTMLAttributes<HTMLDivElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -30,8 +30,8 @@ React.HTMLAttributes<HTMLDivElement>
 CardHeader.displayName = 'CardHeader'
 
 const CardTitle = React.forwardRef<
-HTMLParagraphElement,
-React.HTMLAttributes<HTMLHeadingElement>
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
@@ -45,8 +45,8 @@ React.HTMLAttributes<HTMLHeadingElement>
 CardTitle.displayName = 'CardTitle'
 
 const CardDescription = React.forwardRef<
-HTMLParagraphElement,
-React.HTMLAttributes<HTMLParagraphElement>
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
@@ -57,16 +57,16 @@ React.HTMLAttributes<HTMLParagraphElement>
 CardDescription.displayName = 'CardDescription'
 
 const CardContent = React.forwardRef<
-HTMLDivElement,
-React.HTMLAttributes<HTMLDivElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
 ))
 CardContent.displayName = 'CardContent'
 
 const CardFooter = React.forwardRef<
-HTMLDivElement,
-React.HTMLAttributes<HTMLDivElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}

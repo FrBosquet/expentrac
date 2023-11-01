@@ -1,22 +1,22 @@
 'use client'
 
-import { useUser } from '@components/Provider'
 import { Button } from '@components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import { getUrl } from '@lib/api'
+import { useUser } from '@components/user/hooks'
+import { type LoanFormData } from '@lib/loan'
 import { loanSdk } from '@sdk'
-import { type LoanComplete } from '@types'
+import { PlusIcon } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
 import { useLoans } from './context'
 import { LoanForm } from './form'
 
-const TRIGGER_DECORATOR = 'New loan'
+const TRIGGER_DECORATOR = () => <span className='flex gap-2 items-center '><PlusIcon size={12} /> NEW LOAN</span>
 
 interface Props {
   triggerDecorator?: React.ReactNode
 }
 
-export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR }: Props) => {
+export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR() }: Props) => {
   const { user } = useUser()
 
   const [open, setOpen] = useState(false)
@@ -28,20 +28,15 @@ export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR }: Props) => {
     setLoading(true)
 
     try {
-      const result = await fetch(getUrl('/loan'), {
-        method: 'POST',
-        body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))
-      })
+      const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as LoanFormData
+      const loan = await loanSdk.create(formData)
 
-      const { data } = await result.json() as { data: LoanComplete }
-
-      if (result.ok) {
-        void loanSdk.revalidate(user.id)
-        setOpen(false)
-        addLoan(data)
-      }
+      void loanSdk.revalidate(user.id)
+      setOpen(false)
+      addLoan(loan)
     } catch (err) {
       console.error(err)
+    } finally {
       setLoading(false)
     }
   }
