@@ -92,9 +92,6 @@ export const LoanDetailContent = ({ loan, className }: { loan: Loan, className?:
       lender,
       platform,
       vendor
-    },
-    resources: {
-      link
     }
   } = loan
 
@@ -109,14 +106,6 @@ export const LoanDetailContent = ({ loan, className }: { loan: Loan, className?:
   }, [open, payments, paymentsDone])
 
   return <section className={twMerge('grid grid-cols-2 gap-4', className)}>
-    {
-      link
-        ? <article className="flex flex-col gap-2 col-span-2">
-          <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition text-expentrac-800" rel="noreferrer">Loan link</a>
-        </article>
-        : null
-    }
-
     <article className="grid grid-cols-3 gap-2 col-span-2">
       <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
       <ProviderDetail provider={platform} label="Platform" className="col-start-2" />

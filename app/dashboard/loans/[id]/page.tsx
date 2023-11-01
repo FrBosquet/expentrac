@@ -5,6 +5,8 @@ import { useLoan } from '@components/loan/context'
 import { LoanDelete } from '@components/loan/delete'
 import { LoanDetailContent } from '@components/loan/detail'
 import { LoanEdit } from '@components/loan/edit'
+import { LoanPayplan } from '@components/payplan/loan'
+import { Separator } from '@components/ui/separator'
 import { PinLeftIcon } from '@radix-ui/react-icons'
 import { Edit, Link, Trash } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
@@ -35,5 +37,7 @@ export default function Page() {
       }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
     </menu>
     <LoanDetailContent loan={loan} className='col-span-2 lg:col-span-4' />
+    <Separator className='col-span-2 lg:col-span-4' />
+    <LoanPayplan className='col-span-2 my-4' loan={loan} />
   </>
 }
