@@ -54,6 +54,14 @@ export const getLoans = (refDate: Date) => (state: ContractsSlice) => {
   return contracts
     .filter(contract => contract.type === CONTRACT_TYPE.LOAN)
     .map(contract => unwrapLoan(contract, refDate))
+}
+
+export const getActiveLoans = (refDate: Date) => (state: ContractsSlice) => {
+  const { contracts } = state
+
+  return contracts
+    .filter(contract => contract.type === CONTRACT_TYPE.LOAN)
+    .map(contract => unwrapLoan(contract, refDate))
     .filter(loan => loan.time.isOngoing)
 }
 

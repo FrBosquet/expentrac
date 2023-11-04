@@ -1,4 +1,5 @@
 import { TIME } from '@types'
+import { type Contract } from './prisma'
 
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',
@@ -56,3 +57,59 @@ export const getTimeDescription = (refDate: Date, month: TIME, type: string) => 
     case TIME.FUTURE: return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
   }
 }
+
+export const contractOnGoing = (contract: Contract, date: Date) => {
+  const { periods } = contract
+
+  return periods.some(period => {
+    const from = new Date(period.from)
+
+    if (!period.to) return from <= date
+
+    const to = new Date(period.to)
+
+    return from <= date && to >= date
+  })
+}
+
+export const contractStarts = (contract: Contract, date: Date) => {
+  const { periods } = contract
+
+  return periods.some(period => {
+    const from = new Date(period.from)
+
+    return isInSameMont(from, date)
+  })
+}
+
+export const contractEnds = (contract: Contract, date: Date) => {
+  const { periods } = contract
+
+  return periods.some(period => {
+    if (!period.to) return false
+
+    const to = new Date(period.to)
+
+    return isInSameMont(to, date)
+  })
+}
+
+export const contractMonthsPassed = (contract: Contract, date: Date) => {
+  const { periods } = contract
+
+  const activePeriod = periods.find(period => {
+    return period.to !== undefined
+  })
+
+  if (!activePeriod) return 0
+
+  return monthBeetween(new Date(activePeriod.from), date)
+}
+
+export const isInSameMont = (date1: Date, date2: Date) => {
+  return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+}
+
+export const now = new Date()
+
+export const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1)

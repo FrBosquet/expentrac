@@ -23,6 +23,7 @@ export const useDate = () => {
     nextMonth,
     prevMonth,
     currentMonth,
+    setDate,
     month,
     time
   }
