@@ -2,6 +2,7 @@
 
 import { ButtonLink } from '@components/button-link'
 import { useSub } from '@components/subscription/context'
+import { SubPayplan } from '@components/subscription/dashboard/payplan'
 import { SubDelete } from '@components/subscription/delete'
 import { SubDetailContent } from '@components/subscription/detail'
 import { SubEdit } from '@components/subscription/edit'
@@ -35,5 +36,6 @@ export default function Page() {
       }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />
     </menu>
     <SubDetailContent sub={sub} className='col-span-2 lg:col-span-4' />
+    <SubPayplan className='col-span-2 my-4' sub={sub} />
   </>
 }

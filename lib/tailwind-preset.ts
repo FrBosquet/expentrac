@@ -57,6 +57,10 @@ export const tailwindPreset = {
           'animation-fill-mode': 'both'
         }
       })
+      addUtilities({
+        '.dashboard-label': { '@apply text-xs text-theme-light font-semibold uppercase': {} },
+        '.dashboard-value': { '@apply text-lg text-foreground': {} }
+      })
     })
   ],
   theme: {
