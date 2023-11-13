@@ -2,7 +2,7 @@ import { Tooltip } from '@components/Tooltip'
 import { useDate } from '@components/date/context'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { Subscription } from '@lib/sub'
+import { type Subscription } from '@lib/sub'
 
 interface Props {
   sub: Subscription
@@ -15,7 +15,7 @@ thisMonth.setDate(1)
 export const SubPayplan = ({ sub, className }: Props) => {
   const { date } = useDate()
 
-  const payplan: { date: Date, amount: number }[] = new Array(12).fill(null).reduce((acc, _, index) => {
+  const payplan: Array<{ date: Date, amount: number }> = new Array(12).fill(null).reduce((acc, _, index) => {
     const step = new Date(date)
     step.setMonth(step.getMonth() + index - 10)
 
@@ -57,6 +57,7 @@ export const SubPayplan = ({ sub, className }: Props) => {
             const isPaid = paymentDate < thisMonth
 
             const isThisMonth = paymentDate.getMonth() === date.getMonth() && paymentDate.getFullYear() === date.getFullYear()
+            const isNextMonth = paymentDate.getMonth() === date.getMonth() + 1 && paymentDate.getFullYear() === date.getFullYear()
 
             const tooltipContent = <aside>
               <p>Paid</p>
@@ -67,6 +68,7 @@ export const SubPayplan = ({ sub, className }: Props) => {
                 <p className='text-xs font-semibold uppercase'>
                   {paymentDate.toLocaleDateString('default', { day: '2-digit', month: 'short', year: paymentDate.getFullYear() !== date.getFullYear() ? '2-digit' : undefined })}
                   {isThisMonth ? <span className='text-xs opacity-70'> (this month)</span> : null}
+                  {isNextMonth ? <span className='text-xs opacity-70'> (next month)</span> : null}
                 </p>
                 <p>{euroFormatter.format(amount)}</p>
               </article>

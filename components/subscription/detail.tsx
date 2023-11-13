@@ -68,6 +68,8 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
   const { date } = useDate()
   const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly }, periods: { active } } = sub
 
+  const isActive = active && new Date(active.from) < date
+
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
     <article className="grid grid-cols-2 gap-2 col-span-2">
       <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
@@ -105,7 +107,7 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
     }
 
     {
-      active
+      isActive
         ? <>
           <article className="flex flex-col gap-2">
             <h4 className="dashboard-label">Started</h4>
