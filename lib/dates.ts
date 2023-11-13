@@ -94,6 +94,18 @@ export const contractEnds = (contract: Contract, date: Date) => {
   })
 }
 
+export const getContractTime = (contract: Contract, date: Date) => {
+  const isOngoing = contractOnGoing(contract, date)
+  const startsThisMonth = contractStarts(contract, date)
+  const endsThisMonth = contractEnds(contract, date)
+
+  return {
+    isOngoing,
+    startsThisMonth,
+    endsThisMonth
+  }
+}
+
 export const contractMonthsPassed = (contract: Contract, date: Date) => {
   const { periods } = contract
 

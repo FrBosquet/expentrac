@@ -1,11 +1,11 @@
 import { Tooltip } from '@components/Tooltip'
 import { useDate } from '@components/date/context'
+import { usePayplan } from '@components/payplan/use-payplan'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { contractEnds, contractOnGoing, contractStarts, now } from '@lib/dates'
+import { now } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { TrendingDown, TrendingUp, User } from 'lucide-react'
-import { useMemo } from 'react'
 
 interface Props {
   subs: Subscription[]
@@ -15,55 +15,7 @@ interface Props {
 export const UserSubPayplan = ({ subs, className }: Props) => {
   const { date, setDate } = useDate()
 
-  const payplan = useMemo(() => {
-    return new Array(12).fill(null).map((_, index) => {
-      const refDate = new Date(date)
-      refDate.setMonth(refDate.getMonth() + index)
-
-      const startingSubs: Subscription[] = []
-      const finishingSubs: Subscription[] = []
-      const activeSubs: Subscription[] = []
-      let monthlyPay: number = 0
-      let monthlyHolderFee: number = 0
-      let owed = 0
-
-      subs.forEach(sub => {
-        const { contract, fee } = sub
-        const isOngoing = contractOnGoing(contract, refDate)
-        const startsThisMonth = contractStarts(contract, refDate)
-        const endsThisMonth = contractEnds(contract, refDate)
-
-        if (isOngoing || startsThisMonth || endsThisMonth) {
-          activeSubs.push(sub)
-
-          if (startsThisMonth) startingSubs.push(sub)
-          if (endsThisMonth) finishingSubs.push(sub)
-
-          monthlyPay += fee.monthly
-          monthlyHolderFee += fee.holderMonthly
-
-          owed += 0
-        }
-      })
-
-      const hasStartingSubs = startingSubs.length > 0
-      const hasFinishingSubs = finishingSubs.length > 0
-      const hasSharedSubs = activeSubs.some(loan => loan.shares.isShared)
-
-      return {
-        subs: activeSubs,
-        startingSubs,
-        finishingSubs,
-        date: refDate,
-        monthlyPay,
-        monthlyHolderFee,
-        owed,
-        hasStartingSubs,
-        hasFinishingSubs,
-        hasSharedSubs
-      }
-    })
-  }, [subs])
+  const payplan = usePayplan(date, { subs })
 
   return <Card className={className}>
     <CardHeader>

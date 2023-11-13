@@ -2,10 +2,10 @@
 
 import { ButtonLink } from '@components/button-link'
 import { useLoan } from '@components/loan/context'
+import { LoanPayplan } from '@components/loan/dashboard/payplan'
 import { LoanDelete } from '@components/loan/delete'
 import { LoanDetailContent } from '@components/loan/detail'
 import { LoanEdit } from '@components/loan/edit'
-import { LoanPayplan } from '@components/payplan/loan'
 import { Separator } from '@components/ui/separator'
 import { PinLeftIcon } from '@radix-ui/react-icons'
 import { Edit, Link, Trash } from 'lucide-react'
