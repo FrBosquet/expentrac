@@ -1,6 +1,6 @@
 import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
-import { Check, X } from 'lucide-react'
+import { Check, CheckCheck, X } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
@@ -35,16 +35,16 @@ const getDateString = (date: Date) => {
 export const NotificationWrapper = ({ children, accept, reject, loading, acknowledged, date }: Props) => {
   const dateString = getDateString(new Date(date))
 
-  return <div className={twMerge('p-2 lg:p-4 flex shadow-md gap-4 bg-theme-bottom rounded-md', acknowledged && 'opacity-40')}>
-    <p className='text-xs flex items-center justify-center w-14'>
+  return <div className={twMerge('p-2 lg:p-4 flex shadow-md gap-4 bg-theme-bottom rounded-md')}>
+    <p className='text-xs flex items-center justify-center w-14 text-theme-light'>
       {dateString}
     </p>
-    <section className={twMerge('flex-1 w-full', loading && 'opacity-20')}>
+    <section className={twMerge('flex-1 w-full')}>
       {children}
     </section>
     {
       acknowledged
-        ? null
+        ? <CheckCheck size={14} className='text-theme-light' />
         : loading
           ? <Spinner size={14} />
           : <>

@@ -19,11 +19,13 @@ const PostHeader = ({ title, date, image }: Post) => {
       <h1 className="text-6xl bg-gradient-to-r from-theme to-theme-accent text-transparent py-2 bg-clip-text inline-block">{title}</h1>
       <span className="text-sm text-slate-500">{fullDateFormater.format(new Date(date))}</span>
       {image
-        ? <><div className="w-full h-60 relative overflow-hidden my-2 shadow-lg">
-          <Image alt="splash" src={`/${image.src}`} fill className={twMerge('object-cover', image.className)}></Image>
-        </div> <section className="text-slate-600 pb-1 text-xs">
+        ? <>
+          <div className="w-full h-60 relative overflow-hidden my-2 shadow-lg">
+            <Image alt="splash" src={`/${image.src}`} fill className={twMerge('object-cover', image.className)}></Image>
+          </div> <section className="text-slate-600 pb-1 text-xs">
             <div>Photo by <a className="text-slate-500 transition hover:text-primary-300" href={image.authorUrl}>{image.author}</a> {image.sourceUrl ? <>in <a className="text-slate-500 transition hover:text-primary-300" href={image.sourceUrl}>{image.source}</a></> : null}</div>
-          </section></>
+          </section>
+        </>
         : null}
     </header>
   </>

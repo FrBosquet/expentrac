@@ -1,3 +1,4 @@
+import { thisMonth } from '@lib/dates'
 import { TIME } from '@types'
 import { type StateCreator } from 'zustand'
 
@@ -11,7 +12,7 @@ export interface DateSlice {
 }
 
 export const createDateSlice: StateCreator<DateSlice> = (set) => ({
-  date: new Date(),
+  date: thisMonth,
   setDate: (date: Date) => {
     set({
       date

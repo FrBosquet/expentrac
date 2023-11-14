@@ -2,10 +2,12 @@
 
 import { ProviderDetail } from '@components/ProviderDetail'
 import { SharesDetail } from '@components/common/shares-detail'
+import { useDate } from '@components/date/context'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
+import { monthBeetween } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { Edit, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -63,7 +65,10 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, 
 }
 
 export const SubDetailContent = ({ sub, className }: { sub: Subscription, className?: string }) => {
-  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly } } = sub
+  const { date } = useDate()
+  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly }, periods: { active } } = sub
+
+  const isActive = active && new Date(active.from) < date
 
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
     <article className="grid grid-cols-2 gap-2 col-span-2">
@@ -74,21 +79,21 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
     {
       isYearly && (
         <article className="flex flex-col gap-2">
-          <h4 className="text-sm font-semibold">Yearly fee</h4>
-          <p className="text-lg text-foreground">{euroFormatter.format(yearly)}</p>
+          <h4 className="dashboard-label">Yearly fee</h4>
+          <p className="dashboard-value">{euroFormatter.format(yearly)}</p>
         </article>
       )
     }
 
     <article className="flex flex-col gap-2">
-      <h4 className="text-sm font-semibold">Monthly fee</h4>
-      <p className="text-lg text-foreground">{euroFormatter.format(monthly)}</p>
+      <h4 className="dashboard-label">Monthly fee</h4>
+      <p className="dashboard-value">{euroFormatter.format(monthly)}</p>
     </article>
     {
       payday
         ? <article className="flex flex-col gap-2">
-          <h4 className="text-sm font-semibold">Payment day</h4>
-          <p className="text-lg text-foreground">{payday}</p>
+          <h4 className="dashboard-label">Payment day</h4>
+          <p className="dashboard-value">{payday}</p>
         </article>
         : null
     }
@@ -98,6 +103,25 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
         ? <article className="flex flex-col gap-2 col-span-2">
           <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Subscription link</a>
         </article>
+        : null
+    }
+
+    {
+      isActive
+        ? <>
+          <article className="flex flex-col gap-2">
+            <h4 className="dashboard-label">Started</h4>
+            <p className="dashboard-value">{new Date(active.from).toLocaleDateString('default', {
+              year: '2-digit',
+              month: 'short'
+            })}</p>
+          </article>
+
+          <article className="flex flex-col gap-2">
+            <h4 className="dashboard-label">Months active</h4>
+            <p className="dashboard-value">{monthBeetween(new Date(active.from), date)}</p>
+          </article>
+        </>
         : null
     }
 
