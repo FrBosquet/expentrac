@@ -23,9 +23,14 @@ export const usePayplan = (date: Date, {
       const finishingLoans: Loan[] = []
       const activeLoans: Loan[] = []
 
-      let monthlyPay: number = 0
-      let monthlyHolderFee: number = 0
       let owed = 0
+      let holderOwed = 0
+
+      let monthlyLoanPay: number = 0
+      let monthlyLoanHolderFee: number = 0
+
+      let monthlySubPay: number = 0
+      let monthlySubHolderFee: number = 0
 
       subs.forEach(sub => {
         const { contract, fee } = sub
@@ -42,10 +47,8 @@ export const usePayplan = (date: Date, {
           if (startsThisMonth) startingSubs.push(sub)
           if (endsThisMonth) finishingSubs.push(sub)
 
-          monthlyPay += fee.monthly
-          monthlyHolderFee += fee.holderMonthly
-
-          owed += 0
+          monthlySubPay += fee.monthly
+          monthlySubHolderFee += fee.holderMonthly
         }
       })
 
@@ -63,12 +66,16 @@ export const usePayplan = (date: Date, {
           if (startsThisMonth) startingLoans.push(loan)
           if (endsThisMonth) finishingLoans.push(loan)
 
-          monthlyPay += startsThisMonth ? fee.initial : fee.monthly
-          monthlyHolderFee += startsThisMonth ? fee.holderInitial : fee.holderMonthly
+          monthlyLoanPay += startsThisMonth ? fee.initial : fee.monthly
+          monthlyLoanHolderFee += startsThisMonth ? fee.holderInitial : fee.holderMonthly
 
           owed += amount.total - fee.initial - fee.monthly * contractMonthsPassed(contract, refDate)
+          holderOwed += amount.holderTotal - fee.holderInitial - fee.holderMonthly * contractMonthsPassed(contract, refDate)
         }
       })
+
+      const monthlyPay = monthlyLoanPay + monthlySubPay
+      const monthlyHolderFee = monthlyLoanHolderFee + monthlySubHolderFee
 
       const hasStartingSubs = startingSubs.length > 0
       const hasFinishingSubs = finishingSubs.length > 0
@@ -88,7 +95,12 @@ export const usePayplan = (date: Date, {
         date: refDate,
         monthlyPay,
         monthlyHolderFee,
+        monthlyLoanPay,
+        monthlyLoanHolderFee,
+        monthlySubPay,
+        monthlySubHolderFee,
         owed,
+        holderOwed,
         hasStartingSubs,
         hasFinishingSubs,
         hasSharedSubs,

@@ -2,6 +2,7 @@
 
 import { useDate } from '@components/date/context'
 import { useLoans } from '@components/loan/context'
+import { usePayplan } from '@components/payplan/use-payplan'
 import { useSubs } from '@components/subscription/context'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
@@ -12,9 +13,6 @@ const now = new Date().toLocaleString('default', { month: 'short' })
 
 const useForecastData = () => {
   const { date } = useDate()
-  const { loans } = useLoans()
-  const { subs } = useSubs()
-
   const currentDate = new Date()
   const startDate = new Date(date)
   const endDate = new Date(date)
@@ -22,34 +20,25 @@ const useForecastData = () => {
   startDate.setMonth(startDate.getMonth() - 2)
   endDate.setMonth(endDate.getMonth() + 8)
 
-  const subFee = subs.reduce((acc, cur) => {
-    return acc + cur.fee.holder
-  }, 0)
+  const { loans } = useLoans()
+  const { subs } = useSubs()
+  const payplan = usePayplan(startDate, { loans, subs })
 
-  const forecastData = new Array(12).fill(0).map((_, index) => {
-    const monthDate = new Date(startDate)
-    monthDate.setMonth(monthDate.getMonth() + index)
+  startDate.setMonth(startDate.getMonth() - 2)
+  endDate.setMonth(endDate.getMonth() + 8)
 
-    const differentYear = monthDate.getFullYear() !== currentDate.getFullYear()
+  const forecastData = payplan.map((monthData) => {
+    const { date, monthlyHolderFee, monthlyLoanHolderFee, monthlySubHolderFee, holderOwed } = monthData
 
-    const month = monthDate.toLocaleString('default', { month: 'short', year: differentYear ? '2-digit' : undefined })
-
-    const { loanFee, owedAmount } = loans.reduce((acc, cur) => {
-      if (cur.startDate > monthDate) return acc
-      if (cur.endDate < monthDate) return acc
-
-      return {
-        loanFee: acc.loanFee + cur.fee.holder,
-        owedAmount: acc.owedAmount + cur.amount.holderOwed
-      }
-    }, { loanFee: 0, owedAmount: 0 })
+    const differentYear = date.getFullYear() !== currentDate.getFullYear()
+    const month = date.toLocaleString('default', { month: 'short', year: differentYear ? '2-digit' : undefined })
 
     return {
       month,
-      total: subFee + loanFee,
-      loan: loanFee,
-      sub: subFee,
-      owed: owedAmount
+      total: monthlyHolderFee,
+      loan: monthlyLoanHolderFee,
+      sub: monthlySubHolderFee,
+      owed: holderOwed
     }
   })
 

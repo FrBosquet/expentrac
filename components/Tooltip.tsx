@@ -10,11 +10,11 @@ export const Tooltip = ({ children, tooltip, side }: Props) => {
   const tooltipContent = typeof tooltip === 'string' ? <p>{tooltip}</p> : tooltip
 
   return (
-    <ShadcnTooltip>
-      <TooltipTrigger>
+    <ShadcnTooltip >
+      <TooltipTrigger >
         {children}
       </TooltipTrigger>
-      <TooltipContent side={side}>
+      <TooltipContent side={side} >
         {tooltipContent}
       </TooltipContent>
     </ShadcnTooltip>

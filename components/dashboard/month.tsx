@@ -13,9 +13,7 @@ interface Props {
 export const Month = ({ className }: Props) => {
   const {
     totalFee,
-    alreadyPaidFee,
-    subsWithNoPayday,
-    subsWithNoPaydayFee
+    alreadyPaidFee
   } = useSummary()
 
   const percentage = (alreadyPaidFee / totalFee) * 100
@@ -34,7 +32,6 @@ export const Month = ({ className }: Props) => {
         <Progress value={percentage} />
         <p className='text-sm text-theme-light'>You already paid {percentage.toFixed(0)}% or your monthly fees</p>
         <p className='text-sm text-theme-accent'>{euroFormatter.format(totalFee - alreadyPaidFee)} left</p>
-        <p className='text-xs text-theme-light'>{subsWithNoPayday.length} of your subscriptions have no payday set, so its summed fee ({euroFormatter.format(subsWithNoPaydayFee)}) its considered to have been payed the first day of the month.</p>
       </div>
     </CardContent>
   </Card>

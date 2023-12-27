@@ -19,14 +19,18 @@ export const useSummary = () => {
   const ongoingLoans = allLoans.filter(loan => loan.time.isOngoing)
 
   const loanCount = ongoingLoans.length
-  const loanFee = ongoingLoans.reduce((acc, cur) => acc + cur.fee.holder, 0)
 
-  const subCount = allSubs.length
+  // TODO: Yearly may not be paid this month. Fix it
+  const loanFee = ongoingLoans.reduce((acc, cur) => acc + cur.fee.holderMonthly, 0)
 
-  const subFee = allSubs.reduce((acc, cur) => {
-    const { holder } = cur.fee
+  const ongoingSubs = allSubs.filter(sub => sub.time.isOngoing)
 
-    return acc + holder
+  // TODO: Yearly may not be paid this month. Fix it
+  const subCount = ongoingSubs.length
+  const subFee = ongoingSubs.reduce((acc, cur) => {
+    const { holderMonthly } = cur.fee
+
+    return acc + holderMonthly
   }, 0)
 
   const totalFee = loanFee + subFee
@@ -34,11 +38,11 @@ export const useSummary = () => {
   const owedMoney = allLoans.reduce((acc, cur) => acc + cur.amount.holderTotal, 0)
 
   const alreadyPaidLoans = ongoingLoans.filter(loan => loan.payments.isPaidThisMonth)
-  const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => acc + cur.fee.holder, 0)
+  const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => acc + cur.fee.holderMonthly, 0)
 
   const alreadyPaidSubs = allSubs.filter(sub => sub.payments.isPaidThisMonth)
   const alreadyPaidSubsFee = alreadyPaidSubs.reduce((acc, cur) => {
-    return acc + cur.fee.holder
+    return acc + cur.fee.holderMonthly
   }, 0)
 
   const subsWithNoPayday = allSubs.filter(sub => !sub.time.hasPayday)
