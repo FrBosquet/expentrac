@@ -1,6 +1,6 @@
 'use client'
 
-import { CircleDollarSign, Cog, Landmark, LayoutDashboard, Menu, PencilLine, Tv, User } from 'lucide-react'
+import { CircleDollarSign, Cog, Landmark, LayoutDashboard, Menu, PencilLine, Tv, User, User2 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
@@ -24,6 +24,11 @@ const components = [
     Icon: LayoutDashboard
   },
   SEPARATOR,
+  {
+    title: 'Profile',
+    href: '/dashboard/profile',
+    Icon: User2
+  },
   {
     title: 'Loans',
     href: '/dashboard/loans',

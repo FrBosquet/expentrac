@@ -21,9 +21,14 @@ export const getUser = (data: Session | null): User => {
       emailVerified: null,
       image: null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      occupation: null
     }
   }
 
   return data.user
+}
+
+export const getUserInitials = ({ name }: User): string => {
+  return name?.split(' ').map((n) => n.charAt(0)).join('') ?? ''
 }
