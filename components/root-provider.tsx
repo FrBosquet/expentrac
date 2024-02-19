@@ -15,7 +15,7 @@ const montserrat = localFont({
   ],
   variable: '--font-montserrat'
 })
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', fallback: ['sans-serif'] })
 
 export interface DarkModeContextType {
   darkMode: boolean

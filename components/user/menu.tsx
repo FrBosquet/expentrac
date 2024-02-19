@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@components/ui/dropdown-menu'
@@ -14,7 +13,8 @@ import { useUser } from '@components/user/hooks'
 import {
   Bell,
   BellRing,
-  LogOut
+  LogOut,
+  User2
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -38,12 +38,14 @@ export const UserMenu = ({ className }: { className?: string }) => {
           <AvatarImage src={user?.image as string} alt={user?.name as string} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>
-        {hasPending ? <div className='w-3 h-3 absolute left-0 bottom-0 bg-red-400 rounded-full' /> : null}
       </article>
     </DropdownMenuTrigger>
-    <DropdownMenuContent className="w-56">
-      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-      <DropdownMenuSeparator />
+    <DropdownMenuContent className="w-64">
+      <DropdownMenuItem className="cursor-pointer" onClick={async () => { push('/dashboard/profile') }}>
+        <User2 className='mr-2' size={16} />
+        <span>You</span>
+      </DropdownMenuItem>
+
       <DropdownMenuItem className="cursor-pointer" onClick={async () => { push('/dashboard/notifications') }}>
         {hasPending
           ? <BellRing className="mr-2 h-4 w-4 text-red-500" />
@@ -51,6 +53,8 @@ export const UserMenu = ({ className }: { className?: string }) => {
         }
         <span>Notifications</span>
       </DropdownMenuItem>
+
+      <DropdownMenuSeparator />
       <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
         <LogOut className="mr-2 h-4 w-4" />
         <span>Log out</span>
