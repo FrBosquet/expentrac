@@ -11,6 +11,7 @@ export type SubFormData = {
   endDate: string
   link: string
   isYearly: boolean
+  yearly: 'on' | 'off'
   payday?: string
   paymonth?: string
   periodicity?: string

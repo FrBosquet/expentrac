@@ -66,9 +66,13 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, 
 
 export const SubDetailContent = ({ sub, className }: { sub: Subscription, className?: string }) => {
   const { date } = useDate()
-  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday }, resources: { link }, shares: { total }, time: { isYearly }, periods: { active } } = sub
+  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday, paymonth }, resources: { link }, shares: { total }, time: { isYearly }, periods: { active } } = sub
 
   const isActive = active && new Date(active.from) < date
+
+  const ndate = new Date()
+  if (paymonth) ndate.setMonth(paymonth)
+  if (payday) ndate.setDate(payday)
 
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
     <article className="grid grid-cols-2 gap-2 col-span-2">
@@ -93,7 +97,9 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
       payday
         ? <article className="flex flex-col gap-2">
           <h4 className="dashboard-label">Payment day</h4>
-          <p className="dashboard-value">{payday}</p>
+          <p className="dashboard-value">{
+
+            isYearly ? ndate.toLocaleDateString('default', { month: 'short', day: 'numeric' }) : payday}</p>
         </article>
         : null
     }

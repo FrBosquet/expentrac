@@ -22,6 +22,7 @@ export const SubscriptionAdd = () => {
 
     try {
       const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as SubFormData
+
       const sub = await subscriptionSdk.create(formData)
 
       void subscriptionSdk.revalidate(user.id)

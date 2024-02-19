@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { authOptions } from '@lib/auth'
+import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
 import { prisma, type Contract, type Prisma, type RawProvidersOnContract, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
@@ -65,6 +66,8 @@ export const PATCH = async (req: Request, { params }: Query) => {
   const keysToDelete = sub.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
   const keysToCreate = sharedWithKeys.filter(id => !sub.shares.some(share => share.toId === id))
 
+  const isYearly = body.yearly === 'on'
+
   const updatedSub = await prisma.contract.update({
     where: {
       id
@@ -81,7 +84,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
             fee: Number(body.fee),
             payday: body.payday ? Number(body.payday) : undefined,
             paymonth: body.paymonth ? Number(body.paymonth) : undefined,
-            periodicity: body.periodicity
+            periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
           }
         }
       },

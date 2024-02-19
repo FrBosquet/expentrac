@@ -1,5 +1,6 @@
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
+import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
 import { prisma, type Contract, type Prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
@@ -56,6 +57,8 @@ export const POST = async (req: Request) => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
+  const isYearly = body.yearly === 'on'
+
   const newSub = await prisma.contract.create({
     data: {
       user: {
@@ -72,7 +75,7 @@ export const POST = async (req: Request) => {
           fee: Number(body.fee),
           payday: body.payday ? Number(body.payday) : undefined,
           paymonth: body.paymonth ? Number(body.paymonth) : undefined,
-          periodicity: body.periodicity
+          periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
         }
       },
       providers: {

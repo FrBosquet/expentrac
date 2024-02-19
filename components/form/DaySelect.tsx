@@ -20,7 +20,7 @@ export const DaySelect = ({ name, required, className, defaultValue }: Props) =>
       <SelectValue />
     </SelectTrigger>
     <SelectContent className="max-h-48 overflow-y-scroll">
-      <SelectItem value={'0'}>Not defined</SelectItem>
+      {!required && <SelectItem value={'0'}>Not defined</SelectItem>}
       {Array(31).fill(null).map((_, index) => (
         <SelectItem key={index} value={(index + 1).toString()} >
           {index + 1}
