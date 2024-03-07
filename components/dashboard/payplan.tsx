@@ -8,7 +8,7 @@ import { useSubs } from '@components/subscription/context'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
 import { now } from '@lib/dates'
-import { TrendingDown, TrendingUp, User } from 'lucide-react'
+import { CalendarCheck, TrendingDown, TrendingUp, User } from 'lucide-react'
 
 interface Props {
   className?: string
@@ -42,7 +42,8 @@ export const UserPayplan = ({ className }: Props) => {
               finishingLoans,
               hasStartingLoans,
               hasFinishingLoans,
-              hasSharedLoans
+              hasSharedLoans,
+              yearlySubs
             } = month
 
             const hasStarting = hasStartingLoans || hasStartingSubs
@@ -100,6 +101,24 @@ export const UserPayplan = ({ className }: Props) => {
                   </section>
                   : null
               }
+
+              {
+                yearlySubs.length > 0
+                  ? <section>
+                    <h3 className='pt-2 pb-1 font-semibold text-theme-light flex items-center gap-2'><CalendarCheck size={14} />Yearly Subs paid this month</h3>
+                    <ul>
+                      {
+                        yearlySubs.map((sub, index) => {
+                          return <li className='uppercase text-xs pl-2 text-expentrac-800 flex justify-between' key={index}>
+                            <h3>{sub.name}</h3>
+                            <p>{euroFormatter.format(sub.fee.yearly)}</p>
+                          </li>
+                        })
+                      }
+                    </ul>
+                  </section>
+                  : null
+              }
             </aside>
 
             const handleClick = () => {
@@ -113,6 +132,7 @@ export const UserPayplan = ({ className }: Props) => {
                   {month.date.toLocaleDateString('default', { month: 'short', year: '2-digit' })}
                 </p>
                 <p className='flex items-center gap-2'>
+                  {yearlySubs.length > 0 ? <CalendarCheck size={14} /> : null}
                   {hasStarting ? <TrendingUp className='text-theme-accent' size={14} /> : null}
                   {hasFinishing ? <TrendingDown size={14} /> : null}
                   {hasShared ? <User size={14} /> : null}

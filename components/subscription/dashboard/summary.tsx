@@ -21,6 +21,11 @@ export const SubscriptionSummary = ({ className }: Props) => {
   const ongoingSubs = allSubs.filter((sub) => {
     return sub.time.isOngoing
   })
+  const sortedSubs = ongoingSubs.sort((a, b) => {
+    return a.time.currentMonthPaymentDate.getTime() - b.time.currentMonthPaymentDate.getTime()
+  })
+
+  console.log({ sortedSubs })
 
   const hasSubs = ongoingSubs.length > 0
 
@@ -46,7 +51,7 @@ export const SubscriptionSummary = ({ className }: Props) => {
         </header>
         {hasSubs
           ? <div className='flex flex-col gap-3 max-h-[500px] overflow-y-auto'>
-            {ongoingSubs.map((sub) => <SubItem sub={sub} activeColumn={activeColumn} key={sub.id} />)}
+            {sortedSubs.map((sub) => <SubItem sub={sub} activeColumn={activeColumn} key={sub.id} />)}
           </div>
           : <div className='grid place-content-center gap-2 p-6 text-center'>
             <p className='text-sm text-theme-light'>You have no subscriptions going on in the selected month</p>

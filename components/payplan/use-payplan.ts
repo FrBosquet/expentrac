@@ -1,4 +1,4 @@
-import { contractMonthsPassed, getContractTime } from '@lib/dates'
+import { PERIODICITY, contractMonthsPassed, getContractTime } from '@lib/dates'
 import { type Loan } from '@lib/loan'
 import { type Subscription } from '@lib/sub'
 import { useMemo } from 'react'
@@ -18,6 +18,7 @@ export const usePayplan = (date: Date, {
       const startingSubs: Subscription[] = []
       const finishingSubs: Subscription[] = []
       const activeSubs: Subscription[] = []
+      const yearlySubs: Subscription[] = []
 
       const startingLoans: Loan[] = []
       const finishingLoans: Loan[] = []
@@ -35,6 +36,9 @@ export const usePayplan = (date: Date, {
       subs.forEach(sub => {
         const { contract, fee } = sub
 
+        const refPeriod = contract.periods[0]
+        const isYearly = refPeriod.periodicity === PERIODICITY.YEARLY
+
         const {
           isOngoing,
           startsThisMonth,
@@ -42,13 +46,21 @@ export const usePayplan = (date: Date, {
         } = getContractTime(contract, refDate)
 
         if (isOngoing || startsThisMonth || endsThisMonth) {
+          if (isYearly) {
+            if (refPeriod.paymonth !== refDate.getMonth()) {
+              return
+            } else {
+              yearlySubs.push(sub)
+            }
+          }
+
           activeSubs.push(sub)
 
           if (startsThisMonth) startingSubs.push(sub)
           if (endsThisMonth) finishingSubs.push(sub)
 
-          monthlySubPay += fee.monthly
-          monthlySubHolderFee += fee.holderMonthly
+          monthlySubPay += isYearly ? fee.yearly : fee.monthly
+          monthlySubHolderFee += isYearly ? fee.holderYearly : fee.holderMonthly
         }
       })
 
@@ -106,7 +118,8 @@ export const usePayplan = (date: Date, {
         hasSharedSubs,
         hasStartingLoans,
         hasFinishingLoans,
-        hasSharedLoans
+        hasSharedLoans,
+        yearlySubs
       }
     })
   }, [subs, loans, date])
