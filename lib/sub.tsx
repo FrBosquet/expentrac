@@ -1,3 +1,4 @@
+import { PERIODICITY } from './dates'
 import { type Contract, type Period, type Provider } from './prisma'
 
 export type SubFormData = {
@@ -30,24 +31,30 @@ const getIsPaidThisMonth = (period: Period) => {
   if (periodicity === 'YEARLY') {
     return nowMonth > paymonth || (nowMonth === paymonth && nowDate >= payday)
   } else {
+    // TODO: Compare the current month payment date with NOW
     return nowDate >= payday
   }
 }
 
-const getPeriodPaymentDate = (period: Period) => {
+const getPeriodPaymentDate = (period: Period, date = now) => {
   const { periodicity } = period
 
   const payday = period.payday ?? 1
   const paymonth = period.paymonth ?? 0
 
-  if (periodicity === 'YEARLY') {
-    return new Date(now.getFullYear(), paymonth, payday)
-  } else {
-    return new Date(now.getFullYear(), nowMonth, payday)
-  }
+  const refDate = new Date(date)
+
+  if (periodicity === PERIODICITY.YEARLY) refDate.setMonth(paymonth)
+
+  refDate.setDate(payday)
+
+  return refDate
 }
 
 const getNextPaymentDate = (period: Period) => {
+  // TODO: Compare the selected month payment date with NOW and decide.
+  // If its a yearly payment, get the payment date for this year
+  // Else, the one for current month
   const periodPaymentDate = getPeriodPaymentDate(period)
 
   if (now.getTime() > periodPaymentDate.getTime()) {
@@ -65,13 +72,16 @@ const getNextPaymentDate = (period: Period) => {
   }
 }
 
-export const unwrapSub = (rawSub: Contract) => {
+export const unwrapSub = (rawSub: Contract, date = now) => {
   const {
     shares,
     periods,
     resources,
     providers
   } = rawSub
+
+  const refDate = date.getDate()
+  const refMonth = date.getMonth()
 
   const activePeriods = periods.filter(period => {
     return period.to === null
@@ -106,13 +116,15 @@ export const unwrapSub = (rawSub: Contract) => {
   const link = resources.find(r => r.type === 'LINK')?.url
 
   const isPaidThisMonth = getIsPaidThisMonth(activePeriod)
-  const currentMonthPaymentDate = getPeriodPaymentDate(activePeriod)
+  const currentMonthPaymentDate = getPeriodPaymentDate(activePeriod, date)
+  const currentPaymentDate = getPeriodPaymentDate(activePeriod, date)
+  const isPaidThisPeriod = now.getTime() > currentPaymentDate.getTime()
   const nextPaymentDate = getNextPaymentDate(activePeriod)
 
   const hasPayday = activePeriod?.payday !== null && activePeriod?.payday !== undefined
 
-  const sameDayAsPayday = activePeriod?.payday === nowDate
-  const sameMonthAsPayday = activePeriod?.paymonth === nowMonth
+  const sameDayAsPayday = activePeriod?.payday === refDate
+  const sameMonthAsPayday = activePeriod?.paymonth === refMonth
   const isPayday = isYearly
     ? sameDayAsPayday && sameMonthAsPayday
     : sameDayAsPayday
@@ -162,7 +174,8 @@ export const unwrapSub = (rawSub: Contract) => {
       holderYearly: yearlyHolderFee
     },
     payments: {
-      isPaidThisMonth
+      isPaidThisMonth,
+      isPaidThisPeriod
     },
     periods: {
       active: activePeriod,
@@ -187,6 +200,7 @@ export const unwrapSub = (rawSub: Contract) => {
       payday: activePeriod?.payday,
       paymonth: activePeriod?.paymonth,
       currentMonthPaymentDate,
+      currentPaymentDate,
       nextPaymentDate
     },
     resources: {

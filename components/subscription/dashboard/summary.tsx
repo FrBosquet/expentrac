@@ -25,8 +25,6 @@ export const SubscriptionSummary = ({ className }: Props) => {
     return a.time.currentMonthPaymentDate.getTime() - b.time.currentMonthPaymentDate.getTime()
   })
 
-  console.log({ sortedSubs })
-
   const hasSubs = ongoingSubs.length > 0
 
   return (

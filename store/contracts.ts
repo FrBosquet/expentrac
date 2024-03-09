@@ -81,22 +81,22 @@ export const getHasLoans = (state: ContractsSlice) => {
   return contracts.some(contract => contract.type === CONTRACT_TYPE.LOAN)
 }
 
-export const getSubs = (state: ContractsSlice): Subscription[] => {
+export const getSubs = (refDate: Date) => (state: ContractsSlice): Subscription[] => {
   const { contracts } = state
 
   return contracts
     .filter(contract => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
-    .map(contract => unwrapSub(contract))
+    .map(contract => unwrapSub(contract, refDate))
 }
 
-export const getSub = (id: string) => (state: ContractsSlice) => {
+export const getSub = (id: string, refDate = new Date()) => (state: ContractsSlice) => {
   const { contracts } = state
 
   const contract = contracts.find(contract => contract.id === id)
 
   if (!contract || contract.type !== CONTRACT_TYPE.SUBSCRIPTION) return null
 
-  return unwrapSub(contract)
+  return unwrapSub(contract, refDate)
 }
 
 export const getHasSubs = (state: ContractsSlice) => {
