@@ -1,5 +1,7 @@
 'use client'
 
+import Grid from '@/public/grid.png'
+import Money from '@/public/money.png'
 import { Tooltip } from '@components/Tooltip'
 import { useDate } from '@components/date/context'
 import { useLoans } from '@components/loan/context'
@@ -10,8 +12,6 @@ import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
 import { Coins, HelpingHand, Receipt, Tv, User, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
-import Grid from 'public/grid.png'
-import Money from 'public/money.png'
 import { type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 

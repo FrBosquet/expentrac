@@ -35,7 +35,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
     <DropdownMenuTrigger asChild>
       <article className='relative'>
         <Avatar className={twMerge('cursor-pointer border border-theme-border w-12 h-12', className)}>
-          <AvatarImage src={user?.image as string} alt={user?.name as string} />
+          <AvatarImage src={user?.image!} alt={user?.name!} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>
       </article>

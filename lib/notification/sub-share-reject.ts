@@ -31,7 +31,7 @@ export const handleSubShareReject = async (user: User, shouldEmail: boolean, con
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendSubShareRejection(user.name as string, contract)
+    await emailSdk.sendSubShareRejection(user.name!, contract)
   }
 
   return notification

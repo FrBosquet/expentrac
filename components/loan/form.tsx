@@ -63,7 +63,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
 
     const { startDate, endDate, fee, initial } = formState
 
-    return getPaymentPlan(new Date(startDate as string), new Date(endDate), Number(fee), Number(initial))
+    return getPaymentPlan(new Date(startDate!), new Date(endDate), Number(fee), Number(initial))
   }, [formState])
 
   const removeShareHolder = (user: RawUser) => {

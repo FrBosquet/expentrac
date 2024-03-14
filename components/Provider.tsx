@@ -7,9 +7,9 @@ interface Props {
   children: React.ReactNode
 }
 
-export const RootProvider = ({ children }: Props) => {
+export const RootProvider = async ({ children }: Props) => {
   return (
-    children
+    await children
   )
 }
 

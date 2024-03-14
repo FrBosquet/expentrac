@@ -12,13 +12,13 @@ export default async function Page() {
     <>
       <header className='flex gap-8 col-span-4'>
         <Avatar className={'border border-theme-border w-48 h-48'}>
-          <AvatarImage src={user?.image as string} alt={user?.name as string} />
+          <AvatarImage src={user?.image!} alt={user?.name!} />
           <AvatarFallback>{fallback}</AvatarFallback>
         </Avatar>
         <div className='flex flex-col justify-center flex-1'>
-          <h1 className='text-5xl font-extralight uppercase'>{user?.name as string}</h1>
+          <h1 className='text-5xl font-extralight uppercase'>{user?.name!}</h1>
           {user?.occupation && <p className='text-sm font-bold text-theme-accent uppercase'>{user?.occupation}</p>}
-          <p className='text-xl text-theme-light'>{user?.email as string}</p>
+          <p className='text-xl text-theme-light'>{user?.email!}</p>
         </div>
         <Link href='profile/edit'>
           <Pencil />

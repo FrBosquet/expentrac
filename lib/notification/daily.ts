@@ -32,7 +32,7 @@ export const handleDaily = async (user: User, shouldEmail: boolean, data: DailyN
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendDailyEmail(user.email, user.name as string, data.loans, data.subs)
+    await emailSdk.sendDailyEmail(user.email, user.name!, data.loans, data.subs)
   }
 
   return notification

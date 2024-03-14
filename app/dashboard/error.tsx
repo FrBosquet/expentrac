@@ -1,7 +1,7 @@
 'use client'
 
+import Broken from '@/public/broken.png'
 import Image from 'next/image'
-import Broken from 'public/broken.png'
 
 export default function Page() {
   return <div className="col-span-2 lg:col-span-4 grid gap-2 place-content-center h-screen">

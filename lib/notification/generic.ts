@@ -29,7 +29,7 @@ export const handleGeneric = async (user: User, shouldEmail: boolean, data: Gene
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendGenericEmail(user.email, user.name as string, data.message)
+    await emailSdk.sendGenericEmail(user.email, user.name!, data.message)
   }
 
   return notification

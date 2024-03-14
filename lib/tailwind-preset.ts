@@ -55,6 +55,12 @@ export const tailwindPreset = {
           'animation-timeline': '--fade',
           'animation-name': 'wheel-fade',
           'animation-fill-mode': 'both'
+        },
+        '.scheme-dark': {
+          'color-scheme': 'dark'
+        },
+        '.scheme-light': {
+          'color-scheme': 'light'
         }
       })
       addUtilities({

@@ -32,9 +32,9 @@ const sendEmail = async (userId: string, template: Template) => {
 
   const data = await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
-    to: [user?.email as string],
+    to: [user?.email!],
     subject: 'Welcome to expentrac',
-    react: <Component username={user.name as string} />
+    react: <Component username={user.name!} />
   })
 
   return data

@@ -2,8 +2,7 @@
 const nextConfig = {
   pageExtensions: ['tsx', 'mdx', 'ts'],
   experimental: {
-    mdxRs: true,
-    serverActions: true,
+    mdxRs: true
   },
 }
 

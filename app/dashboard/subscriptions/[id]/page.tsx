@@ -6,10 +6,12 @@ import { SubPayplan } from '@components/subscription/dashboard/payplan'
 import { SubDelete } from '@components/subscription/delete'
 import { SubDetailContent } from '@components/subscription/detail'
 import { SubEdit } from '@components/subscription/edit'
+import { SubPause } from '@components/subscription/pause'
 import { PinLeftIcon } from '@radix-ui/react-icons'
-import { Edit, Link, Trash } from 'lucide-react'
+import { Edit, Link, Pause, Trash } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 
+// TODO: Make this a server path
 export default function Page() {
   const { push } = useRouter()
   const params = useParams()
@@ -31,6 +33,9 @@ export default function Page() {
           </ButtonLink>
           : null}
       <SubEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
+      <SubPause sub={sub}>
+        <article className='text-xs flex items-center gap-2'><Pause size={12} /> Pause</article>
+      </SubPause>
       <SubDelete sideEffect={async () => {
         push('/dashboard/subscriptions')
       }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />

@@ -31,7 +31,7 @@ export const handleLoanShareAccept = async (user: User, shouldEmail: boolean, co
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendLoanShareAcceptance(user.name as string, contract)
+    await emailSdk.sendLoanShareAcceptance(user.name!, contract)
   }
 
   return notification

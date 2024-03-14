@@ -34,7 +34,7 @@ export const handleSubsShare = async (user: User, shouldEmail: boolean, contract
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendSubShare(user.email, user.name as string, contract)
+    await emailSdk.sendSubShare(user.email, user.name!, contract)
   }
 
   return notification
