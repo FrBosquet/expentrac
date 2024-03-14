@@ -25,9 +25,7 @@ export default function SubShareAcceptEmail({
       </Text>
       <Section className="mt-[24px] mb-[24px] flex justify-center">
         <Button
-          pX={20}
-          pY={12}
-          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
+          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center p-3 shadow-md"
           href='https://www.expentrac.app/dashboard/subscriptions'
         >
           Your subscriptions

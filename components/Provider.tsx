@@ -7,10 +7,9 @@ interface Props {
   children: React.ReactNode
 }
 
-export const RootProvider = async ({ children }: Props) => {
-  return (
-    await children
-  )
+// eslint-disable-next-line
+export const RootProvider = ({ children }: Props) => {
+  return (children)
 }
 
 export const useUser = () => {

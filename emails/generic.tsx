@@ -26,9 +26,7 @@ export default function GenericEmail({
       </Text>
       <Section className="mt-[24px] mb-[24px] flex justify-center">
         <Button
-          pX={20}
-          pY={12}
-          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px]"
+          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px] p-3 shadow-md"
           href='https://www.expentrac.app/dashboard'
         >
           Your dashboard

@@ -24,7 +24,7 @@ export default function TemplateEmail({
       <Preview>{preview}</Preview>
       <Tailwind>
         <Body className="bg-gradient-to-b from-slate-950 to-slate-700 my-auto mx-auto">
-          <Container className="bg-slate-200 border border-solid border-slate-100 rounded-lg my-[40px] mx-auto p-[20px] w-[465px] font-sans">
+          <Container className="bg-slate-200 border border-solid border-slate-100 rounded-lg my-[40px] mx-auto p-[20px] w-[465px] font-sans shadow-lg">
             <Section className="mt-[32px]">
               <Img
                 src={'https://expentrac.app/logo.png'}
