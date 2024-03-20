@@ -7,11 +7,10 @@ import { toHTMLInputFormat } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
 import { type Period } from '@prisma/client'
-import { Play } from 'lucide-react'
+import { DollarSign } from 'lucide-react'
 import { useState } from 'react'
-import { resumeSubscription } from './actions'
+import { updateSubscriptionPrice } from './actions'
 import { useSubs } from './context'
-import { SubscriptionFormPeriodicity } from './form'
 
 interface Props {
   sub: Subscription
@@ -20,9 +19,9 @@ interface Props {
   children?: React.ReactNode
 }
 
-const TRIGGER_DECORATOR = <article className='flex items-center gap-2'><Play size={12} /> Resume</article>
+const TRIGGER_DECORATOR = <article className='flex items-center gap-2 whitespace-nowrap'><DollarSign size={12} /> Change price</article>
 
-export const SubResume = ({ sub, className, variant = 'outline', children = TRIGGER_DECORATOR }: Props) => {
+export const SubUpdatePrice = ({ sub, className, variant = 'outline', children = TRIGGER_DECORATOR }: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { updateSub } = useSubs()
@@ -35,7 +34,7 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
       const form = e.currentTarget
       const formData = new FormData(form)
 
-      const response = await resumeSubscription(formData)
+      const response = await updateSubscriptionPrice(formData)
 
       updateSub(response)
       setOpen(false)
@@ -60,9 +59,9 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Resume subscription</DialogTitle>
+          <DialogTitle>Update subscription price</DialogTitle>
           <DialogDescription>
-            Resume <strong className="font-semibold">{sub.name}</strong>.
+            Change <strong className="font-semibold">{sub.name}</strong> fee. This will end the current period and start a new one.
           </DialogDescription>
           <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-2 justify-between items-center pt-4'>
             <input type="hidden" name="id" value={sub.id} />
@@ -70,8 +69,6 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
             <FormField label="From" required type="date" name="date" defaultValue={toHTMLInputFormat(new Date())} />
 
             <FormField required defaultValue={lastActivePeriod.fee} name="fee" label="Fee" type="number" step="0.01" className='text-center'>€</FormField>
-
-            <SubscriptionFormPeriodicity sub={sub} />
 
             <SubmitButton className='col-start-2' submitting={loading} />
           </form>

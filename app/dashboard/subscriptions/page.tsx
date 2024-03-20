@@ -9,7 +9,7 @@ export default function page() {
   const { subs } = useSubs()
 
   return <>
-    <SubscriptionSummary className='col-span-2 lg:col-span-4' />
+    <SubscriptionSummary className='col-span-2 xl:col-span-4' />
     <UserSubPayplan subs={subs} className='col-span-2' />
     <PausedSubs className='col-span-2' />
   </>

@@ -55,7 +55,7 @@ export const SubPause = ({ sub, className, variant = 'outline', children = TRIGG
           <DialogDescription>
             Pause <strong className="font-semibold">{sub.name}</strong>.
           </DialogDescription>
-          <form onSubmit={handleSubmit} className='flex justify-between items-center'>
+          <form onSubmit={handleSubmit} className='flex justify-between items-center pt-4'>
             <input type="hidden" name="id" value={sub.id} />
             <div>
               <label htmlFor="date" className='sr-only'>Until</label>
