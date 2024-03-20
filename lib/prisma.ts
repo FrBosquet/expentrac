@@ -39,7 +39,7 @@ export type Share = RawShare & {
 
 export type ProviderOnContract = RawProvidersOnContract & {
   provider: Provider
-  contract: RawContract
+  contract: Contract
 }
 
 export type Provider = RawProvider & {
