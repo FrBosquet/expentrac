@@ -7,6 +7,7 @@ import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
 import { subscriptionSdk } from '@sdk'
 import { Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useSubs } from './context'
 
@@ -14,18 +15,18 @@ interface Props {
   sub: Subscription
   className?: string
   variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
-  triggerDecorator?: React.ReactNode
-  sideEffect?: () => void
+  children?: React.ReactNode
+  afterDeleteUrl?: string
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
-// TODO: trigger decorator should be a children
 
-export const SubDelete = ({ sub, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
+export const SubDelete = ({ sub, className, variant = 'destructive', children = TRIGGER_DECORATOR, afterDeleteUrl }: Props) => {
   const { id, name } = sub
   const { removeSub } = useSubs()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { push } = useRouter()
 
   const handleDelete = async () => {
     setLoading(true)
@@ -37,7 +38,8 @@ export const SubDelete = ({ sub, className, variant = 'destructive', triggerDeco
       void subscriptionSdk.revalidate(sub.userId)
 
       setOpen(false)
-      void sideEffect?.()
+
+      if (afterDeleteUrl) push(afterDeleteUrl)
     } catch (e) {
       console.error(e)
     } finally {
@@ -48,7 +50,7 @@ export const SubDelete = ({ sub, className, variant = 'destructive', triggerDeco
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
+        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{children}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

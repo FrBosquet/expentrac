@@ -64,8 +64,8 @@ export const SubPayplan = ({ sub, className }: Props) => {
             </aside>
 
             return <Tooltip key={index} tooltip={tooltipContent}>
-              <article data-paid={isPaid} className='flex flex-row justify-between items-center data-[paid=true]:text-expentrac-800 hover:bg-theme-back p-1'>
-                <p className='text-xs font-semibold uppercase'>
+              <article data-paid={isPaid} className='flex flex-row justify-between items-center data-[paid=true]:text-expentrac-800 hover:bg-theme-back p-1 text-xs font-semibold uppercase'>
+                <p>
                   {paymentDate.toLocaleDateString('default', { day: '2-digit', month: 'short', year: paymentDate.getFullYear() !== date.getFullYear() ? '2-digit' : undefined })}
                   {isThisMonth ? <span className='text-xs opacity-70'> (this month)</span> : null}
                   {isNextMonth ? <span className='text-xs opacity-70'> (next month)</span> : null}

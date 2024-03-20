@@ -13,7 +13,7 @@ import { type User } from '@lib/prisma'
 import { type Subscription } from '@lib/sub'
 import { Trash } from 'lucide-react'
 import { useState, type FormEventHandler } from 'react'
-import { FieldSet, FormField, Root, SubmitButton } from '../Form'
+import { FieldSet, LegacyFormField, Root, SubmitButton } from '../Form'
 
 interface Props {
   sub?: Subscription
@@ -21,8 +21,44 @@ interface Props {
   disabled?: boolean
 }
 
-export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => {
+export const SubscriptionFormPeriodicity = ({ sub }: { sub?: Subscription }) => {
   const [isYearly, setIsYearly] = useState(sub?.time.isYearly)
+
+  const handleChangeYearly = (newValue: boolean) => {
+    setIsYearly(newValue)
+  }
+
+  const defaultPayday = sub?.time.payday ?? new Date().getDate()
+
+  return <>
+    <section className="flex justify-end items-center col-span-2 gap-2">
+      <Switch onCheckedChange={handleChangeYearly} id="yearly" name='yearly' defaultChecked={sub?.time.isYearly} />
+      <Label htmlFor="yearly" className='font-semibold'>Paid yearly?</Label>
+    </section>
+
+    {isYearly
+      ? <section className='col-span-2 flex gap-2'>
+        < div className='flex flex-col flex-1 gap-2' >
+          <Label htmlFor='paymonth' className="text-center">
+            Pay month</Label>
+          <MonthSelect className='w-auto min-w-[8rem]' name="paymonth" required defaultValue={sub?.time.paymonth} />
+        </div >
+        <div className='flex flex-col flex-1 gap-2'>
+          <Label htmlFor='paymonth' className="text-center">
+            Payday</Label>
+          <DaySelect className='w-auto min-w-[8rem]' name="payday" required defaultValue={defaultPayday} />
+        </div>
+      </section >
+      : <section className='col-span-2 flex gap-2 items-center justify-end'>
+        <Label htmlFor='payday' className="text-center">
+          Payday
+        </Label>
+        <DaySelect className='w-auto min-w-[8rem]' required name="payday" defaultValue={defaultPayday} />
+      </section>}
+  </>
+}
+
+export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => {
   const { providers } = useProviders()
 
   const [sharedWith, setSharedWith] = useState<User[]>(sub?.shares.data.map(({ to }) => to) ?? [])
@@ -40,14 +76,10 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
     ? sub.time.isYearly ? sub.fee.yearly.toFixed(2) : sub.fee.monthly.toFixed(2)
     : ''
 
-  const handleChangeYearly = (newValue: boolean) => {
-    setIsYearly(newValue)
-  }
-
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
-      <FormField required defaultValue={sub?.name} name="name" label="Name" />
-      <FormField required defaultValue={defaultFee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</FormField>
+      <LegacyFormField required defaultValue={sub?.name} name="name" label="Name" />
+      <LegacyFormField required defaultValue={defaultFee} name="fee" label="Fee" type="number" step="0.01" className='text-right'>€</LegacyFormField>
 
       <section className="col-span-2 grid grid-cols-2 gap-2">
         <span className="flex flex-col gap-2">
@@ -65,33 +97,10 @@ export const SubscriptionForm = ({ sub, onSubmit, disabled = false }: Props) => 
         </span>
       </section>
 
-      <section className="flex justify-end items-center col-span-2 gap-2">
-        <Switch onCheckedChange={handleChangeYearly} id="yearly" name='yearly' defaultChecked={sub?.time.isYearly} />
-        <Label htmlFor="yearly" className='font-semibold'>Paid yearly?</Label>
-      </section>
-
-      {isYearly
-        ? <section className='col-span-2 flex gap-2'>
-          <div className='flex flex-col flex-1 gap-1'>
-            <Label htmlFor='paymonth' className="text-center font-semibold text-sm selft-end">
-              Pay month</Label>
-            <MonthSelect className='w-auto min-w-[8rem]' name="paymonth" required defaultValue={sub?.time.paymonth} />
-          </div>
-          <div className='flex flex-col flex-1 gap-1'>
-            <Label htmlFor='paymonth' className="text-center font-semibold text-sm selft-end">
-              Pay day</Label>
-            <DaySelect className='w-auto min-w-[8rem]' name="payday" required defaultValue={sub?.time.paymonth} />
-          </div>
-        </section>
-        : <section className='col-span-2 flex gap-2 items-center justify-end'>
-          <Label htmlFor='payday' className="text-center font-semibold text-sm selft-end">
-            Payday
-          </Label>
-          <DaySelect className='w-auto min-w-[8rem]' required name="payday" defaultValue={sub?.time.payday} />
-        </section>}
+      <SubscriptionFormPeriodicity sub={sub} />
 
       <Separator className="col-span-2" />
-      <FormField defaultValue={sub?.resources.link ?? ''} name="link" label="Link" />
+      <LegacyFormField defaultValue={sub?.resources.link ?? ''} name="link" label="Link" />
       <p className='text-xs col-span-2'>Direct link to this subscription page</p>
 
       <Separator className="col-span-2" />

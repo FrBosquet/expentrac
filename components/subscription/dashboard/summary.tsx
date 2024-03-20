@@ -21,8 +21,12 @@ export const SubscriptionSummary = ({ className }: Props) => {
   const ongoingSubs = allSubs.filter((sub) => {
     return sub.time.isOngoing
   })
+
   const sortedSubs = ongoingSubs.sort((a, b) => {
-    return a.time.currentMonthPaymentDate.getTime() - b.time.currentMonthPaymentDate.getTime()
+    if (!a.time?.currentMonthPaymentDate) return 1
+    if (!b.time?.currentMonthPaymentDate) return -1
+
+    return a.time?.currentMonthPaymentDate?.getTime() - b.time.currentMonthPaymentDate?.getTime()
   })
 
   const hasSubs = ongoingSubs.length > 0

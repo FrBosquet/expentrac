@@ -10,7 +10,6 @@ import { euroFormatter } from '@lib/currency'
 import { monthBeetween } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { Edit, Trash } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { SubDelete } from './delete'
@@ -26,7 +25,6 @@ interface Props {
 export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, className }: Props) => {
   const [open, setOpen] = useState(false)
   const { ownsResource } = useUser()
-  const { push } = useRouter()
   const userOwnThis = ownsResource(sub)
 
   if (!sub) return null
@@ -52,9 +50,8 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, 
               <Separator className="col-span-2" />
               <menu className="col-span-2 flex gap-2 justify-end">
                 <SubscriptionEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-                <SubDelete sideEffect={() => {
-                  push('/dashboard/subscriptions')
-                }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} sub={sub} />
+                <SubDelete afterDeleteUrl='/dashboard/subscriptions'
+                  sub={sub}><article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article></SubDelete>
               </menu>
             </>
           )
@@ -66,7 +63,7 @@ export const SubscriptionDetail = ({ sub, triggerContent = sub?.name, children, 
 
 export const SubDetailContent = ({ sub, className }: { sub: Subscription, className?: string }) => {
   const { date } = useDate()
-  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday, paymonth }, resources: { link }, shares: { total }, time: { isYearly }, periods: { active } } = sub
+  const { fee: { monthly, yearly }, providers: { vendor, platform }, time: { payday, paymonth }, shares: { total }, time: { isYearly }, periods: { active } } = sub
 
   const isActive = active && new Date(active.from) < date
 
@@ -75,11 +72,6 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
   if (payday) ndate.setDate(payday)
 
   return <section className={twMerge('grid grid-cols-2 gap-6', className)}>
-    <article className="grid grid-cols-2 gap-2 col-span-2">
-      <ProviderDetail provider={vendor} label="Vendor" className="col-start-1" />
-      <ProviderDetail provider={platform} label="Platform" className="col-start-2" />
-    </article>
-
     {
       isYearly && (
         <article className="flex flex-col gap-2">
@@ -100,14 +92,6 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
           <p className="dashboard-value">{
 
             isYearly ? ndate.toLocaleDateString('default', { month: 'short', day: 'numeric' }) : payday}</p>
-        </article>
-        : null
-    }
-
-    {
-      link
-        ? <article className="flex flex-col gap-2 col-span-2">
-          <a target='_blank' href={link} className="text-xs font-semibold hover:text-primary-800 transition" rel="noreferrer">Subscription link</a>
         </article>
         : null
     }
@@ -138,5 +122,9 @@ export const SubDetailContent = ({ sub, className }: { sub: Subscription, classN
         </>
       )
     }
+    <article className="grid grid-cols-2 gap-2 col-span-2 ">
+      <ProviderDetail provider={vendor} withName label="Vendor" className="col-start-1 items-start" />
+      <ProviderDetail provider={platform} withName label="Platform" className="col-start-2 items-start w-auto" />
+    </article>
   </section>
 }

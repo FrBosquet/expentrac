@@ -7,7 +7,7 @@ import { PROVIDER_TYPE } from '@lib/provider'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
-import { include } from './include'
+import { subscriptionInclude } from './include'
 
 export const GET = async (req: Request) => {
   const { searchParams } = new URL(req.url)
@@ -31,7 +31,7 @@ export const GET = async (req: Request) => {
         name: 'asc'
       }
     ],
-    include
+    include: subscriptionInclude
   })
 
   return NextResponse.json(subs)
@@ -106,7 +106,7 @@ export const POST = async (req: Request) => {
         }
       }
     },
-    include
+    include: subscriptionInclude
   })
 
   newSub.shares.forEach(share => {

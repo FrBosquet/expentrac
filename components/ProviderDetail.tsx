@@ -5,7 +5,7 @@ import { CircleOff } from 'lucide-react'
 import { Tooltip } from './Tooltip'
 import { ProviderLogo } from './provider/ProviderLogo'
 
-export const ProviderDetail = ({ provider, label, className }: { provider?: Provider, label: string, className: string }) => {
+export const ProviderDetail = ({ provider, label, className, withName }: { provider?: Provider, label: string, className: string, withName?: boolean }) => {
   const exist = provider != null
 
   if (!exist) {
@@ -24,7 +24,7 @@ export const ProviderDetail = ({ provider, label, className }: { provider?: Prov
     </div>}>
       <article className={cn('flex items-center justify-center flex-col gap-2', className)}>
         <h4 className={'dashboard-label'}>{label}</h4>
-        <a href={getProviderLink(provider)} target="_blank" rel="noreferrer" ><ProviderLogo className="h-12 w-12" provider={provider} /></a>
+        <a className='flex items-center gap-3' href={getProviderLink(provider)} target="_blank" rel="noreferrer" ><ProviderLogo className="h-12 w-12" provider={provider} /> {withName ? <p>{provider.name}</p> : null}</a>
       </article>
     </Tooltip>
   )

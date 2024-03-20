@@ -1,4 +1,4 @@
-export const include = {
+export const subscriptionInclude = {
   shares: {
     include: {
       to: true
