@@ -1,5 +1,5 @@
 import { TIME } from '@types'
-import { type Contract } from './prisma'
+import { type Contract, type Period } from './prisma'
 
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',
@@ -56,6 +56,36 @@ export const getTimeDescription = (refDate: Date, month: TIME, type: string) => 
     case TIME.PRESENT: return `These are the ${type} fees you are paying for this month`
     case TIME.FUTURE: return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
   }
+}
+
+export const getOngoingPeriod = (contract: Contract, date: Date): Period | undefined => {
+  const month = date.getMonth()
+  const year = date.getFullYear()
+  let candidate
+
+  for (const period of contract.periods) {
+    const from = new Date(period.from)
+
+    const fromMonth = from.getMonth()
+    const fromYear = from.getFullYear()
+
+    if (!period.to) {
+      if (from <= date) return period
+
+      if (fromMonth === month && fromYear === year) {
+        candidate = period
+      }
+    } else {
+      const to = new Date(period.to)
+      const toMonth = to.getMonth()
+      const toYear = to.getFullYear()
+
+      if (from <= date && to >= date) return period
+      if (toMonth === month && toYear === year) candidate = period
+    }
+  }
+
+  return candidate
 }
 
 export const contractOnGoing = (contract: Contract, date: Date) => {
