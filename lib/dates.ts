@@ -64,24 +64,32 @@ export const getOngoingPeriod = (contract: Contract, date: Date): Period | undef
   let candidate
 
   for (const period of contract.periods) {
-    const from = new Date(period.from)
+    const { payday, to, from } = period
+    const fromDate = new Date(from)
+    const payDate = new Date(year, month, payday ?? 0)
 
-    const fromMonth = from.getMonth()
-    const fromYear = from.getFullYear()
+    const fromMonth = fromDate.getMonth()
+    const fromYear = fromDate.getFullYear()
 
-    if (!period.to) {
-      if (from <= date) return period
+    if (!to) {
+      if (date >= fromDate) return period
 
       if (fromMonth === month && fromYear === year) {
+        if (payDate >= fromDate) return period
+
         candidate = period
       }
     } else {
-      const to = new Date(period.to)
-      const toMonth = to.getMonth()
-      const toYear = to.getFullYear()
+      const toDate = new Date(to)
+      const toMonth = toDate.getMonth()
+      const toYear = toDate.getFullYear()
 
-      if (from <= date && to >= date) return period
-      if (toMonth === month && toYear === year) candidate = period
+      if (fromDate <= date && toDate >= date) candidate = period
+      if (toMonth === month && toYear === year) {
+        if (payDate <= toDate && payDate >= fromDate) return period
+
+        candidate = period
+      }
     }
   }
 

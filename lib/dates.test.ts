@@ -45,7 +45,13 @@ describe('getOngoingPeriod', () => {
         {
           ...basePeriod,
           from: new Date('2021-02-16'),
+          to: new Date('2022-02-10'),
           fee: 210
+        },
+        {
+          ...basePeriod,
+          from: new Date('2022-02-11'),
+          fee: 220
         }
       ]
     }
@@ -66,12 +72,36 @@ describe('getOngoingPeriod', () => {
       expect(getOngoingPeriod(contract as Contract, new Date('2021-03-15'))).toHaveProperty('fee', 210)
     })
 
-    it('should lazy capture period that starts this month', () => {
-      expect(getOngoingPeriod(contract as Contract, new Date('2021-02-16'))).toHaveProperty('fee', 210)
+    it('should capture period that starts this month', () => {
+      expect(getOngoingPeriod(contract as Contract, new Date('2022-02-1'))).toHaveProperty('fee', 220)
     })
 
-    it.only('should lazy capture period that ends this month', () => {
+    it('should capture period that ends this month', () => {
       expect(getOngoingPeriod(contract as Contract, new Date('1986-08-26'))).toHaveProperty('fee', 10)
+    })
+  })
+
+  describe('should avoid collisions by checking the payday', () => {
+    const contract = {
+      ...baseContract,
+      periods: [
+        {
+          ...basePeriod,
+          from: new Date('2021-01-01'),
+          to: new Date('2021-01-15'),
+          fee: 150
+        },
+        {
+          ...basePeriod,
+          from: new Date('2021-01-16'),
+          to: new Date('2021-01-31'),
+          fee: 250
+        }
+      ]
+    }
+
+    it('should return the ongoing period that has the payday for the given month', () => {
+      expect(getOngoingPeriod(contract as Contract, new Date('2021-01-17'))).toHaveProperty('fee', 150)
     })
   })
 })
