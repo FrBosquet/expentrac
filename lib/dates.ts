@@ -96,52 +96,47 @@ export const getOngoingPeriod = (contract: Contract, date: Date): Period | undef
   return candidate
 }
 
-export const contractOnGoing = (contract: Contract, date: Date) => {
-  const { periods } = contract
-
-  return periods.some(period => {
-    const from = new Date(period.from)
-
-    if (!period.to) return from <= date
-
-    const to = new Date(period.to)
-
-    return from <= date && to >= date
-  })
+const baseStatus = {
+  ongoing: false,
+  starts: false,
+  ends: false,
+  updates: false
 }
+type CONTRACT_STATUS = Record<keyof typeof baseStatus, boolean>
 
-export const contractStarts = (contract: Contract, date: Date) => {
-  const { periods } = contract
+export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STATUS => {
+  const status = { ...baseStatus }
+  const ongoingPeriod = getOngoingPeriod(contract, date)
 
-  return periods.some(period => {
-    const from = new Date(period.from)
+  if (!ongoingPeriod) return status
 
-    return isInSameMont(from, date)
-  })
-}
+  status.ongoing = true
+  if (ongoingPeriod.to && isInSameMont(new Date(ongoingPeriod.to), date)) {
+    // verify there is a next period that is in same or next month to the current date, if its the case, return UPDATE
+    const swapDate = new Date(date)
+    swapDate.setDate(ongoingPeriod.payday ?? 1)
 
-export const contractEnds = (contract: Contract, date: Date) => {
-  const { periods } = contract
+    const nextPeriod = contract.periods.find(period => {
+      if (period === ongoingPeriod) return false
 
-  return periods.some(period => {
-    if (!period.to) return false
+      const from = new Date(period.from)
+      from.setDate(period.payday ?? 1)
 
-    const to = new Date(period.to)
+      return (from.getTime() - swapDate.getTime()) < 30 * 24 * 60 * 60 * 1000
+    })
 
-    return isInSameMont(to, date)
-  })
-}
-
-export const getContractTime = (contract: Contract, date: Date) => {
-  const isOngoing = contractOnGoing(contract, date)
-  const startsThisMonth = contractStarts(contract, date)
-  const endsThisMonth = contractEnds(contract, date)
-
-  return {
-    isOngoing,
-    startsThisMonth,
-    endsThisMonth
+    if (nextPeriod) {
+      status.updates = true
+    } else {
+      status.ends = true
+    }
   }
+
+  if (isInSameMont(new Date(ongoingPeriod.from), date)) {
+    status.starts = true
+  }
+
+  return status
 }
 
 export const contractMonthsPassed = (contract: Contract, date: Date) => {
