@@ -1,4 +1,4 @@
-import { PERIODICITY, contractMonthsPassed, getContractTime } from '@lib/dates'
+import { PERIODICITY, contractMonthsPassed, getContractStatus, getOngoingPeriod } from '@lib/dates'
 import { type Loan } from '@lib/loan'
 import { type Subscription } from '@lib/sub'
 import { useMemo } from 'react'
@@ -19,6 +19,7 @@ export const usePayplan = (date: Date, {
       const finishingSubs: Subscription[] = []
       const activeSubs: Subscription[] = []
       const yearlySubs: Subscription[] = []
+      const updatingSubs: Subscription[] = []
 
       const startingLoans: Loan[] = []
       const finishingLoans: Loan[] = []
@@ -34,18 +35,22 @@ export const usePayplan = (date: Date, {
       let monthlySubHolderFee: number = 0
 
       subs.forEach(sub => {
-        const { contract, fee } = sub
+        const { contract } = sub
 
-        const refPeriod = contract.periods[0]
+        const refPeriod = getOngoingPeriod(contract, refDate)
+
+        if (!refPeriod) return
+
         const isYearly = refPeriod.periodicity === PERIODICITY.YEARLY
 
         const {
-          isOngoing,
-          startsThisMonth,
-          endsThisMonth
-        } = getContractTime(contract, refDate)
+          ongoing,
+          starts,
+          ends,
+          updates
+        } = getContractStatus(contract, refDate)
 
-        if (isOngoing || startsThisMonth || endsThisMonth) {
+        if (ongoing) {
           if (isYearly) {
             if (refPeriod.paymonth !== refDate.getMonth()) {
               return
@@ -56,30 +61,44 @@ export const usePayplan = (date: Date, {
 
           activeSubs.push(sub)
 
-          if (startsThisMonth) startingSubs.push(sub)
-          if (endsThisMonth) finishingSubs.push(sub)
+          let shouldPay = true
 
-          monthlySubPay += isYearly ? fee.yearly : fee.monthly
-          monthlySubHolderFee += isYearly ? fee.holderYearly : fee.holderMonthly
+          if (starts) {
+            startingSubs.push(sub)
+
+            if (refPeriod.payday! < refDate.getDate()) shouldPay = false
+          }
+          if (ends) {
+            finishingSubs.push(sub)
+
+            if (refPeriod.payday! > refDate.getDate()) shouldPay = false
+          }
+          if (updates) updatingSubs.push(sub)
+
+          if (shouldPay) {
+            monthlySubPay += refPeriod.fee
+            monthlySubHolderFee += refPeriod.fee
+          }
         }
       })
 
       loans.forEach(loan => {
         const { contract, fee, amount } = loan
-        const {
-          isOngoing,
-          startsThisMonth,
-          endsThisMonth
-        } = getContractTime(contract, refDate)
 
-        if (isOngoing || startsThisMonth || endsThisMonth) {
+        const {
+          ongoing,
+          starts,
+          ends
+        } = getContractStatus(contract, refDate)
+
+        if (ongoing || starts || ends) {
           activeLoans.push(loan)
 
-          if (startsThisMonth) startingLoans.push(loan)
-          if (endsThisMonth) finishingLoans.push(loan)
+          if (starts) startingLoans.push(loan)
+          if (ends) finishingLoans.push(loan)
 
-          monthlyLoanPay += startsThisMonth ? fee.initial : fee.monthly
-          monthlyLoanHolderFee += startsThisMonth ? fee.holderInitial : fee.holderMonthly
+          monthlyLoanPay += starts ? fee.initial : fee.monthly
+          monthlyLoanHolderFee += ends ? fee.holderInitial : fee.holderMonthly
 
           owed += amount.total - fee.initial - fee.monthly * contractMonthsPassed(contract, refDate)
           holderOwed += amount.holderTotal - fee.holderInitial - fee.holderMonthly * contractMonthsPassed(contract, refDate)

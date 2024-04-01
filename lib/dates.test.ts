@@ -344,8 +344,6 @@ describe('getContractState', () => {
 
       const status = getContractStatus(contract, new Date('2021-04-05'))
 
-      console.log(status)
-
       expect(status.updates).toBe(true)
       expect(status.ongoing).toBe(true)
     })

@@ -143,6 +143,9 @@ dependencies:
   cmdk:
     specifier: ^1.0.0
     version: 1.0.0(@types/react-dom@18.2.22)(@types/react@18.2.65)(react-dom@18.3.0-canary-bb0944fe5-20240313)(react@18.3.0-canary-bb0944fe5-20240313)
+  docuporter:
+    specifier: ^0.7.1
+    version: 0.7.1
   dotenv-cli:
     specifier: ^7.4.1
     version: 7.4.1
@@ -5363,6 +5366,10 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       esutils: 2.0.3
+
+  /docuporter@0.7.1:
+    resolution: {integrity: sha512-wqaoXek/vT68zZCJYZ/H9LMSn8BPPDHYNIjBW2ghxfyE5PCgZjqLNsfHvDrO1GxH8PIoHBQr5gDghKkK3N5ffQ==}
+    dev: false
 
   /dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}

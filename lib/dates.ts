@@ -1,8 +1,6 @@
 import { TIME } from '@types'
 import { type Contract, type Period } from './prisma'
 
-// const DucuHerePath = path.relative(process.cwd(), __filename).replace(/\.([0-9a-z]+)(?:[?#]|$)/i, '.md')
-
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY'
