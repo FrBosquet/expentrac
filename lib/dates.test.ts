@@ -323,5 +323,31 @@ describe('getContractState', () => {
       expect(status.updates).toBe(true)
       expect(status.ongoing).toBe(true)
     })
+
+    it('should update for a changing month', () => {
+      const contract = {
+        ...baseContract,
+        periods: [
+          {
+            ...basePeriod,
+            from: new Date('2021-02-01'),
+            to: new Date('2021-03-31'),
+            fee: 150
+          },
+          {
+            ...basePeriod,
+            from: new Date('2021-04-01'),
+            fee: 200
+          }
+        ]
+      }
+
+      const status = getContractStatus(contract, new Date('2021-04-05'))
+
+      console.log(status)
+
+      expect(status.updates).toBe(true)
+      expect(status.ongoing).toBe(true)
+    })
   })
 })

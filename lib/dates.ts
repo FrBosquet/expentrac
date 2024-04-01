@@ -1,6 +1,8 @@
 import { TIME } from '@types'
 import { type Contract, type Period } from './prisma'
 
+// const DucuHerePath = path.relative(process.cwd(), __filename).replace(/\.([0-9a-z]+)(?:[?#]|$)/i, '.md')
+
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY'
@@ -104,6 +106,19 @@ const baseStatus = {
 }
 type CONTRACT_STATUS = Record<keyof typeof baseStatus, boolean>
 
+const isPeriodActiveIn = (period: Period, date: Date) => {
+  const fromDate = new Date(period.from)
+  if (!period.to) return fromDate <= date
+
+  const toDate = period.to ? new Date(period.to) : new Date()
+
+  return fromDate <= date && toDate >= date
+}
+
+const isContractActive = (contract: Contract, date: Date) => {
+  return contract.periods.some(period => isPeriodActiveIn(period, date))
+}
+
 export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STATUS => {
   const status = { ...baseStatus }
   const ongoingPeriod = getOngoingPeriod(contract, date)
@@ -112,28 +127,30 @@ export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STAT
 
   status.ongoing = true
   if (ongoingPeriod.to && isInSameMont(new Date(ongoingPeriod.to), date)) {
-    // verify there is a next period that is in same or next month to the current date, if its the case, return UPDATE
-    const swapDate = new Date(date)
-    swapDate.setDate(ongoingPeriod.payday ?? 1)
+    const to = new Date(ongoingPeriod.to)
 
-    const nextPeriod = contract.periods.find(period => {
-      if (period === ongoingPeriod) return false
+    const nextDate = new Date(to)
+    nextDate.setDate(nextDate.getDate() + 1)
 
-      const from = new Date(period.from)
-      from.setDate(period.payday ?? 1)
-
-      return (from.getTime() - swapDate.getTime()) < 30 * 24 * 60 * 60 * 1000
-    })
-
-    if (nextPeriod) {
+    if (isContractActive(contract, nextDate)) {
       status.updates = true
     } else {
       status.ends = true
     }
   }
 
-  if (isInSameMont(new Date(ongoingPeriod.from), date)) {
-    status.starts = true
+  const from = new Date(ongoingPeriod.from)
+
+  if (isInSameMont(from, date)) {
+    // check if previous day has an ongoing period
+    const prevDate = new Date(from)
+    prevDate.setDate(prevDate.getDate() - 1)
+
+    if (isContractActive(contract, prevDate)) {
+      status.updates = true
+    } else {
+      status.starts = true
+    }
   }
 
   return status
