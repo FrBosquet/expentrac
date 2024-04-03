@@ -25,6 +25,9 @@ export const useSubs = () => {
   const hasSharedSubs = sharedSubs.length > 0
   const hasAnySubs = hasOwnSubs || hasSharedSubs
 
+  const activeSubs = allSubs.filter(sub => sub.periods.isActive)
+  const pausedSubs = allSubs.filter(sub => sub.periods.isInactive)
+
   return {
     subs,
     addSub,
@@ -33,7 +36,9 @@ export const useSubs = () => {
     allSubs,
     hasOwnSubs,
     hasSharedSubs,
-    hasAnySubs
+    hasAnySubs,
+    activeSubs,
+    pausedSubs
   }
 }
 

@@ -8,7 +8,7 @@ import { type SubFormData } from '@lib/sub'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
-import { include } from '../include'
+import { subscriptionInclude } from '../include'
 
 interface Query {
   params: {
@@ -43,7 +43,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
 
   const body = await req.json() as SubFormData
 
-  const sub = await prisma.contract.findUnique({ where: { id }, include })
+  const sub = await prisma.contract.findUnique({ where: { id }, include: subscriptionInclude })
 
   if (!sub) {
     return NextResponse.json({
@@ -126,7 +126,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
           }
         }
     },
-    include
+    include: subscriptionInclude
   })
 
   keysToCreate.forEach(toId => {

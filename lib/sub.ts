@@ -1,5 +1,5 @@
 import { PERIODICITY } from './dates'
-import { type Contract, type Period, type Provider } from './prisma'
+import { type Contract, type Period, type Provider, type RawPeriod } from './prisma'
 
 export type SubFormData = {
   id?: string
@@ -52,9 +52,6 @@ const getPeriodPaymentDate = (period: Period, date = now) => {
 }
 
 const getNextPaymentDate = (period: Period) => {
-  // TODO: Compare the selected month payment date with NOW and decide.
-  // If its a yearly payment, get the payment date for this year
-  // Else, the one for current month
   const periodPaymentDate = getPeriodPaymentDate(period)
 
   if (now.getTime() > periodPaymentDate.getTime()) {
@@ -91,22 +88,37 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
     throw new Error('More than one ongoing period')
   }
 
+  const isActive = activePeriods.length === 1
+  const isInactive = !isActive
+
   const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
   const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
 
   const isOngoing = activePeriods.length === 1
-  const [activePeriod] = activePeriods
+  const activePeriod: RawPeriod | undefined = activePeriods[0]
 
   const periodicity = activePeriod?.periodicity
   const isYearly = periodicity === 'YEARLY'
 
-  const monthlyFee = isYearly ? (activePeriod.fee / 12) : activePeriod.fee
-  const yearlyFee = isYearly ? activePeriod.fee : (activePeriod.fee * 12)
+  const monthlyFee = isInactive
+    ? 0
+    : (isYearly ? 0 : activePeriod.fee)
+
+  const yearlyFee = isInactive
+    ? 0
+    : (isYearly ? activePeriod.fee : (activePeriod.fee * 12))
 
   const holderAmount = sharesAccepted + 1
 
-  const startDate = new Date(activePeriod.from)
+  const startDate: Date = periods.reduce((acc, cur) => {
+    const currentFrom = new Date(cur.from)
 
+    if (acc.getTime() > currentFrom.getTime()) {
+      return currentFrom
+    } else {
+      return acc
+    }
+  }, new Date())
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
 
@@ -115,11 +127,11 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
 
   const link = resources.find(r => r.type === 'LINK')?.url
 
-  const isPaidThisMonth = getIsPaidThisMonth(activePeriod)
-  const currentMonthPaymentDate = getPeriodPaymentDate(activePeriod, date)
-  const currentPaymentDate = getPeriodPaymentDate(activePeriod, date)
-  const isPaidThisPeriod = now.getTime() > currentPaymentDate.getTime()
-  const nextPaymentDate = getNextPaymentDate(activePeriod)
+  const isPaidThisMonth = isActive && getIsPaidThisMonth(activePeriod)
+  const currentMonthPaymentDate = isActive ? getPeriodPaymentDate(activePeriod, date) : null
+  const currentPaymentDate = isActive ? getPeriodPaymentDate(activePeriod, date) : null
+  const isPaidThisPeriod = currentPaymentDate && now.getTime() > currentPaymentDate.getTime()
+  const nextPaymentDate = isActive ? getNextPaymentDate(activePeriod) : null
 
   const hasPayday = activePeriod?.payday !== null && activePeriod?.payday !== undefined
 
@@ -179,7 +191,9 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
     },
     periods: {
       active: activePeriod,
-      all: periods
+      all: periods,
+      isActive,
+      isInactive
     },
     shares: {
       data: shares,

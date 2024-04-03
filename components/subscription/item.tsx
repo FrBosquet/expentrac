@@ -21,7 +21,7 @@ interface Props {
 }
 
 const getDateString = ({ time: { payday, isYearly, currentPaymentDate }, payments: { isPaidThisPeriod } }: Subscription) => {
-  const str = isYearly ? currentPaymentDate.toLocaleDateString('default', { month: 'short', day: 'numeric' }) : payday
+  const str = (isYearly && currentPaymentDate) ? currentPaymentDate.toLocaleDateString('default', { month: 'short', day: 'numeric' }) : payday
 
   if (isPaidThisPeriod) {
     return `Paid on the ${str}`

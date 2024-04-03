@@ -14,7 +14,7 @@ import { useSubs } from './subscription/context'
 
 export const useSummary = () => {
   const { allLoans, hasAnyLoans } = useLoans()
-  const { allSubs, hasAnySubs } = useSubs()
+  const { activeSubs, hasAnySubs } = useSubs()
 
   const ongoingLoans = allLoans.filter(loan => loan.time.isOngoing)
 
@@ -23,7 +23,7 @@ export const useSummary = () => {
   // TODO: Yearly may not be paid this month. Fix it
   const loanFee = ongoingLoans.reduce((acc, cur) => acc + cur.fee.holderMonthly, 0)
 
-  const ongoingSubs = allSubs.filter(sub => sub.time.isOngoing)
+  const ongoingSubs = activeSubs.filter(sub => sub.time.isOngoing)
 
   // TODO: Yearly may not be paid this month. Fix it
   const subCount = ongoingSubs.length
@@ -40,19 +40,22 @@ export const useSummary = () => {
   const alreadyPaidLoans = ongoingLoans.filter(loan => loan.payments.isPaidThisMonth)
   const alreadyPaidLoansFee = alreadyPaidLoans.reduce((acc, cur) => acc + cur.fee.holderMonthly, 0)
 
-  const alreadyPaidSubs = allSubs.filter(sub => sub.payments.isPaidThisMonth)
+  const alreadyPaidSubs = activeSubs.filter(sub => sub.payments.isPaidThisMonth)
   const alreadyPaidSubsFee = alreadyPaidSubs.reduce((acc, cur) => {
     return acc + cur.fee.holderMonthly
   }, 0)
 
-  const subsWithNoPayday = allSubs.filter(sub => !sub.time.hasPayday)
+  const subsWithNoPayday = activeSubs.filter(sub => !sub.time.hasPayday)
   const subsWithNoPaydayFee = subsWithNoPayday.reduce((acc, cur) => {
     return acc + cur.fee.holder
   }, 0)
 
   const alreadyPaidFee = alreadyPaidLoansFee + alreadyPaidSubsFee
 
-  const sortedContracts = [...allSubs, ...allLoans].sort((a, b) => {
+  const sortedContracts = [...activeSubs, ...allLoans].sort((a, b) => {
+    if (!a.time.currentMonthPaymentDate) return 1
+    if (!b.time.currentMonthPaymentDate) return -1
+
     return a.time.currentMonthPaymentDate.getTime() - b.time.currentMonthPaymentDate.getTime()
   })
 

@@ -1,5 +1,5 @@
 import { TIME } from '@types'
-import { type Contract } from './prisma'
+import { type Contract, type Period } from './prisma'
 
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',
@@ -58,52 +58,100 @@ export const getTimeDescription = (refDate: Date, month: TIME, type: string) => 
   }
 }
 
-export const contractOnGoing = (contract: Contract, date: Date) => {
-  const { periods } = contract
+export const getOngoingPeriod = (contract: Contract, date: Date): Period | undefined => {
+  const month = date.getMonth()
+  const year = date.getFullYear()
+  let candidate
 
-  return periods.some(period => {
-    const from = new Date(period.from)
+  for (const period of contract.periods) {
+    const { payday, to, from } = period
+    const fromDate = new Date(from)
+    const payDate = new Date(year, month, payday ?? 0)
 
-    if (!period.to) return from <= date
+    const fromMonth = fromDate.getMonth()
+    const fromYear = fromDate.getFullYear()
 
-    const to = new Date(period.to)
+    if (!to) {
+      if (date >= fromDate) return period
 
-    return from <= date && to >= date
-  })
-}
+      if (fromMonth === month && fromYear === year) {
+        if (payDate >= fromDate) return period
 
-export const contractStarts = (contract: Contract, date: Date) => {
-  const { periods } = contract
+        candidate = period
+      }
+    } else {
+      const toDate = new Date(to)
+      const toMonth = toDate.getMonth()
+      const toYear = toDate.getFullYear()
 
-  return periods.some(period => {
-    const from = new Date(period.from)
+      if (fromDate <= date && toDate >= date) candidate = period
+      if (toMonth === month && toYear === year) {
+        if (payDate <= toDate && payDate >= fromDate) return period
 
-    return isInSameMont(from, date)
-  })
-}
-
-export const contractEnds = (contract: Contract, date: Date) => {
-  const { periods } = contract
-
-  return periods.some(period => {
-    if (!period.to) return false
-
-    const to = new Date(period.to)
-
-    return isInSameMont(to, date)
-  })
-}
-
-export const getContractTime = (contract: Contract, date: Date) => {
-  const isOngoing = contractOnGoing(contract, date)
-  const startsThisMonth = contractStarts(contract, date)
-  const endsThisMonth = contractEnds(contract, date)
-
-  return {
-    isOngoing,
-    startsThisMonth,
-    endsThisMonth
+        candidate = period
+      }
+    }
   }
+
+  return candidate
+}
+
+const baseStatus = {
+  ongoing: false,
+  starts: false,
+  ends: false,
+  updates: false
+}
+type CONTRACT_STATUS = Record<keyof typeof baseStatus, boolean>
+
+const isPeriodActiveIn = (period: Period, date: Date) => {
+  const fromDate = new Date(period.from)
+  if (!period.to) return fromDate <= date
+
+  const toDate = period.to ? new Date(period.to) : new Date()
+
+  return fromDate <= date && toDate >= date
+}
+
+const isContractActive = (contract: Contract, date: Date) => {
+  return contract.periods.some(period => isPeriodActiveIn(period, date))
+}
+
+export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STATUS => {
+  const status = { ...baseStatus }
+  const ongoingPeriod = getOngoingPeriod(contract, date)
+
+  if (!ongoingPeriod) return status
+
+  status.ongoing = true
+  if (ongoingPeriod.to && isInSameMont(new Date(ongoingPeriod.to), date)) {
+    const to = new Date(ongoingPeriod.to)
+
+    const nextDate = new Date(to)
+    nextDate.setDate(nextDate.getDate() + 1)
+
+    if (isContractActive(contract, nextDate)) {
+      status.updates = true
+    } else {
+      status.ends = true
+    }
+  }
+
+  const from = new Date(ongoingPeriod.from)
+
+  if (isInSameMont(from, date)) {
+    // check if previous day has an ongoing period
+    const prevDate = new Date(from)
+    prevDate.setDate(prevDate.getDate() - 1)
+
+    if (isContractActive(contract, prevDate)) {
+      status.updates = true
+    } else {
+      status.starts = true
+    }
+  }
+
+  return status
 }
 
 export const contractMonthsPassed = (contract: Contract, date: Date) => {

@@ -13,7 +13,7 @@ import { getPaymentPlan, type Loan, type LoanFormData } from '@lib/loan'
 import { type RawUser } from '@lib/prisma'
 import { Trash } from 'lucide-react'
 import { useMemo, useState, type ChangeEvent, type FormEventHandler } from 'react'
-import { FieldSet, FormField, Root, SubmitButton } from '../Form'
+import { FieldSet, LegacyFormField, Root, SubmitButton } from '../Form'
 
 interface Props {
   loan?: Loan
@@ -72,9 +72,9 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
 
   return <Root onSubmit={onSubmit}>
     <FieldSet disabled={disabled}>
-      <FormField required defaultValue={loan?.name} name="name" label="Name" />
-      <FormField required defaultValue={loan?.fee.monthly} name="fee" label="Fee" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
-      <FormField required defaultValue={loan?.fee.initial ?? 0} name="initial" label="Initial" type="number" step="0.01" className='text-right' onChange={handleChange}>€</FormField>
+      <LegacyFormField required defaultValue={loan?.name} name="name" label="Name" />
+      <LegacyFormField required defaultValue={loan?.fee.monthly} name="fee" label="Fee" type="number" step="0.01" className='text-right' onChange={handleChange}>€</LegacyFormField>
+      <LegacyFormField required defaultValue={loan?.fee.initial ?? 0} name="initial" label="Initial" type="number" step="0.01" className='text-right' onChange={handleChange}>€</LegacyFormField>
 
       <div className="col-span-2 grid grid-cols-3 gap-2">
         <span className="flex flex-col gap-2">
@@ -143,7 +143,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
 
       <Separator className="col-span-2" />
 
-      <FormField defaultValue={loan?.resources.link ?? ''} name="link" label="Link" />
+      <LegacyFormField defaultValue={loan?.resources.link ?? ''} name="link" label="Link" />
       <p className='text-xs col-span-2'>Direct link to this loan page</p>
 
       {calculatedFee && <>
