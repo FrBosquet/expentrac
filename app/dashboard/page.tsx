@@ -9,11 +9,11 @@ export default async function Page() {
   return (
     <>
       <Summary className='col-span-2 xl:col-span-4' />
-      <Month className='col-span-2 lg:col-span-1' />
+      <Month className='col-span-2 xl:col-span-1' />
       <Forecast className='col-span-2 xl:col-span-3' />
-      <Today className='col-span-2 row-start-6 md:row-start-3 xl:row-start-auto lg:col-span-1' />
+      <Today className='col-span-2 xl:col-span-1' />
       <Latest className='col-span-2 xl:col-span-3' />
-      <UserPayplan className='col-span-2' />
+      <UserPayplan className='col-span-2 xl:col-span-4' />
     </>
   )
 }
