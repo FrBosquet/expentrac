@@ -2,6 +2,7 @@ import { Tooltip } from '@components/Tooltip'
 import { useDate } from '@components/date/context'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
+import { isInSameMont } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 const thisMonth = new Date()
 thisMonth.setDate(1)
+const today = new Date()
 
 export const SubPayplan = ({ sub, className }: Props) => {
   const { date } = useDate()
@@ -39,9 +41,17 @@ export const SubPayplan = ({ sub, className }: Props) => {
       step.setDate(activePeriod.payday)
     }
 
+    const to = activePeriod.to ? new Date(activePeriod.to) : null
+    let amount = activePeriod.fee
+
+    // If ends this month and before payday, just set amoun to 0
+    if (to && activePeriod.payday && isInSameMont(to, step) && to.getDate() < activePeriod.payday) {
+      amount = 0
+    }
+
     return [...acc, {
       date: step,
-      amount: activePeriod.fee
+      amount
     }]
   }, [])
 
@@ -52,12 +62,13 @@ export const SubPayplan = ({ sub, className }: Props) => {
     <CardContent>
       <section className='flex flex-col gap-2 max-h-[500px] overflow-y-auto'>
         {
-          payplan.map((payment, index) => {
+          payplan.reverse().map((payment, index) => {
             const { date: paymentDate, amount } = payment
-            const isPaid = paymentDate < thisMonth
 
-            const isThisMonth = paymentDate.getMonth() === date.getMonth() && paymentDate.getFullYear() === date.getFullYear()
-            const isNextMonth = paymentDate.getMonth() === date.getMonth() + 1 && paymentDate.getFullYear() === date.getFullYear()
+            const isPaid = paymentDate < today
+
+            const isThisMonth = paymentDate.getMonth() === thisMonth.getMonth() && paymentDate.getFullYear() === thisMonth.getFullYear()
+            const isNextMonth = paymentDate.getMonth() === thisMonth.getMonth() + 1 && paymentDate.getFullYear() === thisMonth.getFullYear()
 
             const tooltipContent = <aside>
               <p>Paid</p>

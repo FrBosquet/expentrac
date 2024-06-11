@@ -21,12 +21,12 @@ export const SubPeriods = ({ sub, className }: Props) => {
     <CardContent>
       <section className='flex flex-col gap-2 max-h-[500px] overflow-y-auto'>
         {
-          all.map((period) => {
+          all.reverse().map((period) => {
             const { from, to, fee, id } = period
             const fromDate = new Date(from)
             const toDate = to ? new Date(to) : null
             const startFormatted = fromDate.toLocaleDateString('default', { year: '2-digit', month: 'short' })
-            const endFormatted = toDate?.toLocaleDateString('default', { year: '2-digit', month: 'short' }) ?? 'now'
+            const endFormatted = toDate?.toLocaleDateString('default', { year: '2-digit', month: 'short' }) ?? 'ongoing'
             const priceFormatted = euroFormatter.format(fee)
 
             const isActiveOne = id === active?.id
