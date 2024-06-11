@@ -77,7 +77,11 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
     providers
   } = rawSub
 
-  const refDate = date.getDate()
+  if (rawSub.name === 'Revista GTM') {
+    console.log('HOLA', date)
+  }
+
+  const refNowDate = now.getDate()
   const refMonth = date.getMonth()
 
   const activePeriods = periods.filter(period => {
@@ -89,24 +93,37 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   }
 
   const isActive = activePeriods.length === 1
+  const activePeriod: RawPeriod | undefined = activePeriods[0]
   const isInactive = !isActive
 
   const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
   const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
 
   const isOngoing = activePeriods.length === 1
-  const activePeriod: RawPeriod | undefined = activePeriods[0]
 
-  const periodicity = activePeriod?.periodicity
+  // The period happening in the current reference date
+  const referencePeriod: RawPeriod | undefined = periods.find(period => {
+    // date is between period from and period to
+    const from = new Date(period.from)
+    const to = period.to ? new Date(period.to) : null
+
+    return to
+      ? date.getTime() >= from.getTime() && date.getTime() <= to.getTime()
+      : date.getTime() >= from.getTime()
+  })
+
+  const wasOngoing = referencePeriod !== undefined
+
+  const periodicity = referencePeriod?.periodicity
   const isYearly = periodicity === 'YEARLY'
 
-  const monthlyFee = isInactive
-    ? 0
-    : (isYearly ? 0 : activePeriod.fee)
+  const monthlyFee = wasOngoing
+    ? (isYearly ? 0 : referencePeriod.fee)
+    : 0
 
-  const yearlyFee = isInactive
-    ? 0
-    : (isYearly ? activePeriod.fee : (activePeriod.fee * 12))
+  const yearlyFee = wasOngoing
+    ? (isYearly ? referencePeriod.fee : (referencePeriod.fee * 12))
+    : 0
 
   const holderAmount = sharesAccepted + 1
 
@@ -127,16 +144,17 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
 
   const link = resources.find(r => r.type === 'LINK')?.url
 
-  const isPaidThisMonth = isActive && getIsPaidThisMonth(activePeriod)
-  const currentMonthPaymentDate = isActive ? getPeriodPaymentDate(activePeriod, date) : null
-  const currentPaymentDate = isActive ? getPeriodPaymentDate(activePeriod, date) : null
+  const isPaidThisMonth = wasOngoing && getIsPaidThisMonth(referencePeriod)
+  const currentMonthPaymentDate = wasOngoing ? getPeriodPaymentDate(referencePeriod, date) : null
+  const currentPaymentDate = wasOngoing ? getPeriodPaymentDate(referencePeriod, date) : null
   const isPaidThisPeriod = currentPaymentDate && now.getTime() > currentPaymentDate.getTime()
-  const nextPaymentDate = isActive ? getNextPaymentDate(activePeriod) : null
+  const nextPaymentDate = wasOngoing ? getNextPaymentDate(referencePeriod) : null
 
-  const hasPayday = activePeriod?.payday !== null && activePeriod?.payday !== undefined
+  const hasPayday = referencePeriod?.payday !== null && referencePeriod?.payday !== undefined
 
-  const sameDayAsPayday = activePeriod?.payday === refDate
-  const sameMonthAsPayday = activePeriod?.paymonth === refMonth
+  const sameDayAsPayday = referencePeriod?.payday === refNowDate
+  const sameMonthAsPayday = referencePeriod?.paymonth === refMonth
+
   const isPayday = isYearly
     ? sameDayAsPayday && sameMonthAsPayday
     : sameDayAsPayday
@@ -190,6 +208,7 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
       isPaidThisPeriod
     },
     periods: {
+      reference: referencePeriod,
       active: activePeriod,
       all: periods,
       isActive,
@@ -211,8 +230,8 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
       isPayday,
       hasPayday,
       periodicity,
-      payday: activePeriod?.payday,
-      paymonth: activePeriod?.paymonth,
+      payday: referencePeriod?.payday,
+      paymonth: referencePeriod?.paymonth,
       currentMonthPaymentDate,
       currentPaymentDate,
       nextPaymentDate
