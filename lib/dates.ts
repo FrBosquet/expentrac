@@ -38,10 +38,12 @@ export const isInXDays = (date: Date, offset: number) => {
   return date.toDateString() === xDays.toDateString()
 }
 
+export const isToday = (date: Date) => isInXDays(date, 0)
 export const isYesterday = (date: Date) => isInXDays(date, -1)
 export const isTomorrow = (date: Date) => isInXDays(date, 1)
 
 export const getDateText = (date: Date) => {
+  if (isToday(date)) return 'Today'
   if (isYesterday(date)) return 'Yesterday'
   if (isTomorrow(date)) return 'Tomorrow'
   if (isInXDays(date, 2)) return 'In two days'
