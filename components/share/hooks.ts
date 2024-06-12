@@ -1,5 +1,5 @@
 import { useStore } from '@store'
-import { getShareUpdater, getShares, getSharesSetter } from '@store/share'
+import { getShares, getSharesSetter, getShareUpdater } from '@store/share'
 
 export const useShares = () => {
   const shares = useStore(getShares)

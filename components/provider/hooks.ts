@@ -13,13 +13,17 @@ export const useProviderExtendedInfo = (provider: Provider) => {
 
   const fromLoans = {
     asVendor: loans.filter((item) => item.providers.vendor?.id === provider.id),
-    asPlatform: loans.filter((item) => item.providers.platform?.id === provider.id),
+    asPlatform: loans.filter(
+      (item) => item.providers.platform?.id === provider.id
+    ),
     asLender: loans.filter((item) => item.providers.lender?.id === provider.id)
   }
 
   const fromSubs = {
     asVendor: subs.filter((item) => item.providers.vendor?.id === provider.id),
-    asPlatform: subs.filter((item) => item.providers.platform?.id === provider.id)
+    asPlatform: subs.filter(
+      (item) => item.providers.platform?.id === provider.id
+    )
   }
 
   const lengths = {
@@ -35,12 +39,20 @@ export const useProviderExtendedInfo = (provider: Provider) => {
   ].filter(Boolean)
 
   const totals = {
-    asVendor: fromLoans.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0) + fromSubs.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0),
-    asPlatform: fromLoans.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0) + fromSubs.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0),
-    asLender: fromLoans.asLender.reduce((acc, item) => acc + item.fee.monthly, 0)
+    asVendor:
+      fromLoans.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0) +
+      fromSubs.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0),
+    asPlatform:
+      fromLoans.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0) +
+      fromSubs.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0),
+    asLender: fromLoans.asLender.reduce(
+      (acc, item) => acc + item.fee.monthly,
+      0
+    )
   }
 
-  const hasAnyItem = lengths.asVendor > 0 || lengths.asPlatform > 0 || lengths.asLender > 0
+  const hasAnyItem =
+    lengths.asVendor > 0 || lengths.asPlatform > 0 || lengths.asLender > 0
 
   return {
     ...provider,

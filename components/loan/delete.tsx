@@ -2,25 +2,40 @@
 
 import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@components/ui/dialog'
 import { type Loan } from '@lib/loan'
 import { cn } from '@lib/utils'
 import { loanSdk } from '@sdk'
+import { ButtonVariant } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
+
 import { useLoans } from './context'
 
 interface Props {
   loan: Loan
   className?: string
-  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
+  variant?: ButtonVariant
   triggerDecorator?: React.ReactNode
   sideEffect?: () => Promise<void>
 }
 
 const TRIGGER_DECORATOR = <Trash size={12} />
 
-export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDecorator = TRIGGER_DECORATOR, sideEffect }: Props) => {
+export const LoanDelete = ({
+  loan,
+  className,
+  variant = 'destructive',
+  triggerDecorator = TRIGGER_DECORATOR,
+  sideEffect
+}: Props) => {
   const { id, name } = loan
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -37,6 +52,8 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
       setOpen(false)
       void sideEffect?.()
     } catch (e) {
+      // TODO: toast
+      // eslint-disable-next-line no-console
       console.error(e)
     } finally {
       setLoading(false)
@@ -46,7 +63,15 @@ export const LoanDelete = ({ loan, className, variant = 'destructive', triggerDe
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
+        <Button
+          className={cn('p-2 h-auto', className)}
+          variant={variant}
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
+          {triggerDecorator}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

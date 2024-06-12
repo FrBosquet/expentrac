@@ -30,5 +30,10 @@ export const getUser = (data: Session | null): User => {
 }
 
 export const getUserInitials = ({ name }: User): string => {
-  return name?.split(' ').map((n) => n.charAt(0)).join('') ?? ''
+  return (
+    name
+      ?.split(' ')
+      .map((n) => n.charAt(0))
+      .join('') ?? ''
+  )
 }

@@ -18,7 +18,12 @@ const now = new Date()
 const thisMonth = new Date()
 thisMonth.setDate(1)
 
-export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: number) => {
+export const getPaymentPlan = (
+  start: Date,
+  end: Date,
+  fee: number,
+  initial?: number
+) => {
   const startDate = new Date(start)
   const endDate = new Date(end)
   const months = monthBeetween(startDate, endDate)
@@ -27,7 +32,8 @@ export const getPaymentPlan = (start: Date, end: Date, fee: number, initial?: nu
 
   const payments = months + (hasInitialPayment ? 1 : 0)
 
-  const totalAmount = Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
+  const totalAmount =
+    Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
 
   return {
     endDate,
@@ -58,17 +64,28 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
 
   const hasStarted = refDate.getTime() >= startDate.getTime()
   const hasEnded = refDate.getTime() >= endDate.getTime()
-  const endsThisMonth = endDate.getMonth() === refDate.getMonth() && endDate.getFullYear() === refDate.getFullYear()
-  const startsThisMonth = startDate.getMonth() === refDate.getMonth() && startDate.getFullYear() === refDate.getFullYear()
+  const endsThisMonth =
+    endDate.getMonth() === refDate.getMonth() &&
+    endDate.getFullYear() === refDate.getFullYear()
+  const startsThisMonth =
+    startDate.getMonth() === refDate.getMonth() &&
+    startDate.getFullYear() === refDate.getFullYear()
 
   const monthBeetweenRefDate = monthBeetween(refDate, endDate)
   const paymentsLeft = endsThisMonth ? 0 : monthBeetweenRefDate
   const paymentsDone = months - paymentsLeft
 
-  const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
-  const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
+  const sharesAccepted = shares.reduce(
+    (acc, cur) => acc + (cur.accepted ? 1 : 0),
+    0
+  )
+  const sharesPending = shares.reduce(
+    (acc, cur) => acc + (cur.accepted === undefined ? 0 : 1),
+    0
+  )
 
-  const totalAmount = Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
+  const totalAmount =
+    Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
   const paidAmount = paymentsDone * fee + initial
   const owedAmount = totalAmount - paidAmount
 
@@ -83,13 +100,10 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
 
   if (isPaidThisMonth) nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1)
 
-  const isOngoing = (hasStarted && !hasEnded) || startsThisMonth || endsThisMonth
+  const isOngoing =
+    (hasStarted && !hasEnded) || startsThisMonth || endsThisMonth
 
-  const currentFee = !isOngoing
-    ? 0
-    : startsThisMonth
-      ? initial
-      : fee
+  const currentFee = !isOngoing ? 0 : startsThisMonth ? initial : fee
 
   const holderFee = currentFee / holderAmount
   const holderMonthlyFee = fee / holderAmount
@@ -97,15 +111,11 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
 
-  const link = resources.find(r => r.type === 'LINK')?.url
+  const link = resources.find((r) => r.type === 'LINK')?.url
   const payday = startDate.getDate()
   const isPayday = now.getDate() === payday
 
-  const {
-    vendor,
-    platform,
-    lender
-  } = rawLoan.providers.reduce<{
+  const { vendor, platform, lender } = rawLoan.providers.reduce<{
     vendor?: Provider
     platform?: Provider
     lender?: Provider

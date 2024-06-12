@@ -6,9 +6,26 @@ interface Props {
 }
 
 export const NavigationLinks = ({ className }: Props) => {
-  return <menu className={twMerge('gap-4 hidden sm:flex', className)}>
-    <Link href='/blog' className='uppercase text-theme-light hover:text-theme-front transition'>Blog</Link>
-    <Link href='/pricing' className='uppercase text-theme-light hover:text-theme-front transition'>Pricing</Link>
-    <Link href='/team' className='uppercase text-theme-light hover:text-theme-front transition'>Team</Link>
-  </menu>
+  return (
+    <menu className={twMerge('gap-4 hidden sm:flex', className)}>
+      <Link
+        className="uppercase text-theme-light transition hover:text-theme-front"
+        href="/blog"
+      >
+        Blog
+      </Link>
+      <Link
+        className="uppercase text-theme-light transition hover:text-theme-front"
+        href="/pricing"
+      >
+        Pricing
+      </Link>
+      <Link
+        className="uppercase text-theme-light transition hover:text-theme-front"
+        href="/team"
+      >
+        Team
+      </Link>
+    </menu>
+  )
 }

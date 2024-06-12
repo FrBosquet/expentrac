@@ -6,7 +6,9 @@ import { useFormStatus } from 'react-dom'
 export const SubmitButton = () => {
   const { pending } = useFormStatus()
 
-  return <button type='submit' aria-disabled={pending}>
-    {pending ? <Spinner /> : <Save />}
-  </button>
+  return (
+    <button aria-disabled={pending} type="submit">
+      {pending ? <Spinner /> : <Save />}
+    </button>
+  )
 }

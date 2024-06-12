@@ -1,1 +1,4 @@
-export const euroFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+export const euroFormatter = new Intl.NumberFormat('es-ES', {
+  style: 'currency',
+  currency: 'EUR'
+})

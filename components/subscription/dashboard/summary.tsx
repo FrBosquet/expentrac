@@ -2,9 +2,16 @@
 
 import { useDate } from '@components/date/context'
 import { Button } from '@components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@components/ui/card'
 import { getTimeDescription } from '@lib/dates'
 import { useState } from 'react'
+
 import { SubscriptionAdd } from '../add'
 import { useSubs } from '../context'
 import { COLUMN, SubItem } from '../item'
@@ -26,7 +33,10 @@ export const SubscriptionSummary = ({ className }: Props) => {
     if (!a.time?.currentMonthPaymentDate) return 1
     if (!b.time?.currentMonthPaymentDate) return -1
 
-    return a.time?.currentMonthPaymentDate?.getTime() - b.time.currentMonthPaymentDate?.getTime()
+    return (
+      a.time?.currentMonthPaymentDate?.getTime() -
+      b.time.currentMonthPaymentDate?.getTime()
+    )
   })
 
   const hasSubs = ongoingSubs.length > 0
@@ -40,26 +50,62 @@ export const SubscriptionSummary = ({ className }: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <header className='flex justify-end gap-2 pb-4 lg:hidden'>
-          <Button size='sm' disabled={activeColumn === COLUMN.DATES} variant='secondary' onClick={() => { setActiveColumn(COLUMN.DATES) }}>DATES</Button>
-          <Button size='sm' disabled={activeColumn === COLUMN.AMOUNT} variant='secondary' onClick={() => { setActiveColumn(COLUMN.AMOUNT) }}>AMOUNT</Button>
-          <Button size='sm' disabled={activeColumn === COLUMN.FEE} variant='secondary' onClick={() => { setActiveColumn(COLUMN.FEE) }}>FEES</Button>
+        <header className="flex justify-end gap-2 pb-4 lg:hidden">
+          <Button
+            disabled={activeColumn === COLUMN.DATES}
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setActiveColumn(COLUMN.DATES)
+            }}
+          >
+            DATES
+          </Button>
+          <Button
+            disabled={activeColumn === COLUMN.AMOUNT}
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setActiveColumn(COLUMN.AMOUNT)
+            }}
+          >
+            AMOUNT
+          </Button>
+          <Button
+            disabled={activeColumn === COLUMN.FEE}
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setActiveColumn(COLUMN.FEE)
+            }}
+          >
+            FEES
+          </Button>
         </header>
-        <header className='hidden lg:grid grid-cols-[2rem_1fr_1fr_1fr_1fr] gap-2 px-1 pb-4'>
-          <p className='uppercase text-xs text-theme-light text-left col-start-2'>name</p>
-          <p className='uppercase text-xs text-theme-light text-center'>started</p>
-          <p className='uppercase text-xs text-theme-light text-center'>paid</p>
-          <p className='uppercase text-xs text-theme-light text-right'>fee</p>
+        <header className="hidden grid-cols-[2rem_1fr_1fr_1fr_1fr] gap-2 px-1 pb-4 lg:grid">
+          <p className="col-start-2 text-left text-xs uppercase text-theme-light">
+            name
+          </p>
+          <p className="text-center text-xs uppercase text-theme-light">
+            started
+          </p>
+          <p className="text-center text-xs uppercase text-theme-light">paid</p>
+          <p className="text-right text-xs uppercase text-theme-light">fee</p>
         </header>
-        {hasSubs
-          ? <div className='flex flex-col gap-3 max-h-[500px] overflow-y-auto'>
-            {sortedSubs.map((sub) => <SubItem sub={sub} activeColumn={activeColumn} key={sub.id} />)}
+        {hasSubs ? (
+          <div className="flex max-h-[500px] flex-col gap-3 overflow-y-auto">
+            {sortedSubs.map((sub) => (
+              <SubItem key={sub.id} activeColumn={activeColumn} sub={sub} />
+            ))}
           </div>
-          : <div className='grid place-content-center gap-2 p-6 text-center'>
-            <p className='text-sm text-theme-light'>You have no subscriptions going on in the selected month</p>
+        ) : (
+          <div className="grid place-content-center gap-2 p-6 text-center">
+            <p className="text-sm text-theme-light">
+              You have no subscriptions going on in the selected month
+            </p>
           </div>
-        }
-        <footer className='flex justify-end pt-8'>
+        )}
+        <footer className="flex justify-end pt-8">
           <SubscriptionAdd />
         </footer>
       </CardContent>

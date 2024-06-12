@@ -1,5 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type Contract, type User } from '@lib/prisma'
+import { type Contract, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 
 export interface DailyNotification {
@@ -13,7 +13,11 @@ export interface DailyNotificationPayload {
   subs: Contract[]
 }
 
-export const handleDaily = async (user: User, shouldEmail: boolean, data: DailyNotification) => {
+export const handleDaily = async (
+  user: User,
+  shouldEmail: boolean,
+  data: DailyNotification
+) => {
   const payload: DailyNotificationPayload = {
     loans: data.loans,
     subs: data.subs

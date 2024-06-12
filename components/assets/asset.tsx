@@ -21,11 +21,36 @@ const getLinkHref = (contract: UnwrappedContract) => {
 export const Asset = ({ contract, past, withDate }: Props) => {
   const { name, vendor, type, id, fee, dateText } = getAssetData(contract)
 
-  return <Link href={getLinkHref(contract)} className='grid grid-rows-[auto_auto] grid-cols-[auto_1fr_auto] gap-x-2 hover:opacity-80' key={id}>
-    <ProviderLogo className="w-8 h-8 row-span-2 self-center" provider={vendor} Default={CalendarCheck2} />
-    <h3 data-withdate={withDate} className='col-span-2 data-[withdate=true]:col-span-1 whitespace-nowrap overflow-hidden text-ellipsis'>{name}</h3>
-    <p data-withdate={withDate} className='hidden data-[withdate=true]:block text-xs text-theme-light text-right uppercase' >{dateText}</p>
-    <p className='text-xs self-end uppercase text-theme-light'>{type}</p>
-    <p data-past={past} className='text-expentrac-800 data-[past=true]:text-theme-accent font-semibold text-right'>{euroFormatter.format(fee)}</p>
-  </Link>
+  return (
+    <Link
+      key={id}
+      className="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] gap-x-2 hover:opacity-80"
+      href={getLinkHref(contract)}
+    >
+      <ProviderLogo
+        className="row-span-2 size-8 self-center"
+        Default={CalendarCheck2}
+        provider={vendor}
+      />
+      <h3
+        className="col-span-2 truncate data-[withdate=true]:col-span-1"
+        data-withdate={withDate}
+      >
+        {name}
+      </h3>
+      <p
+        className="hidden text-right text-xs uppercase text-theme-light data-[withdate=true]:block"
+        data-withdate={withDate}
+      >
+        {dateText}
+      </p>
+      <p className="self-end text-xs uppercase text-theme-light">{type}</p>
+      <p
+        className="text-right font-semibold text-expentrac-800 data-[past=true]:text-theme-accent"
+        data-past={past}
+      >
+        {euroFormatter.format(fee)}
+      </p>
+    </Link>
+  )
 }

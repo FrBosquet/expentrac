@@ -22,34 +22,58 @@ export default function Page() {
 
   if (!sub) return null
 
-  const { resources: { link }, periods: { isInactive, isActive } } = sub
+  const {
+    resources: { link },
+    periods: { isInactive, isActive }
+  } = sub
 
-  return <>
-    <h1 className='col-span-2 xl:col-span-4 text-5xl pb-4 flex gap-4 items-center'>
-      <ProviderLogo className='size-8' provider={sub.providers.vendor} Default={CalendarCheck2} />
-      {sub.name}
-      {isInactive && <span className='text-gray-500'>(Paused)</span>}
-    </h1>
-    <menu className='flex gap-2 pb-6 col-span-2 xl:col-span-4 overflow-x-auto'>
-      <ButtonLink href='/dashboard/subscriptions'><PinLeftIcon /> Back </ButtonLink>
-      {
-        link
-          ? <ButtonLink target='_blank' href={link}>
+  return (
+    <>
+      <h1 className="col-span-2 flex items-center gap-4 pb-4 text-5xl xl:col-span-4">
+        <ProviderLogo
+          className="size-8"
+          Default={CalendarCheck2}
+          provider={sub.providers.vendor}
+        />
+        {sub.name}
+        {isInactive && <span className="text-gray-500">(Paused)</span>}
+      </h1>
+      <menu className="col-span-2 flex gap-2 overflow-x-auto pb-6 xl:col-span-4">
+        <ButtonLink href="/dashboard/subscriptions">
+          <PinLeftIcon /> Back{' '}
+        </ButtonLink>
+        {link ? (
+          <ButtonLink href={link} target="_blank">
             <Link size={12} /> Link
           </ButtonLink>
-          : null}
-      <SubEdit sub={sub} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-      {isActive
-        ? <SubPause sub={sub}>
-          <article className='text-xs flex items-center gap-2'><Pause size={12} /> Pause</article>
-        </SubPause>
-        : <SubResume sub={sub} />}
-      {isActive && <SubUpdatePrice sub={sub} />}
-      <SubDelete sub={sub} afterDeleteUrl='/dashboard/subscriptions'
-      ><article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article></SubDelete>
-    </menu>
-    <SubDetailContent sub={sub} className='col-span-2 xl:col-span-4' />
-    <SubPayplan className='col-span-2 mt-4' sub={sub} />
-    <SubPeriods className='col-span-2 mt-0 xl:mt-4' sub={sub} />
-  </>
+        ) : null}
+        <SubEdit
+          sub={sub}
+          triggerDecorator={
+            <article className="flex items-center gap-2 text-xs">
+              <Edit size={12} /> Edit
+            </article>
+          }
+        />
+        {isActive ? (
+          <SubPause sub={sub}>
+            <article className="flex items-center gap-2 text-xs">
+              <Pause size={12} /> Pause
+            </article>
+          </SubPause>
+        ) : (
+          <SubResume sub={sub} />
+        )}
+        {isActive && <SubUpdatePrice sub={sub} />}
+        <SubDelete afterDeleteUrl="/dashboard/subscriptions" sub={sub}>
+          <article className="flex items-center gap-2 text-xs">
+            <Trash size={12} /> Delete
+          </article>
+        </SubDelete>
+      </menu>
+      <SubDetailContent className="col-span-2 xl:col-span-4" sub={sub} />
+      <SubPayplan className="col-span-2 mt-4" sub={sub} />
+      <SubPeriods className="col-span-2 mt-0 xl:mt-4" sub={sub} />
+    </>
+  )
 }

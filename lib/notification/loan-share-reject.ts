@@ -12,7 +12,11 @@ export interface LoanShareRejectionNotificationPayload {
   shareHolder: User
 }
 
-export const handleLoanShareReject = async (user: User, shouldEmail: boolean, contract: Contract) => {
+export const handleLoanShareReject = async (
+  user: User,
+  shouldEmail: boolean,
+  contract: Contract
+) => {
   const payload: LoanShareRejectionNotificationPayload = {
     contract,
     shareHolder: user

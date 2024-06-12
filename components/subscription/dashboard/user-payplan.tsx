@@ -1,6 +1,6 @@
-import { Tooltip } from '@components/Tooltip'
 import { useDate } from '@components/date/context'
 import { usePayplan } from '@components/payplan/use-payplan'
+import { Tooltip } from '@components/Tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
 import { now } from '@lib/dates'
@@ -17,14 +17,14 @@ export const UserSubPayplan = ({ subs, className }: Props) => {
 
   const payplan = usePayplan(date, { subs })
 
-  return <Card className={className}>
-    <CardHeader>
-      <CardTitle>Payment plan</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <section className='flex flex-col gap-2 max-h-[500px] overflow-y-auto'>
-        {
-          payplan.map((month, index) => {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>Payment plan</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <section className="flex max-h-[500px] flex-col gap-2 overflow-y-auto">
+          {payplan.map((month, index) => {
             const {
               monthlyPay,
               monthlyHolderFee,
@@ -38,66 +38,107 @@ export const UserSubPayplan = ({ subs, className }: Props) => {
 
             const isPassed = month.date < now
 
-            const tooltipContent = <aside>
-              {
-                hasSharedSubs
-                  ? <p className='pb-4 flex items-center gap-2 text-xs'><User size={14} />You have some shared Subs this month</p>
-                  : null
-              }
-              <p className='flex'>Monthly pay: <strong className='flex-1 pl-4 inline-block text-right'>{euroFormatter.format(monthlyPay)}</strong></p>
-              <p className='flex'>Holder fee: <strong className='flex-1 pl-4 inline-block text-right'>{euroFormatter.format(monthlyHolderFee)}</strong></p>
-              <p className='flex'>Owed: <strong className='flex-1 pl-4 inline-block text-right'>{euroFormatter.format(owed)}</strong></p>
+            const tooltipContent = (
+              <aside>
+                {hasSharedSubs ? (
+                  <p className="flex items-center gap-2 pb-4 text-xs">
+                    <User size={14} />
+                    You have some shared Subs this month
+                  </p>
+                ) : null}
+                <p className="flex">
+                  Monthly pay:{' '}
+                  <strong className="inline-block flex-1 pl-4 text-right">
+                    {euroFormatter.format(monthlyPay)}
+                  </strong>
+                </p>
+                <p className="flex">
+                  Holder fee:{' '}
+                  <strong className="inline-block flex-1 pl-4 text-right">
+                    {euroFormatter.format(monthlyHolderFee)}
+                  </strong>
+                </p>
+                <p className="flex">
+                  Owed:{' '}
+                  <strong className="inline-block flex-1 pl-4 text-right">
+                    {euroFormatter.format(owed)}
+                  </strong>
+                </p>
 
-              {
-                startingSubs.length > 0
-                  ? <section>
-                    <h3 className='pt-2 pb-1 font-semibold text-theme-light flex items-center gap-2'><TrendingUp size={14} /> Starting Subs</h3>
+                {startingSubs.length > 0 ? (
+                  <section>
+                    <h3 className="flex items-center gap-2 pb-1 pt-2 font-semibold text-theme-light">
+                      <TrendingUp size={14} /> Starting Subs
+                    </h3>
                     <ul>
-                      {
-                        startingSubs.map((loan, index) => {
-                          return <li className='uppercase text-xs pl-2 text-theme-accent' key={index}>{loan.name}</li>
-                        })
-                      }
+                      {startingSubs.map((loan, index) => {
+                        return (
+                          <li
+                            key={index}
+                            className="pl-2 text-xs uppercase text-theme-accent"
+                          >
+                            {loan.name}
+                          </li>
+                        )
+                      })}
                     </ul>
                   </section>
-                  : null
-              }
+                ) : null}
 
-              {
-                finishingSubs.length > 0
-                  ? <section>
-                    <h3 className='pt-2 pb-1 font-semibold text-theme-light flex items-center gap-2'><TrendingDown size={14} />Finishing Subs</h3>
+                {finishingSubs.length > 0 ? (
+                  <section>
+                    <h3 className="flex items-center gap-2 pb-1 pt-2 font-semibold text-theme-light">
+                      <TrendingDown size={14} />
+                      Finishing Subs
+                    </h3>
                     <ul>
-                      {
-                        finishingSubs.map((loan, index) => {
-                          return <li className='uppercase text-xs pl-2 text-expentrac-800' key={index}>{loan.name}</li>
-                        })
-                      }
+                      {finishingSubs.map((loan, index) => {
+                        return (
+                          <li
+                            key={index}
+                            className="pl-2 text-xs uppercase text-expentrac-800"
+                          >
+                            {loan.name}
+                          </li>
+                        )
+                      })}
                     </ul>
                   </section>
-                  : null
-              }
-            </aside>
+                ) : null}
+              </aside>
+            )
 
             const handleClick = () => {
               setDate(month.date)
             }
 
-            return <Tooltip key={index} tooltip={tooltipContent}>
-              <article onClick={handleClick} data-passed={isPassed} className='flex flex-row justify-between items-center data-[passed=true]:text-expentrac-800 hover:bg-theme-back p-1'>
-                <p className='text-xs font-semibold uppercase'>
-                  {month.date.toLocaleDateString('default', { month: 'short', year: '2-digit' })}
-                </p>
-                <p className='flex items-center gap-2'>
-                  {hasStartingSubs ? <TrendingUp className='text-theme-accent' size={14} /> : null}
-                  {hasFinishingSubs ? <TrendingDown size={14} /> : null}
-                  {hasSharedSubs ? <User size={14} /> : null}
-                  {euroFormatter.format(monthlyHolderFee)}</p>
-              </article>
-            </Tooltip>
-          })
-        }
-      </section>
-    </CardContent>
-  </Card>
+            return (
+              <Tooltip key={index} tooltip={tooltipContent}>
+                <article
+                  className="flex flex-row items-center justify-between p-1 hover:bg-theme-back data-[passed=true]:text-expentrac-800"
+                  data-passed={isPassed}
+                  onClick={handleClick}
+                >
+                  <p className="text-xs font-semibold uppercase">
+                    {month.date.toLocaleDateString('default', {
+                      month: 'short',
+                      year: '2-digit'
+                    })}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    {hasStartingSubs ? (
+                      <TrendingUp className="text-theme-accent" size={14} />
+                    ) : null}
+                    {hasFinishingSubs ? <TrendingDown size={14} /> : null}
+                    {hasSharedSubs ? <User size={14} /> : null}
+                    {euroFormatter.format(monthlyHolderFee)}
+                  </p>
+                </article>
+              </Tooltip>
+            )
+          })}
+        </section>
+      </CardContent>
+    </Card>
+  )
 }

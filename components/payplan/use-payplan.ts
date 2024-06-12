@@ -1,15 +1,23 @@
-import { PERIODICITY, contractMonthsPassed, getContractStatus, getOngoingPeriod } from '@lib/dates'
+import {
+  contractMonthsPassed,
+  getContractStatus,
+  getOngoingPeriod,
+  PERIODICITY
+} from '@lib/dates'
 import { type Loan } from '@lib/loan'
 import { type Subscription } from '@lib/sub'
 import { useMemo } from 'react'
 
-export const usePayplan = (date: Date, {
-  loans = [],
-  subs = []
-}: {
-  loans?: Loan[]
-  subs?: Subscription[]
-}) => {
+export const usePayplan = (
+  date: Date,
+  {
+    loans = [],
+    subs = []
+  }: {
+    loans?: Loan[]
+    subs?: Subscription[]
+  }
+) => {
   const payplan = useMemo(() => {
     return new Array(12).fill(null).map((_, index) => {
       const refDate = new Date(date)
@@ -34,7 +42,7 @@ export const usePayplan = (date: Date, {
       let monthlySubPay: number = 0
       let monthlySubHolderFee: number = 0
 
-      subs.forEach(sub => {
+      subs.forEach((sub) => {
         const { contract } = sub
 
         const refPeriod = getOngoingPeriod(contract, refDate)
@@ -43,12 +51,10 @@ export const usePayplan = (date: Date, {
 
         const isYearly = refPeriod.periodicity === PERIODICITY.YEARLY
 
-        const {
-          ongoing,
-          starts,
-          ends,
-          updates
-        } = getContractStatus(contract, refDate)
+        const { ongoing, starts, ends, updates } = getContractStatus(
+          contract,
+          refDate
+        )
 
         if (ongoing) {
           if (isYearly) {
@@ -82,14 +88,10 @@ export const usePayplan = (date: Date, {
         }
       })
 
-      loans.forEach(loan => {
+      loans.forEach((loan) => {
         const { contract, fee, amount } = loan
 
-        const {
-          ongoing,
-          starts,
-          ends
-        } = getContractStatus(contract, refDate)
+        const { ongoing, starts, ends } = getContractStatus(contract, refDate)
 
         if (ongoing || starts || ends) {
           activeLoans.push(loan)
@@ -100,8 +102,14 @@ export const usePayplan = (date: Date, {
           monthlyLoanPay += starts ? fee.initial : fee.monthly
           monthlyLoanHolderFee += ends ? fee.holderInitial : fee.holderMonthly
 
-          owed += amount.total - fee.initial - fee.monthly * contractMonthsPassed(contract, refDate)
-          holderOwed += amount.holderTotal - fee.holderInitial - fee.holderMonthly * contractMonthsPassed(contract, refDate)
+          owed +=
+            amount.total -
+            fee.initial -
+            fee.monthly * contractMonthsPassed(contract, refDate)
+          holderOwed +=
+            amount.holderTotal -
+            fee.holderInitial -
+            fee.holderMonthly * contractMonthsPassed(contract, refDate)
         }
       })
 
@@ -110,11 +118,11 @@ export const usePayplan = (date: Date, {
 
       const hasStartingSubs = startingSubs.length > 0
       const hasFinishingSubs = finishingSubs.length > 0
-      const hasSharedSubs = activeSubs.some(loan => loan.shares.isShared)
+      const hasSharedSubs = activeSubs.some((loan) => loan.shares.isShared)
 
       const hasStartingLoans = startingLoans.length > 0
       const hasFinishingLoans = finishingLoans.length > 0
-      const hasSharedLoans = activeLoans.some(loan => loan.shares.isShared)
+      const hasSharedLoans = activeLoans.some((loan) => loan.shares.isShared)
 
       return {
         loans: activeLoans,

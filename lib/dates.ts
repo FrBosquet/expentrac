@@ -1,4 +1,5 @@
 import { TIME } from '@types'
+
 import { type Contract, type Period } from './prisma'
 
 export enum PERIODICITY {
@@ -26,11 +27,21 @@ export const monthBeetween = (startDate: Date, endDate: Date) => {
     return offset
   }
 
-  return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
+  return (
+    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (endDate.getMonth() - startDate.getMonth())
+  )
 }
 
-export const dateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' })
-export const fullDateFormater = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', day: 'numeric' })
+export const dateFormater = new Intl.DateTimeFormat('en', {
+  month: 'long',
+  year: 'numeric'
+})
+export const fullDateFormater = new Intl.DateTimeFormat('en', {
+  month: 'long',
+  year: 'numeric',
+  day: 'numeric'
+})
 
 export const isInXDays = (date: Date, offset: number) => {
   const xDays = new Date()
@@ -52,15 +63,25 @@ export const getDateText = (date: Date) => {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
-export const getTimeDescription = (refDate: Date, month: TIME, type: string) => {
+export const getTimeDescription = (
+  refDate: Date,
+  month: TIME,
+  type: string
+) => {
   switch (month) {
-    case TIME.PAST: return `These where the ${type} fees you paid in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
-    case TIME.PRESENT: return `These are the ${type} fees you are paying for this month`
-    case TIME.FUTURE: return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+    case TIME.PAST:
+      return `These where the ${type} fees you paid in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
+    case TIME.PRESENT:
+      return `These are the ${type} fees you are paying for this month`
+    case TIME.FUTURE:
+      return `These are the fees you are going to pay in ${refDate.toLocaleDateString('en-UK', { month: 'long', year: '2-digit' })}`
   }
 }
 
-export const getOngoingPeriod = (contract: Contract, date: Date): Period | undefined => {
+export const getOngoingPeriod = (
+  contract: Contract,
+  date: Date
+): Period | undefined => {
   const month = date.getMonth()
   const year = date.getFullYear()
   let candidate
@@ -116,10 +137,13 @@ const isPeriodActiveIn = (period: Period, date: Date) => {
 }
 
 const isContractActive = (contract: Contract, date: Date) => {
-  return contract.periods.some(period => isPeriodActiveIn(period, date))
+  return contract.periods.some((period) => isPeriodActiveIn(period, date))
 }
 
-export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STATUS => {
+export const getContractStatus = (
+  contract: Contract,
+  date: Date
+): CONTRACT_STATUS => {
   const status = { ...baseStatus }
   const ongoingPeriod = getOngoingPeriod(contract, date)
 
@@ -159,7 +183,7 @@ export const getContractStatus = (contract: Contract, date: Date): CONTRACT_STAT
 export const contractMonthsPassed = (contract: Contract, date: Date) => {
   const { periods } = contract
 
-  const activePeriod = periods.find(period => {
+  const activePeriod = periods.find((period) => {
     return period.to !== undefined
   })
 
@@ -169,7 +193,10 @@ export const contractMonthsPassed = (contract: Contract, date: Date) => {
 }
 
 export const isInSameMont = (date1: Date, date2: Date) => {
-  return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth()
+  )
 }
 
 export const now = new Date()

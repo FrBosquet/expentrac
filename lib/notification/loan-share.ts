@@ -1,5 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type Contract, type Share, type User } from '@lib/prisma'
+import { type Contract, prisma, type Share, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE } from '@types'
 
 export interface LoanShareNotification {
@@ -16,7 +16,12 @@ export interface LoanShareNotificationPayload {
   state: SHARE_STATE
 }
 
-export const handleLoanShare = async (user: User, shouldEmail: boolean, contract: Contract, share: Share) => {
+export const handleLoanShare = async (
+  user: User,
+  shouldEmail: boolean,
+  contract: Contract,
+  share: Share
+) => {
   const payload: LoanShareNotificationPayload = {
     contract,
     share,

@@ -1,11 +1,12 @@
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Contract, type Prisma, type Share } from '@lib/prisma'
+import { type Contract, type Prisma, prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
-import { getServerSession } from 'next-auth/next'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+
 import { include } from './include'
 
 export const GET = async (req: Request) => {
@@ -13,11 +14,14 @@ export const GET = async (req: Request) => {
   const userId = searchParams.get('userId')
 
   if (!userId) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const loans = await prisma.contract.findMany({
@@ -40,18 +44,23 @@ export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const userId = session.user.id
 
   const body = await req.json()
 
-  const keysToCreate = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value as string)
+  const keysToCreate = Object.entries(body)
+    .filter(([key]) => key.startsWith('sharedWith'))
+    .map(([_, value]) => value as string)
 
   const newLoan = await prisma.contract.create({
     data: {
@@ -88,7 +97,7 @@ export const POST = async (req: Request) => {
       },
       shares: {
         createMany: {
-          data: keysToCreate.map(toId => ({
+          data: keysToCreate.map((toId) => ({
             fromId: userId,
             toId
           }))
@@ -105,7 +114,7 @@ export const POST = async (req: Request) => {
     include
   })
 
-  newLoan.shares.forEach(share => {
+  newLoan.shares.forEach((share) => {
     void notificationSdk.create(share.toId, true, {
       type: NOTIFICATION_TYPE.LOAN_SHARE,
       contract: newLoan as Contract,
@@ -113,5 +122,8 @@ export const POST = async (req: Request) => {
     })
   })
 
-  return NextResponse.json({ message: 'success', data: newLoan }, { status: 201 })
+  return NextResponse.json(
+    { message: 'success', data: newLoan },
+    { status: 201 }
+  )
 }

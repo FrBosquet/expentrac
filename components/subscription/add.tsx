@@ -1,11 +1,19 @@
 'use client'
 
 import { Button } from '@components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@components/ui/dialog'
 import { useUser } from '@components/user/hooks'
 import { type SubFormData } from '@lib/sub'
 import { subscriptionSdk } from '@sdk'
-import { useState, type FormEventHandler } from 'react'
+import { type FormEventHandler, useState } from 'react'
+
 import { useSubs } from './context'
 import { SubscriptionForm } from './form'
 
@@ -21,7 +29,9 @@ export const SubscriptionAdd = () => {
     setLoading(true)
 
     try {
-      const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as SubFormData
+      const formData = Object.fromEntries(
+        new FormData(e.currentTarget)
+      ) as unknown as SubFormData
 
       const sub = await subscriptionSdk.create(formData)
 
@@ -29,6 +39,8 @@ export const SubscriptionAdd = () => {
       setOpen(false)
       addSub(sub)
     } catch (e) {
+      // TODO: toast
+      // eslint-disable-next-line no-console
       console.error(e)
     } finally {
       setLoading(false)
@@ -38,16 +50,22 @@ export const SubscriptionAdd = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='outline' className="text-xs h-auto" onClick={() => { setOpen(true) }}>New subscription</Button>
+        <Button
+          className="h-auto text-xs"
+          variant="outline"
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
+          New subscription
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>New subscription</DialogTitle>
-          <DialogDescription>
-            Track a new subscription
-          </DialogDescription>
+          <DialogDescription>Track a new subscription</DialogDescription>
         </DialogHeader>
-        <SubscriptionForm onSubmit={handleSubmit} disabled={loading} />
+        <SubscriptionForm disabled={loading} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   )

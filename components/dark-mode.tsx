@@ -17,7 +17,12 @@ export const useDarkMode = () => {
 export const DarkModeTogle = () => {
   const { darkMode, toggleDarkMode } = useDarkMode()
 
-  return <Button onClick={toggleDarkMode} className='cursor-pointer text-amber-500 dark:text-teal-200'>
-    {darkMode ? <Moon /> : <Sun />}
-  </Button>
+  return (
+    <Button
+      className="cursor-pointer text-amber-500 dark:text-teal-200"
+      onClick={toggleDarkMode}
+    >
+      {darkMode ? <Moon /> : <Sun />}
+    </Button>
+  )
 }

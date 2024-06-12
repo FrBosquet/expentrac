@@ -24,19 +24,25 @@ export const GET = async (req: Request) => {
   const type = searchParams.get('type')
 
   if (type && !Object.values(CONTRACT_TYPE).includes(type as CONTRACT_TYPE)) {
-    return NextResponse.json({
-      message: `invalid contract type ${type}`
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: `invalid contract type ${type}`
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   if (!userId) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const loans = await prisma.contract.findMany({

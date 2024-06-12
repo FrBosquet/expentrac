@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import path from 'path'
@@ -28,32 +28,36 @@ export const getPostsFileNames = (): string[] => {
 export const getPostSlugs = (): string[] => {
   const fileNames = getPostsFileNames()
 
-  return fileNames.map(name => name.replace('.mdx', ''))
+  return fileNames.map((name) => name.replace('.mdx', ''))
 }
 
 export const getPosts = async (tag?: string): Promise<Post[]> => {
   const fileNames = getPostsFileNames()
 
-  const posts: Post[] = await Promise.all(fileNames.map(async name => {
-    const filename = path.join(POSTS_DIRECTORY, name)
-    const raw = readFileSync(filename)
-    const serilized = await serialize(raw, {
-      parseFrontmatter: true
+  const posts: Post[] = await Promise.all(
+    fileNames.map(async (name) => {
+      const filename = path.join(POSTS_DIRECTORY, name)
+      const raw = readFileSync(filename)
+      const serilized = await serialize(raw, {
+        parseFrontmatter: true
+      })
+
+      const meta = serilized.frontmatter as unknown as Post
+
+      const post: Post = {
+        ...meta,
+        slug: name.replace('.mdx', '')
+      }
+
+      return post
     })
-
-    const meta = serilized.frontmatter as unknown as Post
-
-    const post: Post = {
-      ...meta,
-      slug: name.replace('.mdx', '')
-    }
-
-    return post
-  }))
+  )
 
   return posts
-    .filter(post => post.published)
-    .sort((a, b) => new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1)
+    .filter((post) => post.published)
+    .sort((a, b) =>
+      new Date(a.date).getTime() > new Date(b.date).getTime() ? -1 : 1
+    )
 }
 
 export const getPost = async (slug: string) => {

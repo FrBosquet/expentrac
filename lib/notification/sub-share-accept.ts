@@ -1,5 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type Contract, type User } from '@lib/prisma'
+import { type Contract, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 
 export interface SubShareAcceptNotification {
@@ -12,7 +12,11 @@ export interface SubShareAcceptNotificationPayload {
   user: User
 }
 
-export const handleSubShareAccept = async (user: User, shouldEmail: boolean, contract: Contract) => {
+export const handleSubShareAccept = async (
+  user: User,
+  shouldEmail: boolean,
+  contract: Contract
+) => {
   const payload: SubShareAcceptNotificationPayload = {
     contract,
     user

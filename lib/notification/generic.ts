@@ -11,7 +11,11 @@ export interface GenericNotificationPayload {
   message: string
 }
 
-export const handleGeneric = async (user: User, shouldEmail: boolean, data: GenericNotification) => {
+export const handleGeneric = async (
+  user: User,
+  shouldEmail: boolean,
+  data: GenericNotification
+) => {
   const payload: GenericNotificationPayload = {
     message: data.message
   }

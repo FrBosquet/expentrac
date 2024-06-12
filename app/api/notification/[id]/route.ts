@@ -1,18 +1,24 @@
 import { authOptions } from '@lib/auth'
-import { prisma, type Prisma } from '@lib/prisma'
-import { getServerSession } from 'next-auth'
+import { type Prisma, prisma } from '@lib/prisma'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 
-export const PATCH = async (req: Request, { params }: { params: { id: string } }) => {
+export const PATCH = async (
+  req: Request,
+  { params }: { params: { id: string } }
+) => {
   const id = params.id
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const userId = session.user.id
@@ -21,19 +27,25 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
   const notification = await prisma.notification.findUnique({ where: { id } })
 
   if (!notification) {
-    return NextResponse.json({
-      message: 'loan not found'
-    }, {
-      status: 404
-    })
+    return NextResponse.json(
+      {
+        message: 'loan not found'
+      },
+      {
+        status: 404
+      }
+    )
   }
 
   if (userId !== notification.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
+    return NextResponse.json(
+      {
+        message: 'user does not own this resource'
+      },
+      {
+        status: 403
+      }
+    )
   }
 
   const args: Prisma.NotificationUpdateArgs = {
@@ -51,5 +63,8 @@ export const PATCH = async (req: Request, { params }: { params: { id: string } }
 
   const updatedNotification = await prisma.notification.update(args)
 
-  return NextResponse.json({ message: 'success', notification: updatedNotification }, { status: 200 })
+  return NextResponse.json(
+    { message: 'success', notification: updatedNotification },
+    { status: 200 }
+  )
 }

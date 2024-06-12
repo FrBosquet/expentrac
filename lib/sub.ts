@@ -1,5 +1,10 @@
 import { PERIODICITY } from './dates'
-import { type Contract, type Period, type Provider, type RawPeriod } from './prisma'
+import {
+  type Contract,
+  type Period,
+  type Provider,
+  type RawPeriod
+} from './prisma'
 
 export type SubFormData = {
   id?: string
@@ -70,21 +75,12 @@ const getNextPaymentDate = (period: Period) => {
 }
 
 export const unwrapSub = (rawSub: Contract, date = now) => {
-  const {
-    shares,
-    periods,
-    resources,
-    providers
-  } = rawSub
-
-  if (rawSub.name === 'Revista GTM') {
-    console.log('HOLA', date)
-  }
+  const { shares, periods, resources, providers } = rawSub
 
   const refNowDate = now.getDate()
   const refMonth = date.getMonth()
 
-  const activePeriods = periods.filter(period => {
+  const activePeriods = periods.filter((period) => {
     return period.to === null
   })
 
@@ -96,13 +92,19 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   const activePeriod: RawPeriod | undefined = activePeriods[0]
   const isInactive = !isActive
 
-  const sharesAccepted = shares.reduce((acc, cur) => acc + (cur.accepted ? 1 : 0), 0)
-  const sharesPending = shares.reduce((acc, cur) => acc + (cur.accepted === undefined ? 0 : 1), 0)
+  const sharesAccepted = shares.reduce(
+    (acc, cur) => acc + (cur.accepted ? 1 : 0),
+    0
+  )
+  const sharesPending = shares.reduce(
+    (acc, cur) => acc + (cur.accepted === undefined ? 0 : 1),
+    0
+  )
 
   const isOngoing = activePeriods.length === 1
 
   // The period happening in the current reference date
-  const referencePeriod: RawPeriod | undefined = periods.find(period => {
+  const referencePeriod: RawPeriod | undefined = periods.find((period) => {
     // date is between period from and period to
     const from = new Date(period.from)
     const to = period.to ? new Date(period.to) : null
@@ -117,12 +119,12 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   const periodicity = referencePeriod?.periodicity
   const isYearly = periodicity === 'YEARLY'
 
-  const monthlyFee = wasOngoing
-    ? (isYearly ? 0 : referencePeriod.fee)
-    : 0
+  const monthlyFee = wasOngoing ? (isYearly ? 0 : referencePeriod.fee) : 0
 
   const yearlyFee = wasOngoing
-    ? (isYearly ? referencePeriod.fee : (referencePeriod.fee * 12))
+    ? isYearly
+      ? referencePeriod.fee
+      : referencePeriod.fee * 12
     : 0
 
   const holderAmount = sharesAccepted + 1
@@ -142,15 +144,23 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   const monthlyHolderFee = monthlyFee / holderAmount
   const yearlyHolderFee = yearlyFee / holderAmount
 
-  const link = resources.find(r => r.type === 'LINK')?.url
+  const link = resources.find((r) => r.type === 'LINK')?.url
 
   const isPaidThisMonth = wasOngoing && getIsPaidThisMonth(referencePeriod)
-  const currentMonthPaymentDate = wasOngoing ? getPeriodPaymentDate(referencePeriod, date) : null
-  const currentPaymentDate = wasOngoing ? getPeriodPaymentDate(referencePeriod, date) : null
-  const isPaidThisPeriod = currentPaymentDate && now.getTime() > currentPaymentDate.getTime()
-  const nextPaymentDate = wasOngoing ? getNextPaymentDate(referencePeriod) : null
+  const currentMonthPaymentDate = wasOngoing
+    ? getPeriodPaymentDate(referencePeriod, date)
+    : null
+  const currentPaymentDate = wasOngoing
+    ? getPeriodPaymentDate(referencePeriod, date)
+    : null
+  const isPaidThisPeriod =
+    currentPaymentDate && now.getTime() > currentPaymentDate.getTime()
+  const nextPaymentDate = wasOngoing
+    ? getNextPaymentDate(referencePeriod)
+    : null
 
-  const hasPayday = referencePeriod?.payday !== null && referencePeriod?.payday !== undefined
+  const hasPayday =
+    referencePeriod?.payday !== null && referencePeriod?.payday !== undefined
 
   const sameDayAsPayday = referencePeriod?.payday === refNowDate
   const sameMonthAsPayday = referencePeriod?.paymonth === refMonth
@@ -159,10 +169,7 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
     ? sameDayAsPayday && sameMonthAsPayday
     : sameDayAsPayday
 
-  const {
-    vendor,
-    platform
-  } = providers.reduce<{
+  const { vendor, platform } = providers.reduce<{
     vendor?: Provider
     platform?: Provider
   }>((acc, cur) => {

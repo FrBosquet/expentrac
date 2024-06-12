@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 import { prisma } from '@lib/prisma'
 import { NextResponse } from 'next/server'
 
@@ -207,12 +206,17 @@ export const GET = async () => {
 
   const allPeriods = await prisma.period.findMany({})
 
-  await Promise.all(allPeriods.map(async (period) => {
-    if (!period.payday) {
-      const payday = new Date(period.from).getDate()
-      await prisma.period.update({ where: { id: period.id }, data: { payday } })
-    }
-  }))
+  await Promise.all(
+    allPeriods.map(async (period) => {
+      if (!period.payday) {
+        const payday = new Date(period.from).getDate()
+        await prisma.period.update({
+          where: { id: period.id },
+          data: { payday }
+        })
+      }
+    })
+  )
 
   return NextResponse.json({ allPeriods }, { status: 200 })
 }

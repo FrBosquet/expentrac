@@ -6,11 +6,14 @@ export const GET = async (req: Request) => {
   const userId = searchParams.get('userId')
 
   if (!userId) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const loans = await prisma.providersOnContract.findMany({

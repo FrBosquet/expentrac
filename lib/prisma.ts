@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-
 import {
   type Account as PAccount,
   type Contract as PContract,
@@ -27,7 +26,7 @@ export type Contract = RawContract & {
   periods: RawPeriod[]
   providers: ProviderOnContract[]
   resources: RawResource[]
-  shares: Array<RawShare & { to: RawUser, from: RawUser, contract: Contract }>
+  shares: Array<RawShare & { to: RawUser; from: RawUser; contract: Contract }>
   user: RawUser
 }
 

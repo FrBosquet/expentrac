@@ -12,7 +12,11 @@ export interface SubShareRejectNotificationPayload {
   user: User
 }
 
-export const handleSubShareReject = async (user: User, shouldEmail: boolean, contract: Contract) => {
+export const handleSubShareReject = async (
+  user: User,
+  shouldEmail: boolean,
+  contract: Contract
+) => {
   const payload: SubShareRejectNotificationPayload = {
     contract,
     user

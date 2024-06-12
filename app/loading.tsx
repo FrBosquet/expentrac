@@ -1,7 +1,9 @@
 import { Spinner } from '@components/ui/spinner'
 
 export default function Loading() {
-  return <div className="h-screen w-screen flex justify-center items-center bg-background">
-    <Spinner className="w-8 h-8" />
-  </div>
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-background">
+      <Spinner className="size-8" />
+    </div>
+  )
 }

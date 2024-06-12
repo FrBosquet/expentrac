@@ -1,8 +1,6 @@
-import { NextResponse } from 'next/server'
-
 import WelcomeEmail from '@emails/welcome'
-
 import { prisma } from '@lib/prisma'
+import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_KEY)
@@ -45,7 +43,7 @@ export const POST = async (req: Request) => {
 
   const body = await req.json()
 
-  const { userId, template } = body as { userId: string, template: string }
+  const { userId, template } = body as { userId: string; template: string }
 
   await sendEmail(userId, template as Template)
 

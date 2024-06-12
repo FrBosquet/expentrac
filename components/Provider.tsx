@@ -9,7 +9,7 @@ interface Props {
 
 // eslint-disable-next-line
 export const RootProvider = ({ children }: Props) => {
-  return (children)
+  return children
 }
 
 export const useUser = () => {

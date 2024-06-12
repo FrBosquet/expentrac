@@ -1,25 +1,40 @@
+/* eslint-disable prettier/prettier */
 'use client'
 
 import { Button } from '@components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@components/ui/dialog'
 import { type Loan, type LoanFormData } from '@lib/loan'
 import { cn } from '@lib/utils'
 import { loanSdk } from '@sdk'
+import { ButtonVariant } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
-import { useState, type FormEventHandler } from 'react'
+import { type FormEventHandler, useState } from 'react'
+
 import { useLoans } from './context'
 import { LoanForm } from './form'
 
 interface Props {
   loan: Loan
   className?: string
-  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
+  variant?: ButtonVariant
   triggerDecorator?: React.ReactNode
 }
 
 const TRIGGER_DECORATOR = <Edit size={12} />
 
-export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorator = TRIGGER_DECORATOR }: Props) => {
+export const LoanEdit = ({
+  loan,
+  className,
+  variant = 'outline',
+  triggerDecorator = TRIGGER_DECORATOR
+}: Props) => {
   const { updateLoan } = useLoans()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -29,17 +44,18 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
     setLoading(true)
 
     try {
-      const formData = Object.fromEntries(new FormData(e.currentTarget)) as unknown as LoanFormData
+      const formData = Object.fromEntries(
+        new FormData(e.currentTarget)
+      ) as unknown as LoanFormData
 
-      const updatedLoan = await loanSdk.update(
-        loan.id,
-        formData
-      )
+      const updatedLoan = await loanSdk.update(loan.id, formData)
 
       updateLoan(updatedLoan)
       void loanSdk.revalidate(loan.userId)
       setOpen(false)
     } catch (e) {
+      // TODO: toast
+      // eslint-disable-next-line no-console
       console.error(e)
     } finally {
       setLoading(false)
@@ -49,7 +65,15 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{triggerDecorator}</Button>
+        <Button
+          className={cn('p-2 h-auto', className)}
+          variant={variant}
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
+          {triggerDecorator}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -61,7 +85,7 @@ export const LoanEdit = ({ loan, className, variant = 'outline', triggerDecorato
             Edit <strong className="font-semibold">{loan.name}</strong>.
           </DialogDescription>
         </DialogHeader>
-        <LoanForm loan={loan} onSubmit={handleSubmit} disabled={loading} />
+        <LoanForm disabled={loading} loan={loan} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   )

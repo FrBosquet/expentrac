@@ -3,7 +3,7 @@ import { Header } from '@components/web/Header'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <main className='relative min-h-screen bg-gradient-to-r from-slate-800 to-slate-500 overflow-x-hidden text-slate-200 flex flex-col'>
+    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-gradient-to-r from-slate-800 to-slate-500 text-slate-200">
       <Header key="header" />
       {children}
       <Footer />

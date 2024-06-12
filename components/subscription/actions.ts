@@ -2,9 +2,11 @@
 
 import { subscriptionInclude } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
-import { prisma, type Contract } from '@lib/prisma'
+import { type Contract, prisma } from '@lib/prisma'
 
-export const pauseSubscription = async (formData: FormData): Promise<Contract> => {
+export const pauseSubscription = async (
+  formData: FormData
+): Promise<Contract> => {
   const id = formData.get('id') as string
 
   const sub = await prisma.contract.findUnique({
@@ -47,7 +49,9 @@ export const pauseSubscription = async (formData: FormData): Promise<Contract> =
   return contract as Contract
 }
 
-export const updateSubscriptionPrice = async (formData: FormData): Promise<Contract> => {
+export const updateSubscriptionPrice = async (
+  formData: FormData
+): Promise<Contract> => {
   const id = formData.get('id') as string
 
   const sub = await prisma.contract.findUnique({
@@ -107,7 +111,9 @@ export const updateSubscriptionPrice = async (formData: FormData): Promise<Contr
   return contract as Contract
 }
 
-export const resumeSubscription = async (formData: FormData): Promise<Contract> => {
+export const resumeSubscription = async (
+  formData: FormData
+): Promise<Contract> => {
   const id = formData.get('id') as string
 
   const sub = await prisma.contract.findUnique({

@@ -1,6 +1,7 @@
 import { type Notification as NotificationType } from '@lib/prisma'
 import { notificationSdk } from '@sdk'
 import { useLayoutEffect, useState } from 'react'
+
 import { useNotifications } from '../context'
 
 export const useAutoAck = (notification: NotificationType) => {
@@ -20,7 +21,7 @@ export const useAutoAck = (notification: NotificationType) => {
     }
 
     void ackNotificationAsync()
-  }, [])
+  }, [ack, id, updateNotification])
 
   return { loading }
 }

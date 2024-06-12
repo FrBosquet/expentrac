@@ -9,8 +9,8 @@ export default function Page() {
 
   return (
     <>
-      <LoanSummary className='col-span-2 xl:col-span-4' />
-      <UserLoanPayplan loans={everyLoan} className='col-span-2 xl:col-span-4' />
+      <LoanSummary className="col-span-2 xl:col-span-4" />
+      <UserLoanPayplan className="col-span-2 xl:col-span-4" loans={everyLoan} />
     </>
   )
 }

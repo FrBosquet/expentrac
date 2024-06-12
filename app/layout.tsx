@@ -1,9 +1,9 @@
+import './globals.css'
+
 import { RootProvider } from '@components/Provider'
 import { DarkModeProvider } from '@components/root-provider'
 import type { Metadata } from 'next'
-
 import NextTopLoader from 'nextjs-toploader'
-import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Expentrac',
@@ -19,11 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <DarkModeProvider>
-        <RootProvider >
-          <NextTopLoader
-            color="#2dff87"
-            showSpinner={false}
-          />
+        <RootProvider>
+          <NextTopLoader color="#2dff87" showSpinner={false} />
           {children}
         </RootProvider>
       </DarkModeProvider>

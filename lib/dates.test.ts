@@ -37,11 +37,17 @@ describe('getOngoingPeriod', () => {
     }
 
     it('should return the ongoing period', () => {
-      expect(getOngoingPeriod(contract, new Date('2021-02-10'))).toHaveProperty('fee', 200)
+      expect(getOngoingPeriod(contract, new Date('2021-02-10'))).toHaveProperty(
+        'fee',
+        200
+      )
     })
 
     it('should return the ongoing period', () => {
-      expect(getOngoingPeriod(contract, new Date('1986-08-24'))).toHaveProperty('fee', 10)
+      expect(getOngoingPeriod(contract, new Date('1986-08-24'))).toHaveProperty(
+        'fee',
+        10
+      )
     })
 
     it('should return null if no period', () => {
@@ -49,15 +55,24 @@ describe('getOngoingPeriod', () => {
     })
 
     it('should return an unfinished period', () => {
-      expect(getOngoingPeriod(contract, new Date('2021-03-15'))).toHaveProperty('fee', 210)
+      expect(getOngoingPeriod(contract, new Date('2021-03-15'))).toHaveProperty(
+        'fee',
+        210
+      )
     })
 
     it('should capture period that starts this month', () => {
-      expect(getOngoingPeriod(contract, new Date('2022-02-1'))).toHaveProperty('fee', 220)
+      expect(getOngoingPeriod(contract, new Date('2022-02-1'))).toHaveProperty(
+        'fee',
+        220
+      )
     })
 
     it('should capture period that ends this month', () => {
-      expect(getOngoingPeriod(contract, new Date('1986-08-26'))).toHaveProperty('fee', 10)
+      expect(getOngoingPeriod(contract, new Date('1986-08-26'))).toHaveProperty(
+        'fee',
+        10
+      )
     })
   })
 
@@ -81,7 +96,10 @@ describe('getOngoingPeriod', () => {
     }
 
     it('should return the ongoing period that has the payday for the given month', () => {
-      expect(getOngoingPeriod(contract, new Date('2021-01-17'))).toHaveProperty('fee', 150)
+      expect(getOngoingPeriod(contract, new Date('2021-01-17'))).toHaveProperty(
+        'fee',
+        150
+      )
     })
   })
 })

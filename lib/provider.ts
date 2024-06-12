@@ -1,5 +1,9 @@
 import { type Provider } from '@lib/prisma'
-import { type BrandExtendedInfo, type ProviderFetched, type ProviderUnfetched } from '@types'
+import {
+  type BrandExtendedInfo,
+  type ProviderFetched,
+  type ProviderUnfetched
+} from '@types'
 
 export enum PROVIDER_TYPE {
   VENDOR = 'VENDOR',
@@ -7,7 +11,9 @@ export enum PROVIDER_TYPE {
   LENDER = 'LENDER'
 }
 
-export const isFetchedProvider = (provider: ProviderFetched | ProviderUnfetched): provider is ProviderFetched => {
+export const isFetchedProvider = (
+  provider: ProviderFetched | ProviderUnfetched
+): provider is ProviderFetched => {
   return provider.isFetched
 }
 
@@ -17,7 +23,7 @@ export const getAccentColor = (provider?: Provider) => {
   const data = provider.rawContent as unknown as BrandExtendedInfo
   const colors = data.colors
 
-  const accent = colors.find(color => color.type === 'accent')
+  const accent = colors.find((color) => color.type === 'accent')
 
   return accent?.hex
 }

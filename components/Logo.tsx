@@ -7,7 +7,9 @@ interface Props {
 
 export const Logo = ({ className, children }: Props) => {
   return (
-    <h1 className={`text-transparent bg-clip-text bg-gradient-to-r from-expentrac-800 dark:from-expentrac to-theme-accent font-logo uppercase font-extrabold ${className}`}>
+    <h1
+      className={`bg-gradient-to-r from-expentrac-800 to-theme-accent bg-clip-text font-logo font-extrabold uppercase text-transparent dark:from-expentrac ${className}`}
+    >
       {children}
     </h1>
   )

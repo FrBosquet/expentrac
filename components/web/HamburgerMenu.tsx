@@ -1,7 +1,7 @@
 'use client'
 
-import { Logo } from '@components/Logo'
 import { handleSignIn } from '@components/hero/signin'
+import { Logo } from '@components/Logo'
 import { Button } from '@components/ui/button'
 import { Separator } from '@components/ui/separator'
 import { Menu, X } from 'lucide-react'
@@ -15,23 +15,64 @@ export const HambugerMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggle = () => {
-    setIsOpen(prev => !prev)
+    setIsOpen((prev) => !prev)
   }
 
-  return <div className='block md:hidden'>
-    <Button variant="link" className='p-0' onClick={toggle}><Menu className='text-slate-300' /></Button>
-    <aside className={twMerge('flex flex-col gap-6 p-8 fixed z-50 h-screen w-screen bg-slate-900 top-0 left-0 shadow-md items-end transition-[left]', isOpen ? 'left-0' : 'left-[100%]')}>
-      <Button variant='link' className='self-start p-0' onClick={toggle}><X size={40} className='text-slate-300' /></Button>
-      <nav className='flex flex-col gap-4 mt-8'>
-        <Link onClick={toggle} href='/' className='text-slate-300 text-4xl uppercase tracking-wider text-right'>Home</Link>
-        <Link onClick={toggle} href='/blog' className='text-slate-300 text-4xl uppercase tracking-wider text-right'>Blog</Link>
-        <Link onClick={toggle} href='/pricing' className='text-slate-300 text-4xl uppercase tracking-wider text-right'>Pricing</Link>
-        <Link onClick={toggle} href='/team' className='text-slate-300 text-4xl uppercase tracking-wider text-right'>Team</Link>
-      </nav>
-      <Separator />
-      <div className="flex-1"></div>
-      <Button className='text-primary-300 text-4xl uppercase tracking-wider p-0 flex gap-4' variant="link" onClick={handleSignIn}><AiOutlineGoogle /> Log in</Button>
-      <Logo className='text-4xl self-start'>ET</Logo>
-    </aside>
-  </div>
+  return (
+    <div className="block md:hidden">
+      <Button className="p-0" variant="link" onClick={toggle}>
+        <Menu className="text-slate-300" />
+      </Button>
+      <aside
+        className={twMerge(
+          'flex flex-col gap-6 p-8 fixed z-50 h-screen w-screen bg-slate-900 top-0 left-0 shadow-md items-end transition-[left]',
+          isOpen ? 'left-0' : 'left-[100%]'
+        )}
+      >
+        <Button className="self-start p-0" variant="link" onClick={toggle}>
+          <X className="text-slate-300" size={40} />
+        </Button>
+        <nav className="mt-8 flex flex-col gap-4">
+          <Link
+            className="text-right text-4xl uppercase tracking-wider text-slate-300"
+            href="/"
+            onClick={toggle}
+          >
+            Home
+          </Link>
+          <Link
+            className="text-right text-4xl uppercase tracking-wider text-slate-300"
+            href="/blog"
+            onClick={toggle}
+          >
+            Blog
+          </Link>
+          <Link
+            className="text-right text-4xl uppercase tracking-wider text-slate-300"
+            href="/pricing"
+            onClick={toggle}
+          >
+            Pricing
+          </Link>
+          <Link
+            className="text-right text-4xl uppercase tracking-wider text-slate-300"
+            href="/team"
+            onClick={toggle}
+          >
+            Team
+          </Link>
+        </nav>
+        <Separator />
+        <div className="flex-1"></div>
+        <Button
+          className="flex gap-4 p-0 text-4xl uppercase tracking-wider text-primary-300"
+          variant="link"
+          onClick={handleSignIn}
+        >
+          <AiOutlineGoogle /> Log in
+        </Button>
+        <Logo className="self-start text-4xl">ET</Logo>
+      </aside>
+    </div>
+  )
 }

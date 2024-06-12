@@ -1,6 +1,6 @@
 import { type Config } from 'tailwindcss'
-import animatePlugin from 'tailwindcss-animate'
 import plugin from 'tailwindcss/plugin'
+import animatePlugin from 'tailwindcss-animate'
 
 export const tailwindPreset = {
   darkMode: ['class'],
@@ -64,7 +64,9 @@ export const tailwindPreset = {
         }
       })
       addUtilities({
-        '.dashboard-label': { '@apply text-xs text-theme-light font-semibold uppercase': {} },
+        '.dashboard-label': {
+          '@apply text-xs text-theme-light font-semibold uppercase': {}
+        },
         '.dashboard-value': { '@apply text-lg text-foreground': {} }
       })
     })
@@ -86,7 +88,10 @@ export const tailwindPreset = {
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          foreground: 'hsl(var(--primary-foreground))',
+          300: 'hsl(var(--primary))', // TODO: These colors should be defined
+          600: 'hsl(var(--primary))',
+          800: 'hsl(var(--primary))'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -162,6 +167,26 @@ export const tailwindPreset = {
         'fall-short': {
           from: { transform: 'translateY(-2rem)', opacity: '0' },
           to: { transform: 'translateY(0)', opacity: '1' }
+        },
+        'doc-snapshot': {
+          from: {
+            transform:
+              'rotateY(35deg) rotateX(18deg) scale(1.1) translateX(-100px)',
+            opacity: '0.25'
+          },
+          to: {
+            transform:
+              'rotateY(5deg) rotateX(5deg) scale(1) translate3d(0, 0, 100px)',
+            opacity: '1'
+          }
+        },
+        rise: {
+          from: { transform: 'translateY(150px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' }
+        },
+        'wheel-fade': {
+          from: { opacity: '1' },
+          to: { opacity: '0' }
         }
       },
       blur: {

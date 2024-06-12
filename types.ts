@@ -45,7 +45,7 @@ export interface FormatElement {
 export enum FormatEnum {
   JPEG = 'jpeg',
   PNG = 'png',
-  SVG = 'svg',
+  SVG = 'svg'
 }
 
 export interface Link {
@@ -60,8 +60,13 @@ export interface Logo {
   type: string
 }
 
-export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & { isFetched: true }
-export type ProviderUnfetched = { isFetched: false } & Pick<Provider, 'id' | 'name'>
+export type ProviderFetched = Required<Omit<Provider, 'isFetched'>> & {
+  isFetched: true
+}
+export type ProviderUnfetched = { isFetched: false } & Pick<
+  Provider,
+  'id' | 'name'
+>
 
 export enum NOTIFICATION_TYPE {
   GENERIC = 'GENERIC',
@@ -96,3 +101,13 @@ export enum TIME {
   PRESENT,
   FUTURE
 }
+
+export type ButtonVariant =
+  | 'outline'
+  | 'destructive'
+  | 'link'
+  | 'default'
+  | 'secondary'
+  | 'ghost'
+  | null
+  | undefined

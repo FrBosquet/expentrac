@@ -8,17 +8,18 @@ export const GET = async (req: Request) => {
   const userId = searchParams.get('userId')
 
   if (!userId) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const loans = await prisma.notification.findMany({
-    orderBy: [
-      { date: 'desc' }
-    ],
+    orderBy: [{ date: 'desc' }],
     where: {
       userId,
       ack: false || undefined
@@ -29,23 +30,34 @@ export const GET = async (req: Request) => {
 }
 
 export const POST = async (req: Request) => {
-  const body = await req.json() as { userId: string, message: string, email: boolean, type: NOTIFICATION_TYPE }
+  const body = (await req.json()) as {
+    userId: string
+    message: string
+    email: boolean
+    type: NOTIFICATION_TYPE
+  }
   const { userId, message, email } = body
 
   if (!userId) {
-    return NextResponse.json({
-      message: 'userId is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'userId is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   if (!message) {
-    return NextResponse.json({
-      message: 'message is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'message is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   try {
@@ -54,7 +66,10 @@ export const POST = async (req: Request) => {
       message: body.message
     })
 
-    return NextResponse.json({ message: 'success', data: notification }, { status: 201 })
+    return NextResponse.json(
+      { message: 'success', data: notification },
+      { status: 201 }
+    )
   } catch (e) {
     return NextResponse.json({ message: 'error', data: e }, { status: 500 })
   }

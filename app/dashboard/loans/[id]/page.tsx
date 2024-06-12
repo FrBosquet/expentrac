@@ -19,25 +19,45 @@ export default function Page() {
 
   if (!loan) return null
 
-  const { resources: { link } } = loan
+  const {
+    resources: { link }
+  } = loan
 
-  return <>
-    <h1 className='col-span-2 lg:col-span-4 text-5xl pb-4'>{loan.name}</h1>
-    <menu className='flex gap-2 pb-6'>
-      <ButtonLink href='/dashboard/loans'><PinLeftIcon /> Back </ButtonLink>
-      {
-        link
-          ? <ButtonLink target='_blank' href={link}>
+  return (
+    <>
+      <h1 className="col-span-2 pb-4 text-5xl lg:col-span-4">{loan.name}</h1>
+      <menu className="flex gap-2 pb-6">
+        <ButtonLink href="/dashboard/loans">
+          <PinLeftIcon /> Back{' '}
+        </ButtonLink>
+        {link ? (
+          <ButtonLink href={link} target="_blank">
             <Link size={12} /> Link
           </ButtonLink>
-          : null}
-      <LoanEdit loan={loan} triggerDecorator={<article className="text-xs flex items-center gap-2"><Edit size={12} /> Edit</article>} />
-      <LoanDelete sideEffect={async () => {
-        push('/dashboard/loans')
-      }} triggerDecorator={<article className="text-xs flex items-center gap-2"><Trash size={12} /> Delete</article>} loan={loan} />
-    </menu>
-    <LoanDetailContent loan={loan} className='col-span-2 lg:col-span-4' />
-    <Separator className='col-span-2 lg:col-span-4' />
-    <LoanPayplan className='col-span-2 my-4' loan={loan} />
-  </>
+        ) : null}
+        <LoanEdit
+          loan={loan}
+          triggerDecorator={
+            <article className="flex items-center gap-2 text-xs">
+              <Edit size={12} /> Edit
+            </article>
+          }
+        />
+        <LoanDelete
+          loan={loan}
+          sideEffect={async () => {
+            push('/dashboard/loans')
+          }}
+          triggerDecorator={
+            <article className="flex items-center gap-2 text-xs">
+              <Trash size={12} /> Delete
+            </article>
+          }
+        />
+      </menu>
+      <LoanDetailContent className="col-span-2 lg:col-span-4" loan={loan} />
+      <Separator className="col-span-2 lg:col-span-4" />
+      <LoanPayplan className="col-span-2 my-4" loan={loan} />
+    </>
+  )
 }

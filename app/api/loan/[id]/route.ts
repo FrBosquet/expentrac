@@ -1,11 +1,18 @@
 import { authOptions } from '@lib/auth'
 import { type LoanFormData } from '@lib/loan'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Contract, type Prisma, type RawProvidersOnContract, type Share } from '@lib/prisma'
+import {
+  type Contract,
+  type Prisma,
+  prisma,
+  type RawProvidersOnContract,
+  type Share
+} from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
-import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+
 import { include } from '../include'
 interface Query {
   params: {
@@ -17,49 +24,67 @@ export const PATCH = async (req: Request, { params }: Query) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    return NextResponse.json({
-      message: 'forbidden'
-    }, {
-      status: 403
-    })
+    return NextResponse.json(
+      {
+        message: 'forbidden'
+      },
+      {
+        status: 403
+      }
+    )
   }
 
   const id = params.id
 
   if (!id) {
-    return NextResponse.json({
-      message: 'id is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'id is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const userId = session.user.id
 
-  const body = await req.json() as LoanFormData
+  const body = (await req.json()) as LoanFormData
 
   const loan = await prisma.contract.findUnique({ where: { id }, include })
 
   if (!loan) {
-    return NextResponse.json({
-      message: 'loan not found'
-    }, {
-      status: 404
-    })
+    return NextResponse.json(
+      {
+        message: 'loan not found'
+      },
+      {
+        status: 404
+      }
+    )
   }
 
   if (userId !== loan?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
+    return NextResponse.json(
+      {
+        message: 'user does not own this resource'
+      },
+      {
+        status: 403
+      }
+    )
   }
 
   // SHARES
-  const sharedWithKeys = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value)
-  const keysToDelete = loan.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
-  const keysToCreate = sharedWithKeys.filter(id => !loan.shares.some(share => share.toId === id))
+  const sharedWithKeys = Object.entries(body)
+    .filter(([key]) => key.startsWith('sharedWith'))
+    .map(([_, value]) => value)
+  const keysToDelete = loan.shares
+    .filter((share) => !sharedWithKeys.includes(share.toId))
+    .map((share) => ({ id: share.id }))
+  const keysToCreate = sharedWithKeys.filter(
+    (id) => !loan.shares.some((share) => share.toId === id)
+  )
 
   const updatedLoan = await prisma.contract.update({
     where: {
@@ -83,7 +108,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
       providers: getProviderUpdateArgs(loan, body),
       shares: {
         createMany: {
-          data: keysToCreate.map(toId => ({
+          data: keysToCreate.map((toId) => ({
             fromId: userId,
             toId
           }))
@@ -95,7 +120,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
       resources: {
         upsert: {
           where: {
-            id: loan.resources.find(resource => resource.type === 'LINK')?.id,
+            id: loan.resources.find((resource) => resource.type === 'LINK')?.id,
             type: 'LINK'
           },
           update: {
@@ -112,8 +137,8 @@ export const PATCH = async (req: Request, { params }: Query) => {
     include
   })
 
-  keysToCreate.forEach(toId => {
-    const share = updatedLoan.shares.find(share => share.toId === toId)
+  keysToCreate.forEach((toId) => {
+    const share = updatedLoan.shares.find((share) => share.toId === toId)
 
     if (!share) return
 
@@ -124,15 +149,30 @@ export const PATCH = async (req: Request, { params }: Query) => {
     })
   })
 
-  return NextResponse.json({ message: 'success', data: updatedLoan }, { status: 200 })
+  return NextResponse.json(
+    { message: 'success', data: updatedLoan },
+    { status: 200 }
+  )
 }
 
-const getProviderUpdateArgs = (loan: { providers: RawProvidersOnContract[] }, body: LoanFormData) => {
-  const vendorProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.VENDOR)
-  const platformProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.PLATFORM)
-  const lenderProvider = loan.providers.find(provider => provider.as === PROVIDER_TYPE.LENDER)
+const getProviderUpdateArgs = (
+  loan: { providers: RawProvidersOnContract[] },
+  body: LoanFormData
+) => {
+  const vendorProvider = loan.providers.find(
+    (provider) => provider.as === PROVIDER_TYPE.VENDOR
+  )
+  const platformProvider = loan.providers.find(
+    (provider) => provider.as === PROVIDER_TYPE.PLATFORM
+  )
+  const lenderProvider = loan.providers.find(
+    (provider) => provider.as === PROVIDER_TYPE.LENDER
+  )
 
-  const getUpdate = (providerOnContract: RawProvidersOnContract | undefined, providerId: string | undefined) => {
+  const getUpdate = (
+    providerOnContract: RawProvidersOnContract | undefined,
+    providerId: string | undefined
+  ) => {
     if (!providerOnContract) return undefined
     if (providerOnContract.providerId === providerId) return undefined
     if (providerId === SELECT_OPTIONS.NONE) return undefined

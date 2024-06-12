@@ -1,6 +1,12 @@
 import { cn } from '@lib/utils'
-import { CreditCard, Landmark, ShoppingBag, type LucideIcon } from 'lucide-react'
+import {
+  CreditCard,
+  Landmark,
+  type LucideIcon,
+  ShoppingBag
+} from 'lucide-react'
 import { type Dispatch, type MouseEvent, type SetStateAction } from 'react'
+
 import { Tooltip } from './Tooltip'
 import { Toggle } from './ui/toggle'
 
@@ -23,11 +29,13 @@ const icons: Record<Value, LucideIcon> = {
 }
 
 export const ToggleSelect = ({ options, className, type, setType }: Props) => {
-  const handleChange = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+  const handleChange = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
     e.preventDefault()
     const value = e.currentTarget.value
 
-    setType(current => {
+    setType((current) => {
       if (current === value) {
         return null
       }
@@ -36,18 +44,29 @@ export const ToggleSelect = ({ options, className, type, setType }: Props) => {
   }
 
   return (
-    <div className={cn('flex border p-1 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-md', className)}>
-      {
-        options.map(({ tooltip, value }) => {
-          const Icon = icons[value]
+    <div
+      className={cn(
+        'flex border p-1 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-md',
+        className
+      )}
+    >
+      {options.map(({ tooltip, value }) => {
+        const Icon = icons[value]
 
-          return <Tooltip key={value} tooltip={tooltip}>
-            <Toggle className='py-1' pressed={type === value} value={value} onClick={handleChange} aria-label={`toggle ${tooltip}`}>
+        return (
+          <Tooltip key={value} tooltip={tooltip}>
+            <Toggle
+              aria-label={`toggle ${tooltip}`}
+              className="py-1"
+              pressed={type === value}
+              value={value}
+              onClick={handleChange}
+            >
               <Icon size={16} />
             </Toggle>
           </Tooltip>
-        })
-      }
+        )
+      })}
     </div>
   )
 }

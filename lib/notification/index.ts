@@ -1,32 +1,50 @@
 import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
-import { handleDaily, type DailyNotification } from './daily'
-import { handleGeneric, type GenericNotification } from './generic'
+
+import { type DailyNotification, handleDaily } from './daily'
+import { type GenericNotification, handleGeneric } from './generic'
 import { handleLoanShare, type LoanShareNotification } from './loan-share'
-import { handleLoanShareAccept, type LoanShareAcceptNotification } from './loan-share-accept'
-import { handleLoanShareReject, type LoanShareRejectionNotification } from './loan-share-reject'
+import {
+  handleLoanShareAccept,
+  type LoanShareAcceptNotification
+} from './loan-share-accept'
+import {
+  handleLoanShareReject,
+  type LoanShareRejectionNotification
+} from './loan-share-reject'
 import { handleSubsShare, type SubShareNotification } from './sub-share'
-import { handleSubShareAccept, type SubShareAcceptNotification } from './sub-share-accept'
-import { handleSubShareReject, type SubShareRejectNotification } from './sub-share-reject'
+import {
+  handleSubShareAccept,
+  type SubShareAcceptNotification
+} from './sub-share-accept'
+import {
+  handleSubShareReject,
+  type SubShareRejectNotification
+} from './sub-share-reject'
 
 type NotificationData =
-  GenericNotification |
-  LoanShareNotification |
-  LoanShareAcceptNotification |
-  LoanShareRejectionNotification |
-  SubShareNotification |
-  SubShareAcceptNotification |
-  SubShareRejectNotification |
-  DailyNotification
+  | GenericNotification
+  | LoanShareNotification
+  | LoanShareAcceptNotification
+  | LoanShareRejectionNotification
+  | SubShareNotification
+  | SubShareAcceptNotification
+  | SubShareRejectNotification
+  | DailyNotification
 
-const create = async (userId: string, shouldEmail: boolean, data: NotificationData) => {
+const create = async (
+  userId: string,
+  shouldEmail: boolean,
+  data: NotificationData
+) => {
   const user = await prisma.user.findUnique({
     where: {
       id: userId
     }
   })
 
-  if (!user) throw new Error(`Generating notification, no user found for id: ${userId}`)
+  if (!user)
+    throw new Error(`Generating notification, no user found for id: ${userId}`)
 
   const { type } = data
 

@@ -2,13 +2,22 @@
 
 import { FormField, SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@components/ui/dialog'
 import { toHTMLInputFormat } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
 import { type Period } from '@prisma/client'
+import { ButtonVariant } from '@types'
 import { Play } from 'lucide-react'
 import { useState } from 'react'
+
 import { resumeSubscription } from './actions'
 import { useSubs } from './context'
 import { SubscriptionFormPeriodicity } from './form'
@@ -16,13 +25,22 @@ import { SubscriptionFormPeriodicity } from './form'
 interface Props {
   sub: Subscription
   className?: string
-  variant?: 'outline' | 'destructive' | 'link' | 'default' | 'secondary' | 'ghost' | null | undefined
+  variant?: ButtonVariant
   children?: React.ReactNode
 }
 
-const TRIGGER_DECORATOR = <article className='flex items-center gap-2'><Play size={12} /> Resume</article>
+const TRIGGER_DECORATOR = (
+  <article className="flex items-center gap-2">
+    <Play size={12} /> Resume
+  </article>
+)
 
-export const SubResume = ({ sub, className, variant = 'outline', children = TRIGGER_DECORATOR }: Props) => {
+export const SubResume = ({
+  sub,
+  className,
+  variant = 'outline',
+  children = TRIGGER_DECORATOR
+}: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { updateSub } = useSubs()
@@ -40,6 +58,8 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
       updateSub(response)
       setOpen(false)
     } catch (e) {
+      // TODO: toast
+      // eslint-disable-next-line no-console
       console.error(e)
     } finally {
       setLoading(false)
@@ -56,7 +76,15 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} className={cn('p-2 h-auto', className)} onClick={() => { setOpen(true) }}>{children}</Button>
+        <Button
+          className={cn('p-2 h-auto', className)}
+          variant={variant}
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
+          {children}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -64,16 +92,35 @@ export const SubResume = ({ sub, className, variant = 'outline', children = TRIG
           <DialogDescription>
             Resume <strong className="font-semibold">{sub.name}</strong>.
           </DialogDescription>
-          <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-2 justify-between items-center pt-4'>
-            <input type="hidden" name="id" value={sub.id} />
+          <form
+            className="grid grid-cols-2 items-center justify-between gap-2 pt-4"
+            onSubmit={handleSubmit}
+          >
+            <input name="id" type="hidden" value={sub.id} />
 
-            <FormField label="From" required type="date" name="date" defaultValue={toHTMLInputFormat(new Date())} />
+            <FormField
+              required
+              defaultValue={toHTMLInputFormat(new Date())}
+              label="From"
+              name="date"
+              type="date"
+            />
 
-            <FormField required defaultValue={lastActivePeriod.fee} name="fee" label="Fee" type="number" step="0.01" className='text-center'>€</FormField>
+            <FormField
+              required
+              className="text-center"
+              defaultValue={lastActivePeriod.fee}
+              label="Fee"
+              name="fee"
+              step="0.01"
+              type="number"
+            >
+              €
+            </FormField>
 
             <SubscriptionFormPeriodicity sub={sub} />
 
-            <SubmitButton className='col-start-2' submitting={loading} />
+            <SubmitButton className="col-start-2" submitting={loading} />
           </form>
         </DialogHeader>
       </DialogContent>

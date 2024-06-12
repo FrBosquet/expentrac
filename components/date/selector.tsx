@@ -3,7 +3,15 @@
 import { Button } from '@components/ui/button'
 import { dateFormater } from '@lib/dates'
 import { TIME } from '@types'
-import { ArrowLeft, ArrowRight, CalendarCheck, CalendarClock, Clock, type LucideIcon } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarCheck,
+  CalendarClock,
+  Clock,
+  type LucideIcon
+} from 'lucide-react'
+
 import { useDate } from './context'
 
 const ICONS = {
@@ -49,11 +57,24 @@ export const DateSelector = () => {
   const isPast = time === TIME.PAST
   const isPresent = time === TIME.PRESENT
 
-  return <article className="flex gap-2 flex-row justify-between items-center">
-    <Button variant="ghost" className='p-2 h-auto' onClick={prevMonth}><ArrowLeft size={12} /></Button>
-    <Button variant="ghost" className='p-2 h-auto' onClick={nextMonth}><ArrowRight size={12} /></Button>
-    <Button disabled={isPresent} variant={isPresent ? 'ghost' : isPast ? 'default' : 'outline'} onClick={currentMonth} className='disabled:opacity-100'>
-      <strong className='flex flex-row items-center gap-2 min-w-[16ch] text-xs'><CalendarIcon size={12} className='inline' /> {dateString}</strong>
-    </Button>
-  </article>
+  return (
+    <article className="flex flex-row items-center justify-between gap-2">
+      <Button className="h-auto p-2" variant="ghost" onClick={prevMonth}>
+        <ArrowLeft size={12} />
+      </Button>
+      <Button className="h-auto p-2" variant="ghost" onClick={nextMonth}>
+        <ArrowRight size={12} />
+      </Button>
+      <Button
+        className="disabled:opacity-100"
+        disabled={isPresent}
+        variant={isPresent ? 'ghost' : isPast ? 'default' : 'outline'}
+        onClick={currentMonth}
+      >
+        <strong className="flex min-w-[16ch] flex-row items-center gap-2 text-xs">
+          <CalendarIcon className="inline" size={12} /> {dateString}
+        </strong>
+      </Button>
+    </article>
+  )
 }

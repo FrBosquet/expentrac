@@ -14,7 +14,12 @@ export interface SubShareNotificationPayload {
   state: SHARE_STATE
 }
 
-export const handleSubsShare = async (user: User, shouldEmail: boolean, contract: Contract, share: Share) => {
+export const handleSubsShare = async (
+  user: User,
+  shouldEmail: boolean,
+  contract: Contract,
+  share: Share
+) => {
   const payload: SubShareNotificationPayload = {
     contract,
     share,

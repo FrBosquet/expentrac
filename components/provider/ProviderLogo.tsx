@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import { type Provider } from '@lib/prisma'
-import { FormatEnum, type BrandExtendedInfo } from '@types'
-import { PiggyBankIcon, type LucideIcon } from 'lucide-react'
+import { type BrandExtendedInfo, FormatEnum } from '@types'
+import { type LucideIcon, PiggyBankIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
@@ -39,12 +40,27 @@ export const getLogoUrl = (data: BrandExtendedInfo) => {
   return bestCandidate
 }
 
-export const ProviderLogo = ({ provider, className, Default = PiggyBankIcon }: Props) => {
+export const ProviderLogo = ({
+  provider,
+  className,
+  Default = PiggyBankIcon
+}: Props) => {
   if (!provider || !provider.isFetched) {
     return <Default className={twMerge('w-16 h-16', className)} />
   }
 
-  const logoSrc = getLogoUrl(provider.rawContent as unknown as BrandExtendedInfo)
+  const logoSrc = getLogoUrl(
+    provider.rawContent as unknown as BrandExtendedInfo
+  )
 
-  return <img src={logoSrc} alt={provider.name} className={twMerge('w-16 h-16 fill-black object-contain bg-slate-200 p-1 rounded-full border', className)} />
+  return (
+    <img
+      alt={provider.name}
+      className={twMerge(
+        'w-16 h-16 fill-black object-contain bg-slate-200 p-1 rounded-full border',
+        className
+      )}
+      src={logoSrc}
+    />
+  )
 }

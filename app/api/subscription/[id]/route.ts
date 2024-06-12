@@ -1,13 +1,20 @@
-/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable prettier/prettier */
 import { authOptions } from '@lib/auth'
 import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
-import { prisma, type Contract, type Prisma, type RawProvidersOnContract, type Share } from '@lib/prisma'
+import {
+  type Contract,
+  type Prisma,
+  prisma,
+  type RawProvidersOnContract,
+  type Share
+} from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { type SubFormData } from '@lib/sub'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
-import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+
 import { subscriptionInclude } from '../include'
 
 interface Query {
@@ -22,49 +29,70 @@ export const PATCH = async (req: Request, { params }: Query) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    return NextResponse.json({
-      message: 'forbidden'
-    }, {
-      status: 403
-    })
+    return NextResponse.json(
+      {
+        message: 'forbidden'
+      },
+      {
+        status: 403
+      }
+    )
   }
 
   const id = params.id
 
   if (!id) {
-    return NextResponse.json({
-      message: 'id is required'
-    }, {
-      status: 400
-    })
+    return NextResponse.json(
+      {
+        message: 'id is required'
+      },
+      {
+        status: 400
+      }
+    )
   }
 
   const userId = session.user.id
 
-  const body = await req.json() as SubFormData
+  const body = (await req.json()) as SubFormData
 
-  const sub = await prisma.contract.findUnique({ where: { id }, include: subscriptionInclude })
+  const sub = await prisma.contract.findUnique({
+    where: { id },
+    include: subscriptionInclude
+  })
 
   if (!sub) {
-    return NextResponse.json({
-      message: 'sub not found'
-    }, {
-      status: 404
-    })
+    return NextResponse.json(
+      {
+        message: 'sub not found'
+      },
+      {
+        status: 404
+      }
+    )
   }
 
   if (userId !== sub?.userId) {
-    return NextResponse.json({
-      message: 'user does not own this resource'
-    }, {
-      status: 403
-    })
+    return NextResponse.json(
+      {
+        message: 'user does not own this resource'
+      },
+      {
+        status: 403
+      }
+    )
   }
 
   // SHARES
-  const sharedWithKeys = Object.entries(body).filter(([key]) => key.startsWith('sharedWith')).map(([_, value]) => value as string)
-  const keysToDelete = sub.shares.filter(share => !sharedWithKeys.includes(share.toId)).map(share => ({ id: share.id }))
-  const keysToCreate = sharedWithKeys.filter(id => !sub.shares.some(share => share.toId === id))
+  const sharedWithKeys = Object.entries(body)
+    .filter(([key]) => key.startsWith('sharedWith'))
+    .map(([_, value]) => value as string)
+  const keysToDelete = sub.shares
+    .filter((share) => !sharedWithKeys.includes(share.toId))
+    .map((share) => ({ id: share.id }))
+  const keysToCreate = sharedWithKeys.filter(
+    (id) => !sub.shares.some((share) => share.toId === id)
+  )
 
   const isYearly = body.yearly === 'on'
 
@@ -91,7 +119,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
       providers: getProviderUpdateArgs(sub, body),
       shares: {
         createMany: {
-          data: keysToCreate.map(toId => ({
+          data: keysToCreate.map((toId) => ({
             fromId: userId,
             toId
           }))
@@ -100,37 +128,39 @@ export const PATCH = async (req: Request, { params }: Query) => {
           OR: keysToDelete
         }
       },
-      resources: sub.resources.length === 0
-        // THIS IS A FIX FOR THE CARRYOVER OF SUBSCRIPTIONS TO CONTRACTS NOT HAVING LINKS
-        ? {
-          create: {
-            name: 'link',
-            type: 'LINK',
-            url: body.link
-          }
-        }
-        : {
-          upsert: {
-            where: {
-              id: sub.resources.find(resource => resource.type === 'LINK')?.id,
-              type: 'LINK'
-            },
-            update: {
-              url: body.link
-            },
+      resources:
+        sub.resources.length === 0
+          ? // THIS IS A FIX FOR THE CARRYOVER OF SUBSCRIPTIONS TO CONTRACTS NOT HAVING LINKS
+          {
             create: {
               name: 'link',
               type: 'LINK',
               url: body.link
             }
           }
-        }
+          : {
+            upsert: {
+              where: {
+                id: sub.resources.find((resource) => resource.type === 'LINK')
+                  ?.id,
+                type: 'LINK'
+              },
+              update: {
+                url: body.link
+              },
+              create: {
+                name: 'link',
+                type: 'LINK',
+                url: body.link
+              }
+            }
+          }
     },
     include: subscriptionInclude
   })
 
-  keysToCreate.forEach(toId => {
-    const share = updatedSub.shares.find(share => share.toId === toId)
+  keysToCreate.forEach((toId) => {
+    const share = updatedSub.shares.find((share) => share.toId === toId)
 
     if (!share) return
 
@@ -141,14 +171,27 @@ export const PATCH = async (req: Request, { params }: Query) => {
     })
   })
 
-  return NextResponse.json({ message: 'success', data: updatedSub }, { status: 200 })
+  return NextResponse.json(
+    { message: 'success', data: updatedSub },
+    { status: 200 }
+  )
 }
 
-const getProviderUpdateArgs = (sub: { providers: RawProvidersOnContract[] }, body: SubFormData) => {
-  const vendorProvider = sub.providers.find(provider => provider.as === PROVIDER_TYPE.VENDOR)
-  const platformProvider = sub.providers.find(provider => provider.as === PROVIDER_TYPE.PLATFORM)
+const getProviderUpdateArgs = (
+  sub: { providers: RawProvidersOnContract[] },
+  body: SubFormData
+) => {
+  const vendorProvider = sub.providers.find(
+    (provider) => provider.as === PROVIDER_TYPE.VENDOR
+  )
+  const platformProvider = sub.providers.find(
+    (provider) => provider.as === PROVIDER_TYPE.PLATFORM
+  )
 
-  const getUpdate = (providerOnContract: RawProvidersOnContract | undefined, providerId: string | undefined) => {
+  const getUpdate = (
+    providerOnContract: RawProvidersOnContract | undefined,
+    providerId: string | undefined
+  ) => {
     if (!providerOnContract) return undefined
     if (providerOnContract.providerId === providerId) return undefined
     if (providerId === SELECT_OPTIONS.NONE) return undefined
