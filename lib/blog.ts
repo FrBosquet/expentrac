@@ -1,7 +1,8 @@
+import { mdxComponents } from '@components/mdxComponents'
 import { readdirSync, readFileSync } from 'fs'
-import { type MDXRemoteSerializeResult } from 'next-mdx-remote'
-import { serialize } from 'next-mdx-remote/serialize'
+import { compileMDX } from 'next-mdx-remote/rsc'
 import path from 'path'
+import remarkUnwrapImages from 'remark-unwrap-images'
 
 const POSTS_DIRECTORY = path.join(process.cwd(), 'app/(web)/blog/_posts')
 export interface Post {
@@ -31,25 +32,22 @@ export const getPostSlugs = (): string[] => {
   return fileNames.map((name) => name.replace('.mdx', ''))
 }
 
-export const getPosts = async (tag?: string): Promise<Post[]> => {
+export const getPosts = async (): Promise<Post[]> => {
   const fileNames = getPostsFileNames()
 
   const posts: Post[] = await Promise.all(
     fileNames.map(async (name) => {
       const filename = path.join(POSTS_DIRECTORY, name)
       const raw = readFileSync(filename)
-      const serilized = await serialize(raw, {
-        parseFrontmatter: true
+      const { frontmatter } = await compileMDX<Post>({
+        source: raw,
+        components: mdxComponents,
+        options: {
+          parseFrontmatter: true
+        }
       })
 
-      const meta = serilized.frontmatter as unknown as Post
-
-      const post: Post = {
-        ...meta,
-        slug: name.replace('.mdx', '')
-      }
-
-      return post
+      return { ...frontmatter, slug: name.replace('.mdx', '') } as Post
     })
   )
 
@@ -63,9 +61,14 @@ export const getPosts = async (tag?: string): Promise<Post[]> => {
 export const getPost = async (slug: string) => {
   const filename = path.join(POSTS_DIRECTORY, slug + '.mdx')
   const raw = readFileSync(filename)
-  const serialized = await serialize(raw, {
-    parseFrontmatter: true
+  return await compileMDX<Post>({
+    source: raw,
+    components: mdxComponents,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkUnwrapImages]
+      }
+    }
   })
-
-  return serialized as MDXRemoteSerializeResult & { frontmatter: Post }
 }

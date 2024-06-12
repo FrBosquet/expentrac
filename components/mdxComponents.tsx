@@ -1,11 +1,4 @@
-'use client'
-
-import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { type HTMLAttributes } from 'react'
-
-interface MdxContentProps {
-  source: MDXRemoteSerializeResult
-}
 
 const code = (props: HTMLAttributes<HTMLElement>) => {
   const { children } = props
@@ -74,8 +67,4 @@ export const mdxComponents = {
     </em>
   ),
   code
-}
-
-export const MdxContent = ({ source }: MdxContentProps) => {
-  return <MDXRemote {...source} components={mdxComponents} />
 }

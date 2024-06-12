@@ -1,4 +1,3 @@
-import { MdxContent } from '@components/mdxComponents'
 import { getPost, getPostSlugs, type Post } from '@lib/blog'
 import { fullDateFormater } from '@lib/dates'
 import { MoveLeft } from 'lucide-react'
@@ -31,7 +30,7 @@ const PostHeader = ({ title, date, image }: Post) => {
                 alt="splash"
                 className={twMerge('object-cover', image.className)}
                 src={`/${image.src}`}
-              ></Image>
+              />
             </div>{' '}
             <section className="pb-1 text-xs text-slate-600">
               <div>
@@ -63,8 +62,7 @@ const PostHeader = ({ title, date, image }: Post) => {
 }
 
 export default async function Page({ params: { slug } }: Props) {
-  const post = await getPost(slug)
-  const meta = post.frontmatter as Post
+  const { frontmatter, content } = await getPost(slug)
 
   return (
     <section className="relative m-auto flex w-full max-w-5xl flex-1 flex-col justify-start gap-4 px-4 py-6">
@@ -76,8 +74,8 @@ export default async function Page({ params: { slug } }: Props) {
           <MoveLeft className="size-6 transition-all" />
         </Link>
       </aside>
-      <PostHeader {...meta} />
-      <MdxContent source={post} />
+      <PostHeader {...frontmatter} />
+      {content}
     </section>
   )
 }
