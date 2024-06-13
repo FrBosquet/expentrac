@@ -57,7 +57,7 @@ export const ProviderLogo = ({
     <img
       alt={provider.name}
       className={twMerge(
-        'w-16 h-16 fill-black object-contain bg-slate-200 p-1 rounded-full border',
+        'w-16 h-16 fill-black object-contain bg-slate-300 p-1 rounded-full',
         className
       )}
       src={logoSrc}
