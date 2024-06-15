@@ -14,12 +14,12 @@ export default async function Page() {
       <header className="col-span-4 flex gap-8">
         <Avatar className={'size-48 border border-theme-border'}>
           <AvatarImage alt={user?.name!} src={user?.image!} />
-          <AvatarFallback>{fallback}</AvatarFallback>
+          <AvatarFallback className="text-7xl">{fallback}</AvatarFallback>
         </Avatar>
-        <div className="flex flex-1 flex-col justify-center">
+        <div className="flex flex-1 flex-col justify-center gap-2">
           <h1 className="text-5xl font-extralight uppercase">{user?.name!}</h1>
           {user?.occupation && (
-            <p className="text-sm font-bold uppercase text-theme-accent">
+            <p className="text-xs font-bold uppercase text-theme-accent">
               {user?.occupation}
             </p>
           )}
