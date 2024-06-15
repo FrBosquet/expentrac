@@ -73,7 +73,7 @@ export const updateSubscriptionPrice = async (
   const [period] = sub.periods
 
   const date = new Date(formData.get('date') as string)
-  const endDate = new Date(period.from)
+  const endDate = new Date(date)
   endDate.setDate(endDate.getDate() - 1)
 
   await prisma.period.update({

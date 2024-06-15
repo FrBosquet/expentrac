@@ -86,7 +86,7 @@ export const SubPayplan = ({ sub, className }: Props) => {
 
             const tooltipContent = (
               <aside>
-                <p>Paid</p>
+                <p>{isPaid ? 'Paid' : 'Upcoming'}</p>
               </aside>
             )
 

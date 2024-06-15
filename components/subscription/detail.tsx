@@ -14,8 +14,9 @@ import {
 import { Separator } from '@components/ui/separator'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
-import { monthBeetween } from '@lib/dates'
+import { isInSameMont, monthBeetween } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
+import { Period } from '@prisma/client'
 import { Edit, Trash } from 'lucide-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -85,6 +86,36 @@ export const SubscriptionDetail = ({
   )
 }
 
+const isActiveInThisMonth = (refDate: Date, active?: Period | undefined) => {
+  if (!active) return false
+
+  const fromDate = new Date(active.from)
+
+  if (fromDate < refDate) return true
+
+  const sameMonth = isInSameMont(fromDate, refDate)
+
+  if (
+    sameMonth &&
+    fromDate.getDate() <= (active?.payday ?? Number.MAX_SAFE_INTEGER)
+  )
+    return true
+
+  if (active.to) {
+    const toDate = new Date(active.to)
+
+    if (
+      isInSameMont(toDate, refDate) &&
+      toDate.getDate() >= (active?.payday ?? 0)
+    )
+      return true
+
+    if (toDate > refDate) return true
+  }
+
+  return false
+}
+
 export const SubDetailContent = ({
   sub,
   className
@@ -102,8 +133,7 @@ export const SubDetailContent = ({
     periods: { active }
   } = sub
 
-  const isActive = active && new Date(active.from) < date
-
+  const isActive = isActiveInThisMonth(date, active)
   const ndate = new Date()
   if (paymonth) ndate.setMonth(paymonth)
   if (payday) ndate.setDate(payday)
@@ -127,9 +157,9 @@ export const SubDetailContent = ({
           <p className="dashboard-value">
             {isYearly
               ? ndate.toLocaleDateString('default', {
-                  month: 'short',
-                  day: 'numeric'
-                })
+                month: 'short', // eslint-disable-line
+                day: 'numeric' //eslint-disable-line
+              }) // eslint-disable-line
               : payday}
           </p>
         </article>
@@ -150,7 +180,7 @@ export const SubDetailContent = ({
           <article className="flex flex-col gap-2">
             <h4 className="dashboard-label">Months active</h4>
             <p className="dashboard-value">
-              {monthBeetween(new Date(active.from), date)}
+              {monthBeetween(new Date(active.from), date) || 'First month'}
             </p>
           </article>
         </>

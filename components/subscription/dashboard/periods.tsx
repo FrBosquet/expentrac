@@ -1,3 +1,4 @@
+import { Tooltip } from '@components/Tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
 import { type Subscription } from '@lib/sub'
@@ -23,7 +24,7 @@ export const SubPeriods = ({ sub, className }: Props) => {
       </CardHeader>
       <CardContent>
         <section className="flex max-h-[500px] flex-col gap-2 overflow-y-auto">
-          {all.reverse().map((period) => {
+          {all.toReversed().map((period) => {
             const { from, to, fee, id } = period
             const fromDate = new Date(from)
             const toDate = to ? new Date(to) : null
@@ -40,19 +41,26 @@ export const SubPeriods = ({ sub, className }: Props) => {
 
             const isActiveOne = id === active?.id
 
+            const tooltipContent = (
+              <aside>
+                <p>{isActiveOne ? 'Currently active' : 'Past period'}</p>
+              </aside>
+            )
+
             return (
-              <article
-                key={id}
-                className={cn(
-                  'flex gap-2 justify-between font-semibold uppercase text-xs',
-                  isActiveOne && 'text-expentrac-800'
-                )}
-              >
-                <div>
-                  {startFormatted} - {endFormatted}
-                </div>
-                <div>{priceFormatted}/mo</div>
-              </article>
+              <Tooltip key={id} tooltip={tooltipContent}>
+                <article
+                  className={cn(
+                    'flex gap-2 justify-between font-semibold uppercase text-xs text-slate-400',
+                    isActiveOne && 'text-expentrac-800'
+                  )}
+                >
+                  <div>
+                    {startFormatted} - {endFormatted}
+                  </div>
+                  <div>{priceFormatted}/mo</div>
+                </article>
+              </Tooltip>
             )
           })}
         </section>
