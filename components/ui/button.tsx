@@ -18,10 +18,12 @@ const buttonVariants = cva(
         secondary:
           'bg-slate-100 text-slate-900 hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80',
         ghost: 'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50',
-        link: 'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50'
+        link: 'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50',
+        'card-menu': 'gap-1 border px-1 pr-2 hover:bg-slate-700 hover:text-slate-200 dark:hover:bg-slate-300 dark:hover:text-slate-800'
       },
       size: {
         default: 'h-10 px-4 py-2',
+        xs: 'h-6 rounded-sm px-2',
         sm: 'h-9 rounded-md px-3',
         lg: 'h-11 rounded-md px-8',
         icon: 'h-10 w-10'

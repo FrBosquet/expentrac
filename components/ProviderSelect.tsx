@@ -1,3 +1,4 @@
+'use client'
 import { type Provider } from '@lib/prisma'
 import { useState } from 'react'
 

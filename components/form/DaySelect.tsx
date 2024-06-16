@@ -1,4 +1,6 @@
-import { twMerge } from 'tailwind-merge'
+'use client'
+
+import { cn } from '@lib/utils'
 
 import {
   Select as UiSelect,
@@ -28,7 +30,7 @@ export const DaySelect = ({
       required={required}
     >
       <SelectTrigger
-        className={twMerge(
+        className={cn(
           'overflow-hidden whitespace-nowrap text-ellipsis w-full',
           className
         )}

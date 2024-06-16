@@ -64,6 +64,14 @@ const CardContent = React.forwardRef<
 ))
 CardContent.displayName = 'CardContent'
 
+const CardMenu = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <menu ref={ref} className={cn('flex gap-2 px-6 pt-0', className)} {...props} />
+))
+CardContent.displayName = 'CardMenu'
+
 const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -76,4 +84,5 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = 'CardFooter'
 
-export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardMenu, CardTitle }
+
