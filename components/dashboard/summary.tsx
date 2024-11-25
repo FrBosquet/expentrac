@@ -1,5 +1,6 @@
 'use client'
-
+import Grid from '@/public/grid.png'
+import Money from '@/public/money.png'
 import { useDate } from '@components/date/context'
 import { useLoans } from '@components/loan/context'
 import { useMonthPayplan } from '@components/payplan/use-month-payplan'
@@ -14,36 +15,42 @@ import {
 } from '@components/ui/card'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
+import NumberFlow from '@number-flow/react'
 import {
   Coins,
   HelpingHand,
-  type LucideIcon,
   Receipt,
   Tv,
-  User
+  User,
+  type LucideIcon
 } from 'lucide-react'
 import Image from 'next/image'
-import { type ReactNode } from 'react'
+import { useLayoutEffect, useState, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import Grid from '@/public/grid.png'
-import Money from '@/public/money.png'
-
 const ConceptCard = ({
-  value,
+  value: realValue,
   label,
   Icon,
   className,
   hidden,
   tooltip
 }: {
-  value: string
+  value: number
   label: string
   Icon: LucideIcon
   className?: string
   hidden?: boolean
   tooltip?: ReactNode
 }) => {
+  const [value, setValue] = useState(0)
+
+  useLayoutEffect(() => {
+    if (value !== realValue) {
+      setTimeout(() => setValue(realValue), 300)
+    }
+  }, [realValue])
+
   if (hidden) return null
 
   return (
@@ -51,7 +58,12 @@ const ConceptCard = ({
       <Card className={twMerge('animate-fall-short h-full', className)}>
         <CardHeader className="flex flex-col items-center gap-2">
           <Icon />
-          <CardTitle className="break-words text-center">{value}</CardTitle>
+          <CardTitle className="break-words text-center">
+            <NumberFlow trend={1} spinTiming={{ duration: 750 }} format={{
+              style: 'currency',
+              currency: 'EUR'
+            }} transformTiming={{ duration: 750 }} value={value} />
+          </CardTitle>
         </CardHeader>
         <CardContent className="text-center text-xs text-theme-light">
           {label}
@@ -87,7 +99,7 @@ const Cards = ({ className }: { className: string }) => {
   const subCount = activeSubs.length
 
   const owedTooltip = (
-    <aside className="flex max-w-12 flex-col gap-2 pb-4 text-xs">
+    <aside className="flex  flex-col gap-2 pb-4 text-xs">
       <h3 className="flex gap-2 text-theme-light">
         <Coins size={12} /> Total money owed:
       </h3>
@@ -100,7 +112,7 @@ const Cards = ({ className }: { className: string }) => {
   )
 
   const totalTooltip = (
-    <aside className="flex max-w-12 flex-col gap-2 pb-4 text-xs">
+    <aside className="flex  flex-col gap-2 pb-4 text-xs">
       <h3 className="flex gap-2 text-theme-light">
         <Coins size={12} /> Total monthly payment:
       </h3>
@@ -113,7 +125,7 @@ const Cards = ({ className }: { className: string }) => {
   )
 
   const loanTooltip = (
-    <aside className="flex max-w-12 flex-col gap-2 pb-4 text-xs">
+    <aside className="flex  flex-col gap-2 pb-4 text-xs">
       <h3 className="flex gap-2 text-theme-light">
         <Coins size={12} /> Total loan monthly payment:
       </h3>
@@ -128,7 +140,7 @@ const Cards = ({ className }: { className: string }) => {
   )
 
   const subTooltip = (
-    <aside className="flex max-w-12 flex-col gap-2 pb-4 text-xs">
+    <aside className="flex  flex-col gap-2 pb-4 text-xs">
       <h3 className="flex gap-2 text-theme-light">
         <Coins size={12} /> Total subs monthly payment:
       </h3>
@@ -150,7 +162,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Coins}
         label="Total owed money"
         tooltip={owedTooltip}
-        value={euroFormatter.format(holderOwed)}
+        value={(holderOwed)}
       />
       <ConceptCard
         className={className}
@@ -158,7 +170,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Receipt}
         label="Total monthly payments"
         tooltip={totalTooltip}
-        value={euroFormatter.format(monthlyHolderFee)}
+        value={(monthlyHolderFee)}
       />
       <ConceptCard
         className={className}
@@ -166,7 +178,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={HelpingHand}
         label={`Total monthly loan payments, from ${loanCount} loans`}
         tooltip={loanTooltip}
-        value={euroFormatter.format(monthlyLoanHolderFee)}
+        value={(monthlyLoanHolderFee)}
       />
       <ConceptCard
         className={className}
@@ -174,7 +186,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Tv}
         label={`Total monthly subscription payments, from ${subCount} subscriptions`}
         tooltip={subTooltip}
-        value={euroFormatter.format(monthlySubHolderFee)}
+        value={(monthlySubHolderFee)}
       />
     </>
   )

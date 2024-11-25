@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@components/NavigationMenu'
+import { Toaster } from '@components/ui/sonner'
 import { authOptions } from '@lib/auth'
 import { hasUser } from '@lib/session'
 import { notificationSdk } from '@sdk'
@@ -32,6 +33,7 @@ export default async function Layout({ children }: Props) {
 
   return (
     <DashboardLayout>
+      <Toaster />
       <StoreProvider
         contracts={contracts}
         notifications={notifications}

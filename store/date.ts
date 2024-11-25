@@ -19,31 +19,29 @@ export const createDateSlice: StateCreator<DateSlice> = (set) => ({
     })
   },
   nextMonth: () => {
-    set(state => ({
+    set((state) => ({
       date: new Date(state.date.setMonth(state.date.getMonth() + 1))
     }))
   },
   prevMonth: () => {
-    set(state => ({
+    set((state) => ({
       date: new Date(state.date.setMonth(state.date.getMonth() - 1))
     }))
   }
 })
 
 export const getTime = ({ date }: DateSlice) => {
-  return date < now
-    ? TIME.PAST
-    : date > now
-      ? TIME.FUTURE
-      : TIME.PRESENT
+  return date < now ? TIME.PAST : date > now ? TIME.FUTURE : TIME.PRESENT
 }
 
 export const getMonthTime = ({ date }: DateSlice) => {
-  const month = date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
-    ? TIME.PRESENT
-    : date > now
-      ? TIME.FUTURE
-      : TIME.PAST
+  const month =
+    date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+      ? TIME.PRESENT
+      : date > now
+        ? TIME.FUTURE
+        : TIME.PAST
 
   return month
 }

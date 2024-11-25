@@ -68,7 +68,7 @@ const CardMenu = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <menu ref={ref} className={cn('flex gap-2 px-6 pt-0', className)} {...props} />
+  <menu ref={ref} className={cn('flex gap-2 px-6 pt-0 pb-2', className)} {...props} />
 ))
 CardContent.displayName = 'CardMenu'
 

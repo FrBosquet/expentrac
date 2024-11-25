@@ -4,6 +4,9 @@ const nextConfig = {
   experimental: {
     mdxRs: true
   },
+  images: {
+    domains: ['asset.brandfetch.io'],
+  },
 }
 
 const withMDX = require('@next/mdx')()

@@ -1,20 +1,70 @@
+import { ErrorToaster } from '@components/error-toaster'
 import { DaySelect } from '@components/form/DaySelect'
 import { ProviderInput } from '@components/provider-input'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
+import { CONTRACT_TYPE } from '@lib/contract'
+import { prisma } from '@lib/prisma'
+import { PROVIDER_TYPE } from '@lib/provider'
 import { EuroIcon, Save } from 'lucide-react'
+import { redirect } from 'next/navigation'
+
+import { getUserData } from '../getUser'
 
 export default async function Page() {
   const registerWorkContract = async (formData: FormData) => {
     'use server'
-    const name = formData.get('name') as string
-    const employer = formData.get('employer') as string
+    try {
+      const user = await getUserData()
+      const name = formData.get('name') as string
+      const employer = formData.get('employer') as string
+      const salary = Number(formData.get('salary'))
+      const start = new Date(formData.get('start') as string)
+      const payday = Number(formData.get('payday'))
 
-    // console.log({ name, employer })
+      await prisma.contract.create({
+        data: {
+          user: {
+            connect: {
+              id: user.id
+            }
+          },
+          name,
+          type: CONTRACT_TYPE.WORK,
+          periods: {
+            create: {
+              from: start.toISOString(),
+              payday,
+              fee: salary
+            }
+          },
+          providers: {
+            create: {
+              providerId: employer,
+              as: PROVIDER_TYPE.EMPLOYER
+            }
+          }
+        }
+      })
+    } catch (e: unknown) {
+      const message = (e as Error).message
+
+      redirect(
+        `/dashboard/profile/add-contract?error=${message}&timeframe=${Date.now()}`
+      )
+    }
+
+    redirect('/dashboard/profile')
   }
 
   return (
     <form action={registerWorkContract} className="contents">
+      <ErrorToaster
+        errors={{
+          'invalid-data': 'Invalid data provided. Please try again.'
+        }}
+      />
+
       <fieldset className="col-span-2 xl:col-span-4">
         <h1 className="text-xl uppercase">Register a work contract</h1>
         <label className="text-xs uppercase text-theme-light" htmlFor="name">

@@ -8,7 +8,8 @@ import {
 export enum PROVIDER_TYPE {
   VENDOR = 'VENDOR',
   PLATFORM = 'PLATFORM',
-  LENDER = 'LENDER'
+  LENDER = 'LENDER',
+  EMPLOYER = 'EMPLOYER'
 }
 
 export const isFetchedProvider = (
