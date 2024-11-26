@@ -1,6 +1,4 @@
 'use client'
-import Grid from '@/public/grid.png'
-import Money from '@/public/money.png'
 import { useDate } from '@components/date/context'
 import { useLoans } from '@components/loan/context'
 import { useMonthPayplan } from '@components/payplan/use-month-payplan'
@@ -19,14 +17,17 @@ import NumberFlow from '@number-flow/react'
 import {
   Coins,
   HelpingHand,
+  type LucideIcon,
   Receipt,
   Tv,
-  User,
-  type LucideIcon
+  User
 } from 'lucide-react'
 import Image from 'next/image'
-import { useLayoutEffect, useState, type ReactNode } from 'react'
+import { type ReactNode, useLayoutEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+import Grid from '@/public/grid.png'
+import Money from '@/public/money.png'
 
 const ConceptCard = ({
   value: realValue,
@@ -49,7 +50,7 @@ const ConceptCard = ({
     if (value !== realValue) {
       setTimeout(() => setValue(realValue), 300)
     }
-  }, [realValue])
+  }, [realValue, value])
 
   if (hidden) return null
 
@@ -59,10 +60,16 @@ const ConceptCard = ({
         <CardHeader className="flex flex-col items-center gap-2">
           <Icon />
           <CardTitle className="break-words text-center">
-            <NumberFlow trend={1} spinTiming={{ duration: 750 }} format={{
-              style: 'currency',
-              currency: 'EUR'
-            }} transformTiming={{ duration: 750 }} value={value} />
+            <NumberFlow
+              format={{
+                style: 'currency',
+                currency: 'EUR'
+              }}
+              spinTiming={{ duration: 750 }}
+              transformTiming={{ duration: 750 }}
+              trend={1}
+              value={value}
+            />
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center text-xs text-theme-light">
@@ -162,7 +169,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Coins}
         label="Total owed money"
         tooltip={owedTooltip}
-        value={(holderOwed)}
+        value={holderOwed}
       />
       <ConceptCard
         className={className}
@@ -170,7 +177,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Receipt}
         label="Total monthly payments"
         tooltip={totalTooltip}
-        value={(monthlyHolderFee)}
+        value={monthlyHolderFee}
       />
       <ConceptCard
         className={className}
@@ -178,7 +185,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={HelpingHand}
         label={`Total monthly loan payments, from ${loanCount} loans`}
         tooltip={loanTooltip}
-        value={(monthlyLoanHolderFee)}
+        value={monthlyLoanHolderFee}
       />
       <ConceptCard
         className={className}
@@ -186,7 +193,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Tv}
         label={`Total monthly subscription payments, from ${subCount} subscriptions`}
         tooltip={subTooltip}
-        value={(monthlySubHolderFee)}
+        value={monthlySubHolderFee}
       />
     </>
   )
