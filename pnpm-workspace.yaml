@@ -1,3 +1,7 @@
+# Root package (single app, not a monorepo). Required by pnpm when this file exists.
+packages:
+  - '.'
+
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'
