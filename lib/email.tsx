@@ -192,10 +192,7 @@ const sendDailyEmail = async (
   const totalAmount =
     loansData.reduce((sum, l) => sum + l.fee.holder, 0) +
     subData.reduce((sum, s) => sum + s.fee.holder, 0)
-  const names = [
-    ...loansData.map((l) => l.name),
-    ...subData.map((s) => s.name)
-  ]
+  const names = [...loansData.map((l) => l.name), ...subData.map((s) => s.name)]
   const subject =
     names.length > 0
       ? `${euroFormatter.format(totalAmount)} today: ${names.join(', ')}`
@@ -208,9 +205,9 @@ const sendDailyEmail = async (
     react: (
       <DailyEmail
         loans={loans}
+        preview={subject}
         subs={subs}
         username={username}
-        preview={subject}
       />
     )
   })
