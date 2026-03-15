@@ -12,18 +12,35 @@ export interface DailyEmailProps {
   username: string
   loans: Contract[]
   subs?: Contract[]
+  /** Dynamic subject/preview e.g. "12,50 € today: Vercel, Apple" — set by sendDailyEmail */
+  preview?: string
 }
 
 export default function DailyEmail({
   username = 'Fran Bosquet',
   loans = [],
-  subs = []
+  subs = [],
+  preview
 }: DailyEmailProps) {
   const loansData = loans?.map((loan) => unwrapLoan(loan))
   const subData = subs?.map((subscription) => unwrapSub(subscription))
 
+  const previewText =
+    preview ??
+    (() => {
+      if (!loansData?.length && !subData?.length) return 'Your payments for today'
+      const total =
+        (loansData?.reduce((s, l) => s + l.fee.holder, 0) ?? 0) +
+        (subData?.reduce((s, sub) => s + sub.fee.holder, 0) ?? 0)
+      const names = [
+        ...(loansData?.map((l) => l.name) ?? []),
+        ...(subData?.map((s) => s.name) ?? [])
+      ]
+      return `${euroFormatter.format(total)} today: ${names.join(', ')}`
+    })()
+
   return (
-    <TemplateEmail preview={'Your payments for today'}>
+    <TemplateEmail preview={previewText}>
       <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
         Hi {username}
       </Heading>

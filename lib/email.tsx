@@ -9,6 +9,7 @@ import {
   SubShareRejectEmail,
   WelcomeEmail
 } from '@emails'
+import { euroFormatter } from '@lib/currency'
 import { unwrapLoan } from '@lib/loan'
 import { type Contract } from '@lib/prisma'
 import { Resend } from 'resend'
@@ -186,11 +187,32 @@ const sendDailyEmail = async (
   loans: Contract[],
   subs: Contract[]
 ) => {
+  const loansData = loans.map((loan) => unwrapLoan(loan))
+  const subData = subs.map((sub) => unwrapSub(sub))
+  const totalAmount =
+    loansData.reduce((sum, l) => sum + l.fee.holder, 0) +
+    subData.reduce((sum, s) => sum + s.fee.holder, 0)
+  const names = [
+    ...loansData.map((l) => l.name),
+    ...subData.map((s) => s.name)
+  ]
+  const subject =
+    names.length > 0
+      ? `${euroFormatter.format(totalAmount)} today: ${names.join(', ')}`
+      : 'Your payments for today'
+
   await resend.emails.send({
     from: 'Fran from Expentrac <info@expentrac.app>',
     to: direction,
-    subject: 'Your payments for today',
-    react: <DailyEmail loans={loans} subs={subs} username={username} />
+    subject,
+    react: (
+      <DailyEmail
+        loans={loans}
+        subs={subs}
+        username={username}
+        preview={subject}
+      />
+    )
   })
 }
 
