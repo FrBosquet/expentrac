@@ -27,6 +27,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 - Next 16.4.1 and ESLint 10.12.0 flat config pass checks, full production build, compiled-route guard and production/dev real-session browser tests. Explicit Webpack is retained: a default Turbopack build emitted an empty app-path manifest despite exit 0. The Next 15 dev hydration failure no longer reproduces on Next 16. Compiler/Cache Components remain disabled.
 
+- Prisma 6.19.3 intermediate stage: exact CLI/client alignment, generation, all migrations on disposable PostgreSQL, transaction regressions, full checks/build and real-session browser/API checks passed. No schema/data conversion was coupled to this bump.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.
