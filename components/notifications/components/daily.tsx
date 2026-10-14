@@ -1,8 +1,8 @@
 import { LoanDetail } from '@components/loan/detail'
 import { SubscriptionDetail } from '@components/subscription/detail'
 import { unwrapLoan } from '@lib/loan'
+import { type Notification as NotificationType } from '@lib/models'
 import { type DailyNotificationPayload } from '@lib/notification/daily'
-import { type Notification as NotificationType } from '@lib/prisma'
 import { unwrapSub } from '@lib/sub'
 
 import { useAutoAck } from './hooks'

@@ -1,6 +1,6 @@
 'use client'
 
-import { type User } from '@lib/prisma'
+import { type User } from '@lib/models'
 import { useSession } from 'next-auth/react'
 
 interface Props {

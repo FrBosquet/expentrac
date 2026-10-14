@@ -1,5 +1,5 @@
 import { getTag, getUrl } from '@lib/api'
-import { type User } from '@lib/prisma'
+import { type User } from '@lib/models'
 
 export const getUsersByEmail = async (search: string) => {
   const url = getUrl(`user?search=${search}`)

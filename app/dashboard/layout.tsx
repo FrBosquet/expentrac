@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@components/NavigationMenu'
 import { Toaster } from '@components/ui/sonner'
 import { authOptions } from '@lib/auth'
-import { type Contract, type ProviderOnContract, type Share } from '@lib/prisma'
+import { type Contract, type ProviderOnContract, type Share } from '@lib/models'
 import {
   readContracts,
   readNotifications,
@@ -12,6 +12,8 @@ import { hasUser } from '@lib/session'
 import { StoreProvider } from '@store'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+
+export const dynamic = 'force-dynamic'
 
 interface Props {
   children: React.ReactNode

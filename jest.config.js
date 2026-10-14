@@ -2,6 +2,7 @@
 
 module.exports = {
   moduleNameMapper: {
+    '^server-only$': '<rootDir>/tests/server-only.cjs',
     "@types": ["<rootDir>/types.ts"],
     "^@lib/(.*)$": "<rootDir>/lib/$1",
   },

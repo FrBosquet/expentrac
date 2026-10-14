@@ -1,5 +1,5 @@
 import { monthBeetween } from './dates'
-import { type Contract, type Provider } from './prisma'
+import { type Contract, type Provider } from './models'
 
 export type LoanFormData = {
   id?: string

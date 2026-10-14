@@ -1,5 +1,5 @@
 import { getUrl } from '@lib/api'
-import { type Share } from '@lib/prisma'
+import { type Share } from '@lib/models'
 
 const getUserShares = async (userId: string) => {
   const url = getUrl(`share?userId=${userId}`)

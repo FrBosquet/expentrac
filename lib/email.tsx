@@ -11,7 +11,7 @@ import {
 } from '@emails'
 import { euroFormatter } from '@lib/currency'
 import { unwrapLoan } from '@lib/loan'
-import { type Contract } from '@lib/prisma'
+import { type Contract } from '@lib/models'
 import { type Prisma, prisma } from '@lib/prisma'
 import { render } from '@react-email/render'
 

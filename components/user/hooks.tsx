@@ -1,4 +1,4 @@
-import { type RawUser } from '@lib/prisma'
+import { type RawUser } from '@lib/models'
 import { useSession } from 'next-auth/react'
 
 export const useUser = () => {

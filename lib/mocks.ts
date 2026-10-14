@@ -1,6 +1,6 @@
 import { CONTRACT_TYPE } from './contract'
 import { PERIODICITY } from './dates'
-import { type Contract } from './prisma'
+import { type Contract } from './models'
 
 export const baseContract: Contract = {
   id: '0',

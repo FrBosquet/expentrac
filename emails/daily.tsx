@@ -1,6 +1,6 @@
 import { euroFormatter } from '@lib/currency'
 import { unwrapLoan } from '@lib/loan'
-import { type Contract } from '@lib/prisma'
+import { type Contract } from '@lib/models'
 import { unwrapSub } from '@lib/sub'
 import { Button } from '@react-email/button'
 import { Heading } from '@react-email/heading'

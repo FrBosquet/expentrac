@@ -1,4 +1,4 @@
-import { type Notification } from '@lib/prisma'
+import { type Notification } from '@lib/models'
 import { type StateCreator } from 'zustand'
 
 export interface NotificationSlice {
@@ -11,7 +11,9 @@ const sortFunction = (a: Notification, b: Notification) => {
   return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
 }
 
-export const createNotificationSlice: StateCreator<NotificationSlice> = (set) => ({
+export const createNotificationSlice: StateCreator<NotificationSlice> = (
+  set
+) => ({
   notifications: [],
   setNotifications: (rawNotifications: Notification[]) => {
     set({
@@ -19,8 +21,10 @@ export const createNotificationSlice: StateCreator<NotificationSlice> = (set) =>
     })
   },
   updateNotification: (notification: Notification) => {
-    set(state => ({
-      notifications: state.notifications.map(l => l.id === notification.id ? notification : l)
+    set((state) => ({
+      notifications: state.notifications.map((l) =>
+        l.id === notification.id ? notification : l
+      )
     }))
   }
 })

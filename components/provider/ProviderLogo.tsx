@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { type BrandExtendedInfo, FormatEnum } from '@types'
 import { type LucideIcon, PiggyBankIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'

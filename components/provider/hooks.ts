@@ -1,6 +1,6 @@
 import { useLoans } from '@components/loan/context'
 import { useSubs } from '@components/subscription/context'
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { type BrandExtendedInfo } from '@types'
 
 export const useProviderExtendedInfo = (provider: Provider) => {

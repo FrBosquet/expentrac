@@ -1,4 +1,4 @@
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 // TODO: This has to dissapear
 
 export interface BrandExtendedInfo {

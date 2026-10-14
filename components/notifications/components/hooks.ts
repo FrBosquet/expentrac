@@ -1,4 +1,4 @@
-import { type Notification as NotificationType } from '@lib/prisma'
+import { type Notification as NotificationType } from '@lib/models'
 import { notificationSdk } from '@sdk'
 import { useLayoutEffect, useState } from 'react'
 

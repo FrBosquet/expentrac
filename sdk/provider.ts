@@ -1,6 +1,6 @@
 import { type Brand } from '@components/BrandAutocomplete'
 import { getUrl } from '@lib/api'
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 
 const add = async (body: Brand) => {
   const result = await fetch(getUrl('/provider'), {

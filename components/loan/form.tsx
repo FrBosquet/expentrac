@@ -10,7 +10,7 @@ import { UserSearch } from '@components/UserSearch'
 import { euroFormatter } from '@lib/currency'
 import { toHTMLInputFormat } from '@lib/dates'
 import { getPaymentPlan, type Loan, type LoanFormData } from '@lib/loan'
-import { type RawUser } from '@lib/prisma'
+import { type RawUser } from '@lib/models'
 import { Trash } from 'lucide-react'
 import {
   type ChangeEvent,

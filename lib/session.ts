@@ -1,4 +1,4 @@
-import { type User } from '@lib/prisma'
+import { type User } from '@lib/models'
 import { type Session } from 'next-auth'
 
 type SessionWithUser = Session & {

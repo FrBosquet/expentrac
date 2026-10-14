@@ -14,7 +14,7 @@ import {
   CardTitle
 } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { Contract } from '@lib/prisma'
+import { Contract } from '@lib/models'
 import { Provider } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { PlusIcon } from 'lucide-react'

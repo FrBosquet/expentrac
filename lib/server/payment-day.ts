@@ -1,5 +1,5 @@
 import { PERIODICITY } from '@lib/dates'
-import { type Period } from '@lib/prisma'
+import { type Period } from '@lib/models'
 
 const calendar = new Intl.DateTimeFormat('en-CA', {
   timeZone: 'Europe/Madrid',

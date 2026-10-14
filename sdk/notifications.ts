@@ -1,5 +1,5 @@
 import { getUrl } from '@lib/api'
-import { type Notification } from '@lib/prisma'
+import { type Notification } from '@lib/models'
 import { type SHARE_STATE } from '@types'
 
 const get = async (userId: string) => {

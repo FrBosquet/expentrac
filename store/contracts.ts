@@ -1,7 +1,7 @@
 import { CONTRACT_TYPE } from '@lib/contract'
 import { unwrapLoan } from '@lib/loan'
-import { type Contract } from '@lib/prisma'
-import { unwrapSub, type Subscription } from '@lib/sub'
+import { type Contract } from '@lib/models'
+import { type Subscription, unwrapSub } from '@lib/sub'
 import { type StateCreator } from 'zustand'
 
 export interface ContractsSlice {
@@ -30,18 +30,20 @@ export const createContractsSlice: StateCreator<ContractsSlice> = (set) => ({
     })
   },
   addContract: (contract: Contract) => {
-    set(state => ({
+    set((state) => ({
       contracts: [...state.contracts, contract].sort(sortFunction)
     }))
   },
   updateContract: (contract: Contract) => {
-    set(state => ({
-      contracts: state.contracts.map(l => l.id === contract.id ? contract : l)
+    set((state) => ({
+      contracts: state.contracts.map((l) =>
+        l.id === contract.id ? contract : l
+      )
     }))
   },
   removeContract: (contract: Contract) => {
-    set(state => ({
-      contracts: state.contracts.filter(l => l.id !== contract.id)
+    set((state) => ({
+      contracts: state.contracts.filter((l) => l.id !== contract.id)
     }))
   }
 })
@@ -52,55 +54,62 @@ export const getLoans = (refDate: Date) => (state: ContractsSlice) => {
   const { contracts } = state
 
   return contracts
-    .filter(contract => contract.type === CONTRACT_TYPE.LOAN)
-    .map(contract => unwrapLoan(contract, refDate))
+    .filter((contract) => contract.type === CONTRACT_TYPE.LOAN)
+    .map((contract) => unwrapLoan(contract, refDate))
 }
 
 export const getActiveLoans = (refDate: Date) => (state: ContractsSlice) => {
   const { contracts } = state
 
   return contracts
-    .filter(contract => contract.type === CONTRACT_TYPE.LOAN)
-    .map(contract => unwrapLoan(contract, refDate))
-    .filter(loan => loan.time.isOngoing)
+    .filter((contract) => contract.type === CONTRACT_TYPE.LOAN)
+    .map((contract) => unwrapLoan(contract, refDate))
+    .filter((loan) => loan.time.isOngoing)
 }
 
-export const getLoan = (refDate: Date, id: string) => (state: ContractsSlice) => {
-  const { contracts } = state
+export const getLoan =
+  (refDate: Date, id: string) => (state: ContractsSlice) => {
+    const { contracts } = state
 
-  const contract = contracts.find(contract => contract.id === id)
+    const contract = contracts.find((contract) => contract.id === id)
 
-  if (!contract || contract.type !== CONTRACT_TYPE.LOAN) return null
+    if (!contract || contract.type !== CONTRACT_TYPE.LOAN) return null
 
-  return unwrapLoan(contract, refDate)
-}
+    return unwrapLoan(contract, refDate)
+  }
 
 export const getHasLoans = (state: ContractsSlice) => {
   const { contracts } = state
 
-  return contracts.some(contract => contract.type === CONTRACT_TYPE.LOAN)
+  return contracts.some((contract) => contract.type === CONTRACT_TYPE.LOAN)
 }
 
-export const getSubs = (refDate: Date) => (state: ContractsSlice): Subscription[] => {
-  const { contracts } = state
+export const getSubs =
+  (refDate: Date) =>
+  (state: ContractsSlice): Subscription[] => {
+    const { contracts } = state
 
-  return contracts
-    .filter(contract => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
-    .map(contract => unwrapSub(contract, refDate))
-}
+    return contracts
+      .filter((contract) => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
+      .map((contract) => unwrapSub(contract, refDate))
+  }
 
-export const getSub = (id: string, refDate = new Date()) => (state: ContractsSlice) => {
-  const { contracts } = state
+export const getSub =
+  (id: string, refDate = new Date()) =>
+  (state: ContractsSlice) => {
+    const { contracts } = state
 
-  const contract = contracts.find(contract => contract.id === id)
+    const contract = contracts.find((contract) => contract.id === id)
 
-  if (!contract || contract.type !== CONTRACT_TYPE.SUBSCRIPTION) return null
+    if (!contract || contract.type !== CONTRACT_TYPE.SUBSCRIPTION) return null
 
-  return unwrapSub(contract, refDate)
-}
+    return unwrapSub(contract, refDate)
+  }
 
 export const getHasSubs = (state: ContractsSlice) => {
   const { contracts } = state
 
-  return contracts.some(contract => contract.type === CONTRACT_TYPE.SUBSCRIPTION)
+  return contracts.some(
+    (contract) => contract.type === CONTRACT_TYPE.SUBSCRIPTION
+  )
 }

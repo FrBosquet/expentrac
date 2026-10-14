@@ -1,7 +1,7 @@
 import { LoanDetail } from '@components/loan/detail'
 import { unwrapLoan } from '@lib/loan'
+import { type Notification as NotificationType } from '@lib/models'
 import { type LoanShareAcceptNotificationPayload } from '@lib/notification/loan-share-accept'
-import { type Notification as NotificationType } from '@lib/prisma'
 
 import { useAutoAck } from './hooks'
 import { NotificationWrapper } from './wrapper'

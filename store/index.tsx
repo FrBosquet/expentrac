@@ -5,7 +5,7 @@ import {
   type Notification,
   type ProviderOnContract,
   type Share
-} from '@lib/prisma'
+} from '@lib/models'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { create } from 'zustand'
@@ -62,7 +62,16 @@ export const StoreProvider = ({
     setContracts(contracts)
     setNotifications(notifications)
     setProvidersOnContracts(providersOnContracts)
-  }, [])
+  }, [
+    shares,
+    contracts,
+    notifications,
+    providersOnContracts,
+    setShares,
+    setContracts,
+    setNotifications,
+    setProvidersOnContracts
+  ])
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

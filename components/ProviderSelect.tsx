@@ -1,5 +1,5 @@
 'use client'
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { useState } from 'react'
 
 import {

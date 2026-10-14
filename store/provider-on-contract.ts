@@ -1,4 +1,8 @@
-import { type Contract, type Provider, type ProviderOnContract } from '@lib/prisma'
+import {
+  type Contract,
+  type Provider,
+  type ProviderOnContract
+} from '@lib/models'
 import { type StateCreator } from 'zustand'
 
 export interface ProviderOnContractSlice {
@@ -10,7 +14,9 @@ const sortFunction = (a: ProviderOnContract, b: ProviderOnContract) => {
   return a.provider.name > b.provider.name ? 1 : -1
 }
 
-export const createProvidersOnContractsSlice: StateCreator<ProviderOnContractSlice> = (set) => ({
+export const createProvidersOnContractsSlice: StateCreator<
+  ProviderOnContractSlice
+> = (set) => ({
   providersOnContracts: [],
   setProvidersOnContracts: (rawPOC: ProviderOnContract[]) => {
     set({
@@ -19,21 +25,26 @@ export const createProvidersOnContractsSlice: StateCreator<ProviderOnContractSli
   }
 })
 
-export const getProvidersOnContractsSetter = (state: ProviderOnContractSlice) => state.setProvidersOnContracts
+export const getProvidersOnContractsSetter = (state: ProviderOnContractSlice) =>
+  state.setProvidersOnContracts
 
 export const getProvidersOnContracts = (state: ProviderOnContractSlice) => {
   return state.providersOnContracts
 }
 
 export const getProvidersAndContracts = (state: ProviderOnContractSlice) => {
-  return state.providersOnContracts.reduce<Array<Provider & {
-    as: {
-      lender: Contract[]
-      vendor: Contract[]
-      platform: Contract[]
-    }
-  }>>((acc, { contract, provider, as }) => {
-    const providerAndContracts = acc.find(p => p.id === provider.id)
+  return state.providersOnContracts.reduce<
+    Array<
+      Provider & {
+        as: {
+          lender: Contract[]
+          vendor: Contract[]
+          platform: Contract[]
+        }
+      }
+    >
+  >((acc, { contract, provider, as }) => {
+    const providerAndContracts = acc.find((p) => p.id === provider.id)
 
     const lender = as === 'LENDER' ? [contract] : []
     const vendor = as === 'VENDOR' ? [contract] : []
@@ -58,4 +69,6 @@ export const getProvidersAndContracts = (state: ProviderOnContractSlice) => {
   }, [])
 }
 
-export type ProviderWithContracts = ReturnType<typeof getProvidersAndContracts>[number]
+export type ProviderWithContracts = ReturnType<
+  typeof getProvidersAndContracts
+>[number]

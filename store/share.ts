@@ -1,4 +1,4 @@
-import { type Share } from '@lib/prisma'
+import { type Share } from '@lib/models'
 import { type StateCreator } from 'zustand'
 
 export interface ShareSlice {
@@ -25,8 +25,8 @@ export const createShareSlice: StateCreator<ShareSlice> = (set) => ({
     })
   },
   updateShare: (loan: Share) => {
-    set(state => ({
-      shares: state.shares.map(l => l.id === loan.id ? loan : l)
+    set((state) => ({
+      shares: state.shares.map((l) => (l.id === loan.id ? loan : l))
     }))
   }
 })
@@ -43,7 +43,7 @@ export const getShares = (state: ShareSlice) => {
 export const getShare = (id: string) => (state: ShareSlice) => {
   const { shares } = state
 
-  const share = shares.find(share => share.id === id)
+  const share = shares.find((share) => share.id === id)
 
   if (!share) return null
 

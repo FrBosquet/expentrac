@@ -12,7 +12,7 @@ import {
 } from '@components/ui/dialog'
 import { Separator } from '@components/ui/separator'
 import { euroFormatter } from '@lib/currency'
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { cn } from '@lib/utils'
 import { useState } from 'react'
 

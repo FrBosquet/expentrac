@@ -1,6 +1,6 @@
 import { SubscriptionDetail } from '@components/subscription/detail'
+import { type Notification as NotificationType } from '@lib/models'
 import { type SubShareAcceptNotificationPayload } from '@lib/notification/sub-share-accept'
-import { type Notification as NotificationType } from '@lib/prisma'
 import { unwrapSub } from '@lib/sub'
 
 import { useAutoAck } from './hooks'

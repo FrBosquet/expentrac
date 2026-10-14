@@ -1,4 +1,4 @@
-import { type User } from '@lib/prisma'
+import { type User } from '@lib/models'
 import { twMerge } from 'tailwind-merge'
 
 import { Avatar as UiAvatar, AvatarFallback, AvatarImage } from './ui/avatar'

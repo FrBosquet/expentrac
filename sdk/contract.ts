@@ -1,5 +1,5 @@
 import { getUrl } from '@lib/api'
-import { type Contract } from '@lib/prisma'
+import { type Contract } from '@lib/models'
 
 export const getUserContracts = async (userId: string) => {
   const url = getUrl(`contract?userId=${userId}`)

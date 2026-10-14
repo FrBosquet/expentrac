@@ -1,0 +1,26 @@
+name: Audit checks
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_PRISMA_URL: postgresql://audit:audit@127.0.0.1:55432/audit
+      POSTGRES_URL_NON_POOLING: postgresql://audit:audit@127.0.0.1:55432/audit
+      NEXTAUTH_SECRET: local-ci-only-secret
+      NEXTAUTH_URL: http://localhost:3000
+      GOOGLE_CLIENT_ID: local-ci-client
+      GOOGLE_CLIENT_SECRET: local-ci-secret
+      RESEND_KEY: re_local_ci
+      CRON_SECRET: local-ci-cron-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm prisma:generate
+      - run: pnpm check
+      - run: pnpm test:db
+      - run: pnpm build

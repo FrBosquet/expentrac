@@ -1,6 +1,6 @@
 import { TIME } from '@types'
 
-import { type Contract, type Period } from './prisma'
+import { type Contract, type Period } from './models'
 
 export enum PERIODICITY {
   MONTHLY = 'MONTHLY',

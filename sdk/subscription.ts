@@ -1,6 +1,6 @@
 import { getTag, getUrl } from '@lib/api'
 import { CONTRACT_TYPE } from '@lib/contract'
-import { type Contract } from '@lib/prisma'
+import { type Contract } from '@lib/models'
 import { type SubFormData } from '@lib/sub'
 
 export const getUserSubscriptions = async (userId: string) => {

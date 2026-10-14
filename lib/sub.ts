@@ -4,7 +4,7 @@ import {
   type Period,
   type Provider,
   type RawPeriod
-} from './prisma'
+} from './models'
 
 export type SubFormData = {
   id?: string

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { cn } from '@lib/utils'
 import { providerSdk } from '@sdk/provider'
 import { useState } from 'react'

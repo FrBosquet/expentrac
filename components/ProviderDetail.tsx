@@ -1,4 +1,4 @@
-import { type Provider } from '@lib/prisma'
+import { type Provider } from '@lib/models'
 import { getProviderLink } from '@lib/provider'
 import { cn } from '@lib/utils'
 import { CircleOff } from 'lucide-react'

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
@@ -32,7 +32,7 @@
       ],
       "@emails": [
         "./emails"
-      ],
+      ]
     }
   },
   "include": [
@@ -43,9 +43,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "moduleResolution": [
-    "node_modules",
-    "node"
   ]
 }

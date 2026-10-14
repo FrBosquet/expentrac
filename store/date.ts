@@ -37,7 +37,7 @@ export const getTime = ({ date }: DateSlice) => {
 export const getMonthTime = ({ date }: DateSlice) => {
   const month =
     date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
+    date.getFullYear() === now.getFullYear()
       ? TIME.PRESENT
       : date > now
         ? TIME.FUTURE
