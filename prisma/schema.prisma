@@ -234,3 +234,21 @@ model SubscriptionShare {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   accepted       Boolean?
 }
+
+// Durable snapshots for retryable email delivery. Never log html or recipient addresses.
+model EmailOutbox {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  to            String
+  subject       String
+  html          String   @db.Text
+  status        String   @default("pending")
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now())
+  leaseUntil    DateTime?
+  firstAttemptAt DateTime?
+  sentAt        DateTime?
+  errorCode     String?
+
+  @@index([status, nextAttemptAt])
+}

@@ -1,5 +1,11 @@
 import { emailSdk } from '@lib/email'
-import { type Contract, prisma, type Share, type User } from '@lib/prisma'
+import {
+  type Contract,
+  type Prisma,
+  prisma,
+  type Share,
+  type User
+} from '@lib/prisma'
 import { NOTIFICATION_TYPE, SHARE_STATE } from '@types'
 
 export interface SubShareNotification {
@@ -18,7 +24,8 @@ export const handleSubsShare = async (
   user: User,
   shouldEmail: boolean,
   contract: Contract,
-  share: Share
+  share: Share,
+  db: Prisma.TransactionClient = prisma
 ) => {
   const payload: SubShareNotificationPayload = {
     contract,
@@ -26,7 +33,7 @@ export const handleSubsShare = async (
     state: SHARE_STATE.PENDING
   }
 
-  const notification = await prisma.notification.create({
+  const notification = await db.notification.create({
     data: {
       user: {
         connect: { id: user.id }
@@ -39,7 +46,13 @@ export const handleSubsShare = async (
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendSubShare(user.email, user.name!, contract)
+    await emailSdk.sendSubShare(
+      user.email,
+      user.name!,
+      contract,
+      db,
+      notification.id
+    )
   }
 
   return notification

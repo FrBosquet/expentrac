@@ -107,6 +107,10 @@ export const PATCH = async (
   }
   const { accepted } = body
 
+  if (share.accepted === accepted) {
+    return NextResponse.json({ message: 'Unchanged', data: share })
+  }
+
   const updatedShare = await prisma.share.update({
     where: { id },
     data: { accepted },

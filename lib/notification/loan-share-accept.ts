@@ -1,5 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { type Contract, prisma, type User } from '@lib/prisma'
+import { type Contract, type Prisma, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 
 export interface LoanShareAcceptNotification {
@@ -15,14 +15,15 @@ export interface LoanShareAcceptNotificationPayload {
 export const handleLoanShareAccept = async (
   user: User,
   shouldEmail: boolean,
-  contract: Contract
+  contract: Contract,
+  db: Prisma.TransactionClient = prisma
 ) => {
   const payload: LoanShareAcceptNotificationPayload = {
     contract,
     shareHolder: user
   }
 
-  const notification = await prisma.notification.create({
+  const notification = await db.notification.create({
     data: {
       user: {
         connect: { id: contract.user.id }
@@ -35,7 +36,12 @@ export const handleLoanShareAccept = async (
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendLoanShareAcceptance(user.name!, contract)
+    await emailSdk.sendLoanShareAcceptance(
+      user.name!,
+      contract,
+      db,
+      notification.id
+    )
   }
 
   return notification

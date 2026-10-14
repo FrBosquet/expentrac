@@ -11,3 +11,4 @@ onlyBuiltDependencies:
   - prisma
   - sharp
   - utf-8-validate
+  - '@embedded-postgres/darwin-arm64'

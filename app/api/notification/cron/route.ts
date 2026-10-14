@@ -1,103 +1,77 @@
 import { CONTRACT_TYPE } from '@lib/contract'
-import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
-import { type Contract, prisma, type User } from '@lib/prisma'
+import { type Contract, prisma } from '@lib/prisma'
+import { deliverOutbox } from '@lib/server/outbox'
+import { madridDay, paymentDayMatches } from '@lib/server/payment-day'
 import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 
 export const revalidate = 0
-export const GET = async () => {
-  const now = Date.now()
-  const today = new Date()
-  today.setHours(12, 0, 0, 0)
-  const date = new Date().getDate()
-
-  const users: Record<string, User & { loans: Contract[]; subs: Contract[] }> =
-    {}
-
+export const GET = async (req: Request) => {
+  const secret = process.env.CRON_SECRET
+  if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+  }
+  const day = madridDay(new Date())
   const periods = await prisma.period.findMany({
     where: {
-      payday: date,
-      from: {
-        lte: today
-      },
-      OR: [
-        {
-          to: null
-        },
-        {
-          to: {
-            gte: today
-          }
-        }
-      ]
+      contract: {
+        type: { in: [CONTRACT_TYPE.LOAN, CONTRACT_TYPE.SUBSCRIPTION] }
+      }
     },
+    orderBy: { from: 'desc' },
     include: {
       contract: {
         include: {
           user: true,
           shares: true,
           periods: true,
-          providers: true,
+          providers: { include: { provider: true } },
           resources: true
         }
       }
     }
   })
-
-  periods.forEach((period) => {
-    const { contract, periodicity, paymonth } = period
-    const { userId, type } = contract
-
-    if (
-      periodicity === PERIODICITY.YEARLY &&
-      new Date().getMonth() !== paymonth
-    )
-      return
-
-    if (!users[userId]) {
-      users[userId] = { ...contract.user, loans: [], subs: [] }
-    }
-
+  const users = new Map<string, { loans: Contract[]; subs: Contract[] }>()
+  const contracts = new Set<string>()
+  for (const period of periods) {
+    if (!paymentDayMatches(period, day) || contracts.has(period.contractId))
+      continue
+    contracts.add(period.contractId)
+    const { contract } = period
+    const items = users.get(contract.userId) ?? { loans: [], subs: [] }
     const target =
-      type === CONTRACT_TYPE.LOAN ? users[userId].loans : users[userId].subs
-
+      contract.type === CONTRACT_TYPE.LOAN ? items.loans : items.subs
     target.push(contract as Contract)
-  })
-
-  await Promise.all(
-    Object.values(users).map(async (user) => {
-      const { loans, subs } = user
-
-      await notificationSdk.create(user.id, true, {
+    users.set(contract.userId, items)
+  }
+  let queued = 0
+  for (const [userId, items] of Array.from(users)) {
+    const id = `daily/${userId}/${day}`
+    if (await prisma.notification.findUnique({ where: { id } })) continue
+    try {
+      await notificationSdk.create(userId, true, {
         type: NOTIFICATION_TYPE.DAILY,
-        loans,
-        subs
+        ...items,
+        day
       })
-    })
-  )
-
-  // Clean up older notifications
-  const aMonthAgo = new Date()
-  aMonthAgo.setMonth(aMonthAgo.getMonth() - 1)
-
-  // using prisma, delete notification with more than a month
+      queued++
+    } catch (error) {
+      // A concurrent cron may have won the unique-id insert. Other failures must surface.
+      if (
+        !(
+          error &&
+          typeof error === 'object' &&
+          'code' in error &&
+          error.code === 'P2002'
+        )
+      )
+        throw error
+    }
+  }
+  const delivery = await deliverOutbox()
   await prisma.notification.deleteMany({
-    where: {
-      createdAt: {
-        lt: aMonthAgo
-      }
-    }
+    where: { createdAt: { lt: new Date(Date.now() - 30 * 86_400_000) } }
   })
-
-  // done
-  return NextResponse.json(
-    {
-      message: `Job finished in ${Date.now() - now} ms`,
-      users
-    },
-    {
-      status: 200
-    }
-  )
+  return NextResponse.json({ day, queued, users: users.size, delivery })
 }

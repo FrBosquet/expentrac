@@ -1,5 +1,5 @@
 import { emailSdk } from '@lib/email'
-import { prisma, type User } from '@lib/prisma'
+import { type Prisma, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 
 export interface GenericNotification {
@@ -14,13 +14,14 @@ export interface GenericNotificationPayload {
 export const handleGeneric = async (
   user: User,
   shouldEmail: boolean,
-  data: GenericNotification
+  data: GenericNotification,
+  db: Prisma.TransactionClient = prisma
 ) => {
   const payload: GenericNotificationPayload = {
     message: data.message
   }
 
-  const notification = await prisma.notification.create({
+  const notification = await db.notification.create({
     data: {
       user: {
         connect: { id: user.id }
@@ -33,7 +34,13 @@ export const handleGeneric = async (
   })
 
   if (shouldEmail && user.email) {
-    await emailSdk.sendGenericEmail(user.email, user.name!, data.message)
+    await emailSdk.sendGenericEmail(
+      user.email,
+      user.name!,
+      data.message,
+      db,
+      notification.id
+    )
   }
 
   return notification

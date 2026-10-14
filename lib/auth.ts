@@ -5,6 +5,7 @@ import { type Adapter } from 'next-auth/adapters'
 import GoogleProvider from 'next-auth/providers/google'
 
 import { emailSdk } from './email'
+import { deliverOutbox } from './server/outbox'
 
 const adapter = PrismaAdapter(prisma) as Adapter
 
@@ -32,7 +33,18 @@ export const authOptions: AuthOptions = {
   events: {
     async createUser(message) {
       if (message.user.email) {
-        void emailSdk.sendWelcome(message.user.email, message.user.name!)
+        await emailSdk.sendWelcome(
+          message.user.email,
+          message.user.name!,
+          prisma,
+          `welcome/${message.user.id}`
+        )
+        try {
+          await deliverOutbox(`welcome/${message.user.id}`)
+        } catch {
+          // eslint-disable-next-line no-console -- operational failure without recipient or payload
+          console.error('Welcome email deferred')
+        }
       }
     }
   }

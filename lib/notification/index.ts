@@ -1,4 +1,5 @@
 import { prisma } from '@lib/prisma'
+import { deliverOutbox } from '@lib/server/outbox'
 import { NOTIFICATION_TYPE } from '@types'
 
 import { type DailyNotification, handleDaily } from './daily'
@@ -48,32 +49,55 @@ const create = async (
 
   const { type } = data
 
-  switch (type) {
-    case NOTIFICATION_TYPE.GENERIC: {
-      return await handleGeneric(user, shouldEmail, data)
+  const notification = await prisma.$transaction(async (db) => {
+    switch (type) {
+      case NOTIFICATION_TYPE.GENERIC: {
+        return await handleGeneric(user, shouldEmail, data, db)
+      }
+      case NOTIFICATION_TYPE.LOAN_SHARE: {
+        return await handleLoanShare(
+          user,
+          shouldEmail,
+          data.contract,
+          data.share,
+          db
+        )
+      }
+      case NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED: {
+        return await handleLoanShareAccept(user, shouldEmail, data.contract, db)
+      }
+      case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED: {
+        return await handleLoanShareReject(user, shouldEmail, data.contract, db)
+      }
+      case NOTIFICATION_TYPE.SUB_SHARE: {
+        return await handleSubsShare(
+          user,
+          shouldEmail,
+          data.contract,
+          data.share,
+          db
+        )
+      }
+      case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED: {
+        return await handleSubShareAccept(user, shouldEmail, data.contract, db)
+      }
+      case NOTIFICATION_TYPE.SUB_SHARE_REJECTED: {
+        return await handleSubShareReject(user, shouldEmail, data.contract, db)
+      }
+      case NOTIFICATION_TYPE.DAILY: {
+        return await handleDaily(user, shouldEmail, data, db)
+      }
     }
-    case NOTIFICATION_TYPE.LOAN_SHARE: {
-      return await handleLoanShare(user, shouldEmail, data.contract, data.share)
-    }
-    case NOTIFICATION_TYPE.LOAN_SHARE_ACCEPTED: {
-      return await handleLoanShareAccept(user, shouldEmail, data.contract)
-    }
-    case NOTIFICATION_TYPE.LOAN_SHARE_REJECTED: {
-      return await handleLoanShareReject(user, shouldEmail, data.contract)
-    }
-    case NOTIFICATION_TYPE.SUB_SHARE: {
-      return await handleSubsShare(user, shouldEmail, data.contract, data.share)
-    }
-    case NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED: {
-      return await handleSubShareAccept(user, shouldEmail, data.contract)
-    }
-    case NOTIFICATION_TYPE.SUB_SHARE_REJECTED: {
-      return await handleSubShareReject(user, shouldEmail, data.contract)
-    }
-    case NOTIFICATION_TYPE.DAILY: {
-      return await handleDaily(user, shouldEmail, data)
+  })
+  if (notification && shouldEmail) {
+    try {
+      await deliverOutbox(notification.id)
+    } catch {
+      // eslint-disable-next-line no-console -- operational failure without recipient or payload
+      console.error('Email delivery deferred; outbox retains pending work')
     }
   }
+  return notification
 }
 
 export const notificationSdk = {
