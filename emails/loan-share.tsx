@@ -1,7 +1,4 @@
-import { Button } from '@react-email/button'
-import { Heading } from '@react-email/heading'
-import { Section } from '@react-email/section'
-import { Text } from '@react-email/text'
+import { Button, Heading, Section, Text } from 'react-email'
 import TemplateEmail from './template'
 
 export interface LoanShareProps {
@@ -31,12 +28,20 @@ export default function LoanShareEmail({
         <strong>{loanName}</strong>
       </Text>
       <Text className="text-black text-[14px] leading-[24px]">
-        Monthly fee for this loan is <strong>{new Intl.NumberFormat('en-UK', { style: 'currency', currency: 'EUR' }).format(loanAmount)}</strong>. Its going to last <strong>{months}</strong> months. You can accept or reject the loan in your notifications section.
+        Monthly fee for this loan is{' '}
+        <strong>
+          {new Intl.NumberFormat('en-UK', {
+            style: 'currency',
+            currency: 'EUR'
+          }).format(loanAmount)}
+        </strong>
+        . Its going to last <strong>{months}</strong> months. You can accept or
+        reject the loan in your notifications section.
       </Text>
       <Section className="mt-[24px] mb-[24px] flex justify-center">
         <Button
-          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center p-3 shadow-md"
-          href='https://www.expentrac.app/dashboard/notifications'
+          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center p-3 "
+          href="https://www.expentrac.app/dashboard/notifications"
         >
           Your notifications centre
         </Button>

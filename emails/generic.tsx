@@ -1,7 +1,4 @@
-import { Button } from '@react-email/button'
-import { Heading } from '@react-email/heading'
-import { Section } from '@react-email/section'
-import { Text } from '@react-email/text'
+import { Button, Heading, Section, Text } from 'react-email'
 import TemplateEmail from './template'
 
 export interface GenericEmailProps {
@@ -21,13 +18,11 @@ export default function GenericEmail({
       <Text className="text-black text-[14px] leading-[24px]">
         This is <strong>Fran</strong>, from <strong>Expentrac</strong>
       </Text>
-      <Text className="text-black text-[14px] leading-[24px]">
-        {message}
-      </Text>
+      <Text className="text-black text-[14px] leading-[24px]">{message}</Text>
       <Section className="mt-[24px] mb-[24px] flex justify-center">
         <Button
-          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px] p-3 shadow-md"
-          href='https://www.expentrac.app/dashboard'
+          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px] p-3 "
+          href="https://www.expentrac.app/dashboard"
         >
           Your dashboard
         </Button>

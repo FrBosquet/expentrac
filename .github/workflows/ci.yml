@@ -22,6 +22,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm prisma:generate
       - run: pnpm check
+      - run: pnpm test:emails
       - run: pnpm test:db
       - run: pnpm test:money
       - run: pnpm build

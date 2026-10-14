@@ -33,6 +33,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 - Integer cents implemented in current and retained legacy money columns. Half-up conversion, viewer-aware deterministic splits and cent-based payplan totals are tested. Old-schema seeded migration, unsafe-data rollback and real synthetic pg_dump/pg_restore pass, as do checks/build/database/browser regressions. See `money-migration.md` for the maintenance-window and rollback procedure; production remains unchanged.
 
+- React Email consolidated to 6.11.1; nine templates render with escaped user text and resolved CSS, local screenshot QA checked. Unsupported shadow-variable CSS and invalid list markup corrected; theme toggle now uses the UI Button, toasts use the actual theme context. Deprecated email packages, unused Postgres SDK/docuporter and replaced next-themes removed.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

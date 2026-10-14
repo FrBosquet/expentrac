@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '@react-email/button'
+import { Button } from '@components/ui/button'
 import { Moon, Sun } from 'lucide-react'
 import { useContext } from 'react'
 
@@ -19,7 +19,9 @@ export const DarkModeTogle = () => {
 
   return (
     <Button
-      className="cursor-pointer text-amber-500 dark:text-teal-200"
+      variant="ghost"
+      size="icon"
+      aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
       onClick={toggleDarkMode}
     >
       {darkMode ? <Moon /> : <Sun />}

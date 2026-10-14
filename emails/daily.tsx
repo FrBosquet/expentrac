@@ -1,11 +1,9 @@
+import { Button, Heading, Section, Text } from 'react-email'
+import { sumMoney } from '@lib/money'
 import { euroFormatter } from '@lib/currency'
 import { unwrapLoan } from '@lib/loan'
 import { type Contract } from '@lib/models'
 import { unwrapSub } from '@lib/sub'
-import { Button } from '@react-email/button'
-import { Heading } from '@react-email/heading'
-import { Section } from '@react-email/section'
-import { Text } from '@react-email/text'
 import TemplateEmail from './template'
 
 export interface DailyEmailProps {
@@ -28,10 +26,12 @@ export default function DailyEmail({
   const previewText =
     preview ??
     (() => {
-      if (!loansData?.length && !subData?.length) return 'Your payments for today'
-      const total =
-        (loansData?.reduce((s, l) => s + l.fee.holder, 0) ?? 0) +
-        (subData?.reduce((s, sub) => s + sub.fee.holder, 0) ?? 0)
+      if (!loansData?.length && !subData?.length)
+        return 'Your payments for today'
+      const total = sumMoney(
+        ...loansData.map((loan) => loan.fee.holder),
+        ...subData.map((sub) => sub.fee.holder)
+      )
       const names = [
         ...(loansData?.map((l) => l.name) ?? []),
         ...(subData?.map((s) => s.name) ?? [])
@@ -45,25 +45,32 @@ export default function DailyEmail({
         Hi {username}
       </Heading>
       <Text className="text-black text-[14px] leading-[24px]">
-        This is <strong>Fran</strong>, from <strong>Expentrac</strong>, given your daily update about your expenses. Today, you are paying for:
+        This is <strong>Fran</strong>, from <strong>Expentrac</strong>, given
+        your daily update about your expenses. Today, you are paying for:
       </Text>
-      <Text className="text-black text-[14px] leading-[24px]">
+      <Section className="text-black text-[14px] leading-[24px]">
         <ul className="list-disc list-inside">
           {loansData?.map((loan, index) => (
-            <li key={index}><strong>{loan.name}</strong> - {euroFormatter.format(loan.fee.holder)}</li>
+            <li key={index}>
+              <strong>{loan.name}</strong> -{' '}
+              {euroFormatter.format(loan.fee.holder)}
+            </li>
           ))}
           {subData?.map((sub, index) => (
-            <li key={index}><strong>{sub.name}</strong> - {euroFormatter.format(sub.fee.holder)}</li>
+            <li key={index}>
+              <strong>{sub.name}</strong> -{' '}
+              {euroFormatter.format(sub.fee.holder)}
+            </li>
           ))}
         </ul>
-      </Text>
+      </Section>
       <Text className="text-black text-[14px] leading-[24px]">
-        Access you dashboard to see more details about your expenses.
+        Access your dashboard to see more details about your expenses.
       </Text>
       <Section className="mt-[24px] mb-[24px] flex justify-center">
         <Button
-          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px] p-3 shadow-md"
-          href='https://www.expentrac.app/dashboard'
+          className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center mr-[12px] p-3 "
+          href="https://www.expentrac.app/dashboard"
         >
           Your dashboard
         </Button>
