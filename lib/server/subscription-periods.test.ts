@@ -68,7 +68,7 @@ test('price change closes and opens periods within one serializable transaction'
   })
   expect(prisma.period.create).toHaveBeenCalledWith(
     expect.objectContaining({
-      data: expect.objectContaining({ fee: 12.5, from: new Date('2026-10-14') })
+      data: expect.objectContaining({ feeCents: 1250, from: new Date('2026-10-14') })
     })
   )
 })

@@ -1,3 +1,4 @@
+import { centsToEuros } from '@lib/money'
 import { useDate } from '@components/date/context'
 import { Tooltip } from '@components/Tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
@@ -44,7 +45,7 @@ export const SubPayplan = ({ sub, className }: Props) => {
       }
 
       const to = activePeriod.to ? new Date(activePeriod.to) : null
-      let amount = activePeriod.fee
+      let amount = centsToEuros(activePeriod.feeCents)
 
       // If ends this month and before payday, just set amoun to 0
       if (

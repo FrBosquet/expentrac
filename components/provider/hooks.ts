@@ -1,5 +1,6 @@
 import { useLoans } from '@components/loan/context'
 import { useSubs } from '@components/subscription/context'
+import { sumMoney } from '@lib/money'
 import { type Provider } from '@lib/models'
 import { type BrandExtendedInfo } from '@types'
 
@@ -40,13 +41,25 @@ export const useProviderExtendedInfo = (provider: Provider) => {
 
   const totals = {
     asVendor:
-      fromLoans.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0) +
-      fromSubs.asVendor.reduce((acc, item) => acc + item.fee.monthly, 0),
+      fromLoans.asVendor.reduce(
+        (acc, item) => sumMoney(acc, item.fee.monthly),
+        0
+      ) +
+      fromSubs.asVendor.reduce(
+        (acc, item) => sumMoney(acc, item.fee.monthly),
+        0
+      ),
     asPlatform:
-      fromLoans.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0) +
-      fromSubs.asPlatform.reduce((acc, item) => acc + item.fee.monthly, 0),
+      fromLoans.asPlatform.reduce(
+        (acc, item) => sumMoney(acc, item.fee.monthly),
+        0
+      ) +
+      fromSubs.asPlatform.reduce(
+        (acc, item) => sumMoney(acc, item.fee.monthly),
+        0
+      ),
     asLender: fromLoans.asLender.reduce(
-      (acc, item) => acc + item.fee.monthly,
+      (acc, item) => sumMoney(acc, item.fee.monthly),
       0
     )
   }

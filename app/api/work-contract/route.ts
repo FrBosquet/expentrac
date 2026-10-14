@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { CONTRACT_TYPE, subscriptionInclude } from '@lib/contract'
 import { prisma } from '@lib/prisma'
 import { ApiError, apiResponse, requireUser } from '@lib/server/api'
@@ -30,7 +31,7 @@ export const POST = (req: Request) =>
         periods: {
           create: {
             from: dateInput(body.start),
-            fee: amount(body.salary),
+            feeCents: eurosToCents(amount(body.salary)),
             payday: integer(body.payday, 'payday', 1, 31)
           }
         },

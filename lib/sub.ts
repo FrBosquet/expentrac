@@ -1,3 +1,4 @@
+import { centsToEuros, holderAmount as sharedAmount } from './money'
 import { PERIODICITY } from './dates'
 import {
   type Contract,
@@ -74,7 +75,11 @@ const getNextPaymentDate = (period: Period) => {
   }
 }
 
-export const unwrapSub = (rawSub: Contract, date = now) => {
+export const unwrapSub = (
+  rawSub: Contract,
+  date = new Date(),
+  viewerId = rawSub.userId
+) => {
   const { shares, periods, resources, providers } = rawSub
 
   const refNowDate = now.getDate()
@@ -119,12 +124,16 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   const periodicity = referencePeriod?.periodicity
   const isYearly = periodicity === 'YEARLY'
 
-  const monthlyFee = wasOngoing ? (isYearly ? 0 : referencePeriod.fee) : 0
+  const monthlyFee = wasOngoing
+    ? isYearly
+      ? 0
+      : centsToEuros(referencePeriod.feeCents)
+    : 0
 
   const yearlyFee = wasOngoing
     ? isYearly
-      ? referencePeriod.fee
-      : referencePeriod.fee * 12
+      ? centsToEuros(referencePeriod.feeCents)
+      : centsToEuros(referencePeriod.feeCents * 12)
     : 0
 
   const holderAmount = sharesAccepted + 1
@@ -141,8 +150,14 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
 
-  const monthlyHolderFee = monthlyFee / holderAmount
-  const yearlyHolderFee = yearlyFee / holderAmount
+  const monthlyHolderFee = sharedAmount(
+    Math.round(monthlyFee * 100),
+    rawSub,
+    viewerId
+  )
+  const yearlyHolderFee = isYearly
+    ? sharedAmount(Math.round(yearlyFee * 100), rawSub, viewerId)
+    : centsToEuros(Math.round(monthlyHolderFee * 100) * 12)
 
   const link = resources.find((r) => r.type === 'LINK')?.url
 
@@ -196,6 +211,7 @@ export const unwrapSub = (rawSub: Contract, date = now) => {
 
   return {
     contract: rawSub,
+    viewerId,
     startDate,
     ...rawSub,
     providers: {

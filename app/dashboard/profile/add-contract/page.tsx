@@ -56,7 +56,7 @@ export default function Page() {
             id="salary"
             min={0}
             name="salary"
-            type="number"
+            step="0.01" type="number"
           />
           <EuroIcon
             className="absolute right-2 top-1/2 -translate-y-1/2 group-focus-within:hidden group-hover:hidden"

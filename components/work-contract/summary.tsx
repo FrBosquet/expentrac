@@ -1,5 +1,6 @@
 'use client'
 
+import { centsToEuros } from '@lib/money'
 import { Button } from '@components/ui/button'
 import {
   Card,
@@ -74,7 +75,7 @@ const WorkContractRow = ({ contract }: { contract: Contract }) => {
           )}`}
       </p>
       <p className="text-expentrac">
-        {euroFormatter.format(currentPeriod?.fee ?? 0)}/mo
+        {euroFormatter.format(centsToEuros(currentPeriod?.feeCents ?? 0))}/mo
       </p>
     </li>
   )

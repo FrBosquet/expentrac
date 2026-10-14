@@ -31,6 +31,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 - Prisma 7.10.0: generated client outside node_modules, explicit environment/migration config, aligned PostgreSQL adapter, per-process pool cap and development cache. Documented CommonJS generator output preserves existing tooling. Generation, checks, full build, disposable migration/transaction tests and real-session browser/API checks pass. Production SSL/provider connection budget still needs release verification.
 
+- Integer cents implemented in current and retained legacy money columns. Half-up conversion, viewer-aware deterministic splits and cent-based payplan totals are tested. Old-schema seeded migration, unsafe-data rollback and real synthetic pg_dump/pg_restore pass, as do checks/build/database/browser regressions. See `money-migration.md` for the maintenance-window and rollback procedure; production remains unchanged.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

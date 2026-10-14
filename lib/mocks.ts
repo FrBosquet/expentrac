@@ -9,7 +9,7 @@ export const baseContract: Contract = {
   userId: '1',
   name: 'Base contract',
   type: CONTRACT_TYPE.SUBSCRIPTION,
-  fee: 0,
+  feeCents: 0,
   providers: [],
   periods: [],
   resources: [],
@@ -18,6 +18,7 @@ export const baseContract: Contract = {
 }
 
 export const basePeriod = {
+  feeCents: 0,
   id: '0',
   createdAt: new Date(),
   updatedAt: new Date(),

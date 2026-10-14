@@ -1,3 +1,8 @@
+import {
+  centsToEuros,
+  eurosToCents,
+  holderAmount as sharedAmount
+} from './money'
 import { monthBeetween } from './dates'
 import { type Contract, type Provider } from './models'
 
@@ -32,8 +37,10 @@ export const getPaymentPlan = (
 
   const payments = months + (hasInitialPayment ? 1 : 0)
 
-  const totalAmount =
-    Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
+  const totalAmount = centsToEuros(
+    eurosToCents(fee) * months +
+      (hasInitialPayment ? eurosToCents(initial!) : 0)
+  )
 
   return {
     endDate,
@@ -45,14 +52,19 @@ export const getPaymentPlan = (
   }
 }
 
-export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
-  const { shares, fee: baseFee, periods, resources } = rawLoan
+export const unwrapLoan = (
+  rawLoan: Contract,
+  refDate: Date = new Date(),
+  viewerId = rawLoan.userId
+) => {
+  const { shares, feeCents: baseFee, periods, resources } = rawLoan
 
-  const initial = baseFee ?? 0
+  const initial = centsToEuros(baseFee ?? 0)
 
   if (periods.length === 0) throw new Error(`Loan ${rawLoan.id} has no periods`)
 
-  const { from, to, fee } = periods[0]
+  const { from, to, feeCents } = periods[0]
+  const fee = centsToEuros(feeCents)
 
   if (!to) throw new Error(`Loan ${rawLoan.id} has no end date`)
 
@@ -84,9 +96,8 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
     0
   )
 
-  const totalAmount =
-    Number(fee) * months + (hasInitialPayment ? Number(initial) : 0)
-  const paidAmount = paymentsDone * fee + initial
+  const totalAmount = centsToEuros(feeCents * months + (baseFee ?? 0))
+  const paidAmount = centsToEuros(paymentsDone * feeCents + (baseFee ?? 0))
   const owedAmount = totalAmount - paidAmount
 
   const holderAmount = 1 + sharesAccepted
@@ -105,8 +116,8 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
 
   const currentFee = !isOngoing ? 0 : startsThisMonth ? initial : fee
 
-  const holderFee = currentFee / holderAmount
-  const holderMonthlyFee = fee / holderAmount
+  const holderFee = sharedAmount(eurosToCents(currentFee), rawLoan, viewerId)
+  const holderMonthlyFee = sharedAmount(feeCents, rawLoan, viewerId)
 
   const hasShares = shares.length > 0
   const hasAcceptedShares = sharesAccepted > 0
@@ -143,6 +154,7 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
 
   return {
     contract: rawLoan,
+    viewerId,
     ...rawLoan,
     startDate,
     endDate,
@@ -156,16 +168,29 @@ export const unwrapLoan = (rawLoan: Contract, refDate: Date = new Date()) => {
       monthly: fee,
       holder: holderFee,
       holderMonthly: holderMonthlyFee,
-      holderInitial: initial ? initial / holderAmount : 0,
+      holderInitial: initial
+        ? sharedAmount(baseFee ?? 0, rawLoan, viewerId)
+        : 0,
       current: currentFee
     },
     amount: {
       total: totalAmount,
       paid: paidAmount,
       owed: owedAmount,
-      holderTotal: totalAmount / holderAmount,
-      holderPaid: paidAmount / holderAmount,
-      holderOwed: owedAmount / holderAmount
+      holderTotal: centsToEuros(
+        Math.round(holderMonthlyFee * 100) * months +
+          Math.round(sharedAmount(baseFee ?? 0, rawLoan, viewerId) * 100)
+      ),
+      holderPaid: centsToEuros(
+        Math.round(holderMonthlyFee * 100) * paymentsDone +
+          Math.round(sharedAmount(baseFee ?? 0, rawLoan, viewerId) * 100)
+      ),
+      holderOwed: centsToEuros(
+        Math.max(
+          0,
+          Math.round(holderMonthlyFee * 100) * (months - paymentsDone)
+        )
+      )
     },
     payments: {
       total: months + (hasInitialPayment ? 1 : 0),

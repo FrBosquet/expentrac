@@ -1,3 +1,4 @@
+import { centsToEuros, holderAmount as sharedAmount } from '@lib/money'
 import {
   contractMonthsPassed,
   getContractStatus,
@@ -82,8 +83,10 @@ export const usePayplan = (
           if (updates) updatingSubs.push(sub)
 
           if (shouldPay) {
-            monthlySubPay += refPeriod.fee
-            monthlySubHolderFee += refPeriod.fee
+            monthlySubPay += refPeriod.feeCents
+            monthlySubHolderFee += Math.round(
+              100 * sharedAmount(refPeriod.feeCents, contract, sub.viewerId)
+            )
           }
         }
       })
@@ -99,22 +102,30 @@ export const usePayplan = (
           if (starts) startingLoans.push(loan)
           if (ends) finishingLoans.push(loan)
 
-          monthlyLoanPay += starts ? fee.initial : fee.monthly
-          monthlyLoanHolderFee += ends ? fee.holderInitial : fee.holderMonthly
+          monthlyLoanPay += Math.round(
+            100 * (starts ? fee.initial : fee.monthly)
+          )
+          monthlyLoanHolderFee += Math.round(
+            100 * (starts ? fee.holderInitial : fee.holderMonthly)
+          )
 
           owed +=
-            amount.total -
-            fee.initial -
-            fee.monthly * contractMonthsPassed(contract, refDate)
+            Math.round(amount.total * 100) -
+            Math.round(fee.initial * 100) -
+            Math.round(fee.monthly * 100) *
+              contractMonthsPassed(contract, refDate)
           holderOwed +=
-            amount.holderTotal -
-            fee.holderInitial -
-            fee.holderMonthly * contractMonthsPassed(contract, refDate)
+            Math.round(amount.holderTotal * 100) -
+            Math.round(fee.holderInitial * 100) -
+            Math.round(fee.holderMonthly * 100) *
+              contractMonthsPassed(contract, refDate)
         }
       })
 
-      const monthlyPay = monthlyLoanPay + monthlySubPay
-      const monthlyHolderFee = monthlyLoanHolderFee + monthlySubHolderFee
+      const monthlyPay = centsToEuros(monthlyLoanPay + monthlySubPay)
+      const monthlyHolderFee = centsToEuros(
+        monthlyLoanHolderFee + monthlySubHolderFee
+      )
 
       const hasStartingSubs = startingSubs.length > 0
       const hasFinishingSubs = finishingSubs.length > 0
@@ -134,12 +145,12 @@ export const usePayplan = (
         date: refDate,
         monthlyPay,
         monthlyHolderFee,
-        monthlyLoanPay,
-        monthlyLoanHolderFee,
-        monthlySubPay,
-        monthlySubHolderFee,
-        owed,
-        holderOwed,
+        monthlyLoanPay: centsToEuros(monthlyLoanPay),
+        monthlyLoanHolderFee: centsToEuros(monthlyLoanHolderFee),
+        monthlySubPay: centsToEuros(monthlySubPay),
+        monthlySubHolderFee: centsToEuros(monthlySubHolderFee),
+        owed: centsToEuros(owed),
+        holderOwed: centsToEuros(holderOwed),
         hasStartingSubs,
         hasFinishingSubs,
         hasSharedSubs,

@@ -45,7 +45,7 @@ test('inverted loan dates are rejected', async () => {
     )
   ).rejects.toMatchObject({ status: 400 })
 })
-test.each([0, 32, 1.5])(
+test.each([0, 32, 1.5, 1.001])(
   'subscription payday %s is rejected',
   async (payday) => {
     await expect(

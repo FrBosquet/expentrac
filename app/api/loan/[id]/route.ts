@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { type LoanFormData } from '@lib/loan'
@@ -104,7 +105,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
     },
     data: {
       name: body.name,
-      fee: Number(body.initial),
+      feeCents: eurosToCents(body.initial),
       periods: {
         updateMany: {
           where: {
@@ -113,7 +114,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
           data: {
             to: new Date(body.endDate).toISOString(),
             from: new Date(body.startDate).toISOString(),
-            fee: Number(body.fee)
+            feeCents: eurosToCents(body.fee)
           }
         }
       },

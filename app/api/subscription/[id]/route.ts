@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
@@ -54,7 +55,11 @@ const handlePATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = await contractInput(await jsonObject(req), CONTRACT_TYPE.SUBSCRIPTION, userId) as unknown as SubFormData
+  const body = (await contractInput(
+    await jsonObject(req),
+    CONTRACT_TYPE.SUBSCRIPTION,
+    userId
+  )) as unknown as SubFormData
 
   const sub = await prisma.contract.findUnique({
     where: { id },
@@ -84,7 +89,10 @@ const handlePATCH = async (req: Request, { params }: Query) => {
   }
 
   if (sub.type !== CONTRACT_TYPE.SUBSCRIPTION) {
-    return NextResponse.json({ message: 'Invalid contract type' }, { status: 400 })
+    return NextResponse.json(
+      { message: 'Invalid contract type' },
+      { status: 400 }
+    )
   }
 
   // SHARES
@@ -106,16 +114,17 @@ const handlePATCH = async (req: Request, { params }: Query) => {
     },
     data: {
       name: body.name,
-      fee: Number(body.initial),
+      feeCents: eurosToCents(body.initial),
       periods: {
         updateMany: {
           where: {
             id: sub.periods[0].id
           },
           data: {
-            fee: Number(body.fee),
+            feeCents: eurosToCents(body.fee),
             payday: body.payday ? Number(body.payday) : undefined,
-            paymonth: body.paymonth ? Number(body.paymonth) : undefined,
+            paymonth:
+              body.paymonth !== undefined ? Number(body.paymonth) : null,
             periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
           }
         }
@@ -135,45 +144,47 @@ const handlePATCH = async (req: Request, { params }: Query) => {
       resources:
         sub.resources.length === 0
           ? // THIS IS A FIX FOR THE CARRYOVER OF SUBSCRIPTIONS TO CONTRACTS NOT HAVING LINKS
-          {
-            create: {
-              name: 'link',
-              type: 'LINK',
-              url: body.link
-            }
-          }
-          : {
-            upsert: {
-              where: {
-                id: sub.resources.find((resource) => resource.type === 'LINK')
-                  ?.id,
-                type: 'LINK'
-              },
-              update: {
-                url: body.link
-              },
+            {
               create: {
                 name: 'link',
                 type: 'LINK',
                 url: body.link
               }
             }
-          }
+          : {
+              upsert: {
+                where: {
+                  id: sub.resources.find((resource) => resource.type === 'LINK')
+                    ?.id,
+                  type: 'LINK'
+                },
+                update: {
+                  url: body.link
+                },
+                create: {
+                  name: 'link',
+                  type: 'LINK',
+                  url: body.link
+                }
+              }
+            }
     },
     include: subscriptionInclude
   })
 
-  await Promise.all(keysToCreate.map(async (toId) => {
-    const share = updatedSub.shares.find((share) => share.toId === toId)
+  await Promise.all(
+    keysToCreate.map(async (toId) => {
+      const share = updatedSub.shares.find((share) => share.toId === toId)
 
-    if (!share) return
+      if (!share) return
 
-    await notificationSdk.create(share.toId, true, {
-      type: NOTIFICATION_TYPE.SUB_SHARE,
-      contract: updatedSub as Contract,
-      share: { id: share.id }
+      await notificationSdk.create(share.toId, true, {
+        type: NOTIFICATION_TYPE.SUB_SHARE,
+        contract: updatedSub as Contract,
+        share: { id: share.id }
+      })
     })
-  }))
+  )
 
   return NextResponse.json(
     { message: 'success', data: updatedSub },
@@ -238,4 +249,5 @@ const getProviderUpdateArgs = (
   }
 }
 
-export const PATCH = (req: Request, query: Query) => apiResponse(() => handlePATCH(req, query))
+export const PATCH = (req: Request, query: Query) =>
+  apiResponse(() => handlePATCH(req, query))

@@ -1,5 +1,6 @@
 'use client'
 
+import { centsToEuros } from '@lib/money'
 import { FormField, SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import {
@@ -106,7 +107,7 @@ export const SubUpdatePrice = ({
             <FormField
               required
               className="text-center"
-              defaultValue={lastActivePeriod.fee}
+              defaultValue={centsToEuros(lastActivePeriod.feeCents)}
               label="Fee"
               name="fee"
               step="0.01"

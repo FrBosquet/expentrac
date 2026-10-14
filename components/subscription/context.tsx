@@ -2,10 +2,12 @@
 
 import { useDate } from '@components/date/context'
 import { useContracts, useShareQuery } from '@hooks/resources'
+import { useQueryScope } from '@store'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { unwrapSub } from '@lib/sub'
 
 export const useSubs = () => {
+  const viewerId = useQueryScope()
   const { date } = useDate()
   const query = useContracts()
   const shares = useShareQuery()
@@ -17,7 +19,7 @@ export const useSubs = () => {
       (s) =>
         s.accepted === true && s.contract?.type === CONTRACT_TYPE.SUBSCRIPTION
     )
-    .map((s) => unwrapSub(s.contract!, date))
+    .map((s) => unwrapSub(s.contract!, date, viewerId))
   const allSubs = [...subs, ...sharedSubs]
   return {
     subs,
@@ -32,6 +34,7 @@ export const useSubs = () => {
   }
 }
 export const useSub = (id: string) => {
+  const viewerId = useQueryScope()
   const { date } = useDate()
   const query = useContracts()
   const shares = useShareQuery()
@@ -42,7 +45,7 @@ export const useSub = (id: string) => {
     shares.shares.find((s) => s.accepted === true && s.contractId === id)
       ?.contract
   return {
-    sub: contract ? unwrapSub(contract, date) : null,
+    sub: contract ? unwrapSub(contract, date, viewerId) : null,
     isLoading: query.isPending || shares.isPending,
     error: query.error ?? shares.error
   }

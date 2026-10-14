@@ -1,3 +1,4 @@
+import { eurosToCents, centsToEuros } from '@lib/money'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { prisma } from '@lib/prisma'
 import { SELECT_OPTIONS } from '@types'
@@ -35,7 +36,11 @@ export function amount(value: unknown, name = 'amount') {
   const result = Number(value)
   if (!Number.isFinite(result) || result < 0 || result > 21_474_836.47)
     throw new ApiError(400, `Invalid ${name}`)
-  return result
+  try {
+    return centsToEuros(eurosToCents(value))
+  } catch {
+    throw new ApiError(400, `Invalid ${name}`)
+  }
 }
 export function integer(
   value: unknown,
@@ -43,7 +48,12 @@ export function integer(
   min: number,
   max: number
 ) {
-  const result = amount(value, name)
+  if (
+    (typeof value !== 'number' && typeof value !== 'string') ||
+    (typeof value === 'string' && !value.trim())
+  )
+    throw new ApiError(400, `Invalid ${name}`)
+  const result = Number(value)
   if (!Number.isInteger(result) || result < min || result > max)
     throw new ApiError(400, `Invalid ${name}`)
   return result

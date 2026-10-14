@@ -76,7 +76,7 @@ model Contract {
   user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   type      String
-  fee       Float?
+  feeCents Int? @map("fee")
   periods   Period[]
   shares    Share[]
   providers ProvidersOnContract[]
@@ -100,7 +100,7 @@ model Period {
   id          String    @id @default(cuid())
   from        DateTime
   to          DateTime?
-  fee         Float
+  feeCents Int @map("fee")
   payday      Int?
   paymonth    Int?
   periodicity String?
@@ -180,8 +180,8 @@ model Loan {
   updatedAt  DateTime      @updatedAt
   id         String        @id @default(cuid())
   name       String
-  fee        Float
-  initial    Float         @default(0)
+  feeCents Int @map("fee")
+  initialCents Int @default(0) @map("initial")
   startDate  DateTime
   endDate    DateTime
   userId     String
@@ -212,7 +212,7 @@ model Subscription {
   updatedAt  DateTime            @updatedAt
   id         String              @id @default(cuid())
   name       String
-  fee        Float
+  feeCents Int @map("fee")
   userId     String
   yearly     Boolean             @default(false)
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)

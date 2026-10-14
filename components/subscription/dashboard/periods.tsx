@@ -1,3 +1,4 @@
+import { centsToEuros } from '@lib/money'
 import { Tooltip } from '@components/Tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
@@ -25,7 +26,7 @@ export const SubPeriods = ({ sub, className }: Props) => {
       <CardContent>
         <section className="flex max-h-[500px] flex-col gap-2 overflow-y-auto">
           {all.toReversed().map((period) => {
-            const { from, to, fee, id } = period
+            const { from, to, feeCents, id } = period
             const fromDate = new Date(from)
             const toDate = to ? new Date(to) : null
             const startFormatted = fromDate.toLocaleDateString('default', {
@@ -37,7 +38,7 @@ export const SubPeriods = ({ sub, className }: Props) => {
                 year: '2-digit',
                 month: 'short'
               }) ?? 'ongoing'
-            const priceFormatted = euroFormatter.format(fee)
+            const priceFormatted = euroFormatter.format(centsToEuros(feeCents))
 
             const isActiveOne = id === active?.id
 

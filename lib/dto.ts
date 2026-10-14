@@ -1,3 +1,4 @@
+import { centsToEuros, eurosToCents } from './money'
 import { type Contract } from './models'
 
 export interface ContractPreview {
@@ -32,7 +33,11 @@ export function contractPreview(contract: Contract): ContractPreview {
       image: contract.user?.image ?? null
     },
     monthlyAmount: period
-      ? period.fee / (period.periodicity === 'YEARLY' ? 12 : 1)
+      ? centsToEuros(
+          Math.round(
+            period.feeCents / (period.periodicity === 'YEARLY' ? 12 : 1)
+          )
+        )
       : 0
   }
 }
@@ -48,12 +53,20 @@ export function safeDto(value: unknown): unknown {
     Object.entries(value).map(([key, child]) => [key, safeDto(child)])
   )
   if (
+    typeof value.fee === 'number' &&
+    !('feeCents' in value) &&
+    ('periods' in value || ('contractId' in value && 'from' in value))
+  ) {
+    result.feeCents = eurosToCents(value.fee)
+    delete result.fee
+  }
+  if (
     'contractId' in value &&
     'toId' in value &&
     'accepted' in value &&
     object(value.contract)
   ) {
-    result.preview = contractPreview(value.contract as unknown as Contract)
+    result.preview = contractPreview(safeDto(value.contract) as Contract)
     if (value.accepted !== true) result.contract = null
     else if (object(result.contract) && Array.isArray(result.contract.shares))
       result.contract.shares = result.contract.shares.filter(
@@ -68,7 +81,7 @@ export function safeDto(value: unknown): unknown {
       const payload = JSON.parse(value.payload)
       if (object(payload.contract))
         result.payload = JSON.stringify({
-          preview: contractPreview(payload.contract as unknown as Contract),
+          preview: contractPreview(safeDto(payload.contract) as Contract),
           share: { id: payload.share?.id },
           state: payload.state
         })

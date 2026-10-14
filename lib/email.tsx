@@ -9,6 +9,7 @@ import {
   SubShareRejectEmail,
   WelcomeEmail
 } from '@emails'
+import { sumMoney } from '@lib/money'
 import { euroFormatter } from '@lib/currency'
 import { unwrapLoan } from '@lib/loan'
 import { type Contract } from '@lib/models'
@@ -267,9 +268,10 @@ const sendDailyEmail = async (
 ) => {
   const loansData = loans.map((loan) => unwrapLoan(loan))
   const subData = subs.map((sub) => unwrapSub(sub))
-  const totalAmount =
-    loansData.reduce((sum, l) => sum + l.fee.holder, 0) +
-    subData.reduce((sum, s) => sum + s.fee.holder, 0)
+  const totalAmount = sumMoney(
+    ...loansData.map((loan) => loan.fee.holder),
+    ...subData.map((sub) => sub.fee.holder)
+  )
   const names = [...loansData.map((l) => l.name), ...subData.map((s) => s.name)]
   const subject =
     names.length > 0

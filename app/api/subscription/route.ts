@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
@@ -56,13 +57,13 @@ const handlePOST = async (req: Request) => {
       },
       type: CONTRACT_TYPE.SUBSCRIPTION,
       name: body.name,
-      fee: Number(body.initial),
+      feeCents: eurosToCents(body.initial),
       periods: {
         create: {
           from: today,
-          fee: Number(body.fee),
+          feeCents: eurosToCents(body.fee),
           payday: body.payday ? Number(body.payday) : undefined,
-          paymonth: body.paymonth ? Number(body.paymonth) : undefined,
+          paymonth: body.paymonth !== undefined ? Number(body.paymonth) : null,
           periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
         }
       },

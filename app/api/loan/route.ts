@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk } from '@lib/notification'
@@ -50,12 +51,12 @@ const handlePOST = async (req: Request) => {
       },
       type: CONTRACT_TYPE.LOAN,
       name: body.name,
-      fee: Number(body.initial),
+      feeCents: eurosToCents(body.initial),
       periods: {
         create: {
           to: new Date(body.endDate).toISOString(),
           from: new Date(body.startDate).toISOString(),
-          fee: Number(body.fee),
+          feeCents: eurosToCents(body.fee),
           payday: body.payday ?? new Date(body.startDate).getDate()
         }
       },

@@ -1,3 +1,4 @@
+import { eurosToCents } from '@lib/money'
 import { CONTRACT_TYPE, subscriptionInclude } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
 import { safeDto } from '@lib/dto'
@@ -34,7 +35,7 @@ export async function changeSubscriptionPeriod(
           data: {
             contractId: id,
             from: date,
-            fee: amount(form.get('fee')),
+            feeCents: eurosToCents(amount(form.get('fee'))),
             payday: integer(form.get('payday'), 'payday', 1, 31),
             paymonth: yearly
               ? integer(form.get('paymonth'), 'paymonth', 0, 11)
@@ -52,9 +53,12 @@ export async function changeSubscriptionPeriod(
             data: { to: date }
           })
         } else {
-          const fee = amount(form.get('fee'))
+          const feeCents = eurosToCents(amount(form.get('fee')))
           if (date.getTime() === new Date(active.from).getTime()) {
-            await db.period.update({ where: { id: active.id }, data: { fee } })
+            await db.period.update({
+              where: { id: active.id },
+              data: { feeCents }
+            })
           } else {
             await db.period.update({
               where: { id: active.id },
@@ -64,7 +68,7 @@ export async function changeSubscriptionPeriod(
               data: {
                 contractId: id,
                 from: date,
-                fee,
+                feeCents,
                 payday: active.payday,
                 paymonth: active.paymonth,
                 periodicity: active.periodicity

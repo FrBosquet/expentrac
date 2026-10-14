@@ -14,39 +14,39 @@ describe('getOngoingPeriod', () => {
           ...basePeriod,
           from: new Date('1986-08-02'),
           to: new Date('1986-08-25'),
-          fee: 10
+          feeCents: 1000
         },
         {
           ...basePeriod,
           from: new Date('2021-01-05'),
           to: new Date('2021-02-15'),
-          fee: 200
+          feeCents: 20000
         },
         {
           ...basePeriod,
           from: new Date('2021-02-16'),
           to: new Date('2022-02-10'),
-          fee: 210
+          feeCents: 21000
         },
         {
           ...basePeriod,
           from: new Date('2022-02-11'),
-          fee: 220
+          feeCents: 22000
         }
       ]
     }
 
     it('should return the ongoing period', () => {
       expect(getOngoingPeriod(contract, new Date('2021-02-10'))).toHaveProperty(
-        'fee',
-        200
+        'feeCents',
+        20000
       )
     })
 
     it('should return the ongoing period', () => {
       expect(getOngoingPeriod(contract, new Date('1986-08-24'))).toHaveProperty(
-        'fee',
-        10
+        'feeCents',
+        1000
       )
     })
 
@@ -56,22 +56,22 @@ describe('getOngoingPeriod', () => {
 
     it('should return an unfinished period', () => {
       expect(getOngoingPeriod(contract, new Date('2021-03-15'))).toHaveProperty(
-        'fee',
-        210
+        'feeCents',
+        21000
       )
     })
 
     it('should capture period that starts this month', () => {
       expect(getOngoingPeriod(contract, new Date('2022-02-1'))).toHaveProperty(
-        'fee',
-        220
+        'feeCents',
+        22000
       )
     })
 
     it('should capture period that ends this month', () => {
       expect(getOngoingPeriod(contract, new Date('1986-08-26'))).toHaveProperty(
-        'fee',
-        10
+        'feeCents',
+        1000
       )
     })
   })
@@ -84,21 +84,21 @@ describe('getOngoingPeriod', () => {
           ...basePeriod,
           from: new Date('2021-01-01'),
           to: new Date('2021-01-15'),
-          fee: 150
+          feeCents: 15000
         },
         {
           ...basePeriod,
           from: new Date('2021-01-16'),
           to: new Date('2021-01-31'),
-          fee: 250
+          feeCents: 25000
         }
       ]
     }
 
     it('should return the ongoing period that has the payday for the given month', () => {
       expect(getOngoingPeriod(contract, new Date('2021-01-17'))).toHaveProperty(
-        'fee',
-        150
+        'feeCents',
+        15000
       )
     })
   })
@@ -118,7 +118,7 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-01-15'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -135,7 +135,7 @@ describe('getContractState', () => {
           {
             ...basePeriod,
             from: new Date('2024-01-01'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -165,7 +165,7 @@ describe('getContractState', () => {
           {
             ...basePeriod,
             from: new Date('2021-01-15'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -183,7 +183,7 @@ describe('getContractState', () => {
           {
             ...basePeriod,
             from: new Date('2021-01-01'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -203,7 +203,7 @@ describe('getContractState', () => {
           {
             ...basePeriod,
             from: new Date('2021-01-01'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -221,7 +221,7 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-03-01'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -241,7 +241,7 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-01-31'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -260,7 +260,7 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-01-15'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -279,7 +279,7 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-01-30'),
-            fee: 150
+            feeCents: 15000
           }
         ]
       }
@@ -301,12 +301,12 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-01-01'),
             to: new Date('2021-02-15'),
-            fee: 150
+            feeCents: 15000
           },
           {
             ...basePeriod,
             from: new Date('2021-02-16'),
-            fee: 200
+            feeCents: 20000
           }
         ]
       }
@@ -325,12 +325,12 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-02-01'),
             to: new Date('2021-02-15'),
-            fee: 150
+            feeCents: 15000
           },
           {
             ...basePeriod,
             from: new Date('2021-02-16'),
-            fee: 200
+            feeCents: 20000
           }
         ]
       }
@@ -350,12 +350,12 @@ describe('getContractState', () => {
             ...basePeriod,
             from: new Date('2021-02-01'),
             to: new Date('2021-03-31'),
-            fee: 150
+            feeCents: 15000
           },
           {
             ...basePeriod,
             from: new Date('2021-04-01'),
-            fee: 200
+            feeCents: 20000
           }
         ]
       }
