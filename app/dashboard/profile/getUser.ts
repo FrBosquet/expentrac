@@ -1,7 +1,7 @@
 import { authOptions } from '@lib/auth'
 import { prisma } from '@lib/prisma'
 import { hasUser } from '@lib/session'
-import { type User } from '@prisma/client'
+import { type User } from '@lib/models'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 

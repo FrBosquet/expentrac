@@ -38,3 +38,6 @@ next-env.d.ts
 # Browser test artifacts
 /test-results/
 /playwright-report/
+
+# Generated Prisma client
+/generated/prisma/

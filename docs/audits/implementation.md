@@ -29,6 +29,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 - Prisma 6.19.3 intermediate stage: exact CLI/client alignment, generation, all migrations on disposable PostgreSQL, transaction regressions, full checks/build and real-session browser/API checks passed. No schema/data conversion was coupled to this bump.
 
+- Prisma 7.10.0: generated client outside node_modules, explicit environment/migration config, aligned PostgreSQL adapter, per-process pool cap and development cache. Documented CommonJS generator output preserves existing tooling. Generation, checks, full build, disposable migration/transaction tests and real-session browser/API checks pass. Production SSL/provider connection budget still needs release verification.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

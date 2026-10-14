@@ -32,7 +32,7 @@ try {
   await postgres.createDatabase('audit')
   await run(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'], true)
   const [command, ...args] = process.argv.slice(2)
-  if (command) await run(command, args)
+  if (command) await run(command, command === 'node' ? ['--import', 'tsx', ...args] : args)
   console.log('Disposable PostgreSQL migration checks passed')
 } finally {
   await postgres.stop()

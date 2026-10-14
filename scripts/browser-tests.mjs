@@ -3,8 +3,9 @@ import { spawn } from 'node:child_process'
 import { setTimeout } from 'node:timers/promises'
 
 const require = createRequire(import.meta.url)
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('../generated/prisma/client.ts')
+const { PrismaPg } = require('@prisma/adapter-pg')
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.POSTGRES_PRISMA_URL, max: 2 }) })
 const url = new URL(process.env.POSTGRES_PRISMA_URL ?? '')
 if (process.env.EXPENTRAC_TEST_DB !== 'true' || url.hostname !== '127.0.0.1' || url.pathname !== '/audit') throw new Error('Disposable test database required')
 for (const role of ['owner', 'recipient', 'third']) {

@@ -8,8 +8,8 @@ import {
   type Resource as PResource,
   type Share as PShare,
   type User as PUser
-} from '@prisma/client'
-export type * from '@prisma/client'
+} from '../generated/prisma/browser'
+export type * from '../generated/prisma/browser'
 
 export type RawAccount = PAccount
 export type RawContract = PContract

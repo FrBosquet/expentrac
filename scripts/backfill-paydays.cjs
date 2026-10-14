@@ -5,7 +5,8 @@ if (process.env.ALLOW_OFFLINE_MAINTENANCE !== "true") {
     "Set ALLOW_OFFLINE_MAINTENANCE=true for an explicitly selected database",
   );
 }
-const prisma = new PrismaClient();
+const { PrismaPg } = require('@prisma/adapter-pg')
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.POSTGRES_PRISMA_URL, max: 1 }) });
 async function main() {
   const periods = await prisma.period.findMany({ where: { payday: null } });
   for (const period of periods) {
