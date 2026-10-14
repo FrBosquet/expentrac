@@ -39,7 +39,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
               className
             )}
           >
-            <AvatarImage alt={user?.name!} src={user?.image!} />
+            <AvatarImage alt={user?.name ?? 'Member'} src={user?.image ?? undefined} />
             <AvatarFallback>{fallback}</AvatarFallback>
           </Avatar>
         </article>

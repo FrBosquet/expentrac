@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode
 }
 
-// eslint-disable-next-line
+
 export const RootProvider = ({ children }: Props) => {
   return children
 }

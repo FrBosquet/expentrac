@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Cable, Combine, Send, Users } from 'lucide-react'
 import Image from 'next/image'
 

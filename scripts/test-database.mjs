@@ -17,18 +17,20 @@ const env = { ...process.env,
   DATABASE_URL: 'postgresql://audit:audit@127.0.0.1:55432/audit',
   EXPENTRAC_TEST_DB: 'true', RESEND_KEY: 're_local_test', CRON_SECRET: 'local-test-secret'
 }
-function run(command, args) {
+function run(command, args, quiet = false) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { env, stdio: 'inherit' })
+    const child = spawn(command, args, { env, stdio: quiet ? ['ignore', 'pipe', 'pipe'] : 'inherit' })
+    let output = ''
+    if (quiet) for (const stream of [child.stdout, child.stderr]) stream.on('data', (data) => { output = (output + data).slice(-6000) })
     child.on('error', reject)
-    child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Test process exited ${code}`)))
+    child.on('exit', (code) => { if (code === 0) resolve(); else { if (quiet) console.error(output); reject(new Error(`Test process exited ${code}`)) } })
   })
 }
 try {
   await postgres.initialise()
   await postgres.start()
   await postgres.createDatabase('audit')
-  await run(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'])
+  await run(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'], true)
   const [command, ...args] = process.argv.slice(2)
   if (command) await run(command, args)
   console.log('Disposable PostgreSQL migration checks passed')

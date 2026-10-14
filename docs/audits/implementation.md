@@ -25,6 +25,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 - Next 15.5.28 / React 19.3.1 stage: async route params and metadata, remote image patterns, current Radix/Query/form/toast peers. Unit tests, typecheck, lint, production build and real-session production-bundle browser checks pass. Next 15 dev served a truncated first-load layout chunk during recompilation; this remains a dev smoke check for the Next 16 stage. The codemod could not transform wrapped route exports; those were migrated manually and checked.
 
+- Next 16.4.1 and ESLint 10.12.0 flat config pass checks, full production build, compiled-route guard and production/dev real-session browser tests. Explicit Webpack is retained: a default Turbopack build emitted an empty app-path manifest despite exit 0. The Next 15 dev hydration failure no longer reproduces on Next 16. Compiler/Cache Components remain disabled.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

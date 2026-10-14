@@ -20,7 +20,7 @@ await prisma.contract.create({ data: { id: 'browser-sub', name: 'Fixture streami
   periods: { create: { fee: 12.5, payday: 14, periodicity: 'MONTHLY', from: new Date('2026-01-01') } }
 } })
 const env = { ...process.env, NEXTAUTH_URL: 'http://127.0.0.1:3100', NEXTAUTH_SECRET: 'browser-test-only', GOOGLE_CLIENT_ID: 'browser-test', GOOGLE_CLIENT_SECRET: 'browser-test', NEXT_PUBLIC_BASE_URL: '/api', RESEND_KEY: '' }
-const server = spawn(process.execPath, [require.resolve('next/dist/bin/next'), process.env.EXPENTRAC_BROWSER_MODE === 'dev' ? 'dev' : 'start', '-p', '3100', '-H', '127.0.0.1'], { env, stdio: ['ignore', 'pipe', 'pipe'] })
+const server = spawn(process.execPath, [require.resolve('next/dist/bin/next'), ...(process.env.EXPENTRAC_BROWSER_MODE === 'dev' ? ['dev', '--webpack'] : ['start']), '-p', '3100', '-H', '127.0.0.1'], { env, stdio: ['ignore', 'pipe', 'pipe'] })
 let diagnostics = ''
 for (const stream of [server.stdout, server.stderr]) stream.on('data', (data) => { diagnostics = (diagnostics + data).slice(-12_000) })
 function run(command, args) {

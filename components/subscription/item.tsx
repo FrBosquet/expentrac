@@ -1,6 +1,5 @@
 'use client'
 
-/* eslint-disable prettier/prettier */
 
 import { useDate } from '@components/date/context'
 import { ProviderLogo } from '@components/provider/ProviderLogo'

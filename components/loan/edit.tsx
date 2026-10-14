@@ -1,6 +1,5 @@
 'use client'
 
-/* eslint-disable prettier/prettier */
 import { Button } from '@components/ui/button'
 import {
   Dialog,

@@ -1,6 +1,5 @@
 'use client'
 
-/* eslint-disable prettier/prettier */
 
 import { cn } from '@lib/utils'
 import {

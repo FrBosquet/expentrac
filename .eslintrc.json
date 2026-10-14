@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "frbosquet-tsnext",
-    "plugin:@tanstack/eslint-plugin-query/recommended"
-  ]
-}

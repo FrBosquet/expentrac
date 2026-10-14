@@ -10,3 +10,13 @@
 - Money migration uses integer cents, validated ranges and deterministic splits. Do not combine destructive legacy retirement with dependency updates.
 - Persist email work atomically with notification state; send after commit, check provider error responses, and retain bounded idempotent retry state. Do not log recipient addresses, payloads or secrets.
 - Run `pnpm check`, `pnpm test:db` for database changes, and `pnpm build` for framework changes. No tests or builds should need production credentials. Report outstanding real OAuth/deployment/data checks honestly.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

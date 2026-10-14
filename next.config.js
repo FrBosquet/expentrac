@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['tsx', 'mdx', 'ts'],
-  experimental: {
-    mdxRs: true
-  },
+  turbopack: { root: __dirname },
+  experimental: { mdxRs: true },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'asset.brandfetch.io' }],
   },

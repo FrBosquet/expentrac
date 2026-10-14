@@ -157,9 +157,9 @@ export const SubDetailContent = ({
           <p className="dashboard-value">
             {isYearly
               ? ndate.toLocaleDateString('default', {
-                month: 'short', // eslint-disable-line
-                day: 'numeric' //eslint-disable-line
-              }) // eslint-disable-line
+                month: 'short',
+                day: 'numeric'
+              })
               : payday}
           </p>
         </article>

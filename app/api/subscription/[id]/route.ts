@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
