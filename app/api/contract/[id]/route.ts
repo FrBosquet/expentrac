@@ -16,7 +16,7 @@ export const DELETE = async (
         message: 'forbidden'
       },
       {
-        status: 403
+        status: 401
       }
     )
   }
@@ -61,7 +61,7 @@ export const DELETE = async (
   await prisma.contract.delete({ where: { id } })
 
   return NextResponse.json(
-    { message: 'DELETED', data: contract },
+    { message: 'DELETED', data: { id: contract.id } },
     { status: 200 }
   )
 }
@@ -78,7 +78,7 @@ export const GET = async (
         message: 'forbidden'
       },
       {
-        status: 403
+        status: 401
       }
     )
   }

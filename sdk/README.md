@@ -1,6 +1,5 @@
-# What is an SDK?
+# Browser API clients
 
-A software development kit is a bundle of functions that allows frontend to interact with an endpoint in the backend:
+All dashboard HTTP calls use `sdk/http.ts`: same-origin session cookies, uncached private resources, timeout/cancellation, HTTP errors, JSON/envelope validation and Date restoration. Resource IDs and search terms are URL-encoded. Writes are never automatically retried.
 
-- Only frontend can import from SDK
-- Code in SDK should be executable in the frontend
+RSC uses authorized `lib/server/` services directly; never import the browser SDK in a server layout. Dashboard query keys include session identity, and mutations invalidate dependent projections.

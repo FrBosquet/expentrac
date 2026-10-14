@@ -1,7 +1,13 @@
 import { type User } from '@lib/models'
 import { getUsersByEmail } from '@sdk/user'
 import { ChevronsUpDown } from 'lucide-react'
-import { type ChangeEvent, useCallback, useRef, useState } from 'react'
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { useUser } from './Provider'
 import { Button } from './ui/button'
@@ -21,7 +27,10 @@ interface Props {
 }
 
 export function UserSearch({ onSelect, selectedUsers }: Props) {
-  const debounce = useRef<any>(null)
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const controller = useRef<AbortController | null>(null)
+  const sequence = useRef(0)
+  const [error, setError] = useState('')
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [value, setValue] = useState('')
@@ -32,28 +41,54 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
     async (search: string) => {
       if (debounce.current) clearTimeout(debounce.current)
 
-      if (search.length < 2) {
+      controller.current?.abort()
+      const current = ++sequence.current
+      setError('')
+      setLoading(false)
+      if (search.length < 3) {
         setOptions([])
         return
       }
 
       debounce.current = setTimeout(async () => {
         setLoading(true)
-        const users = await getUsersByEmail(search)
+        controller.current = new AbortController()
+        try {
+          const users = await getUsersByEmail(search, controller.current.signal)
+          if (current !== sequence.current) return
 
-        const optionList = users
-          .filter(({ id }) => id !== user.id)
-          .map((user) => ({
-            value: user.email,
-            label: user.name,
-            user
-          }))
+          const optionList = users
+            .filter(({ id }) => id !== user.id)
+            .map((user) => ({
+              value: user.email,
+              label: user.name,
+              user
+            }))
 
-        setOptions(optionList)
-        setLoading(false)
+          setOptions(optionList)
+        } catch (error) {
+          if (
+            current === sequence.current &&
+            !controller.current?.signal.aborted
+          ) {
+            setError(error instanceof Error ? error.message : 'Search failed')
+            setOptions([])
+          }
+        } finally {
+          if (current === sequence.current) setLoading(false)
+        }
       }, 170)
     },
     [user.id]
+  )
+
+  useEffect(
+    () => () => {
+      sequence.current++
+      controller.current?.abort()
+      if (debounce.current) clearTimeout(debounce.current)
+    },
+    []
   )
 
   const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +100,18 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value)
+        if (!value) {
+          sequence.current++
+          controller.current?.abort()
+          if (debounce.current) clearTimeout(debounce.current)
+          setLoading(false)
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           aria-expanded={open}
@@ -82,7 +128,10 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
           <CommandInput placeholder="write its email" />
           <CommandEmpty>
             {!loading &&
-              (value.length < 2 ? 'At least two chars' : 'No user found.')}
+              (error ||
+                (value.length < 3
+                  ? 'At least three characters'
+                  : 'No user found.'))}
           </CommandEmpty>
           {loading ? (
             <div className="flex w-full justify-center pb-2 text-slate-600">

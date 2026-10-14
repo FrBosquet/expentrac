@@ -9,7 +9,7 @@ export interface ContractsSlice {
   setContracts: (contracts: Contract[]) => void
   addContract: (contract: Contract) => void
   updateContract: (contract: Contract) => void
-  removeContract: (contract: Contract) => void
+  removeContract: (contract: Pick<Contract, 'id'>) => void
 }
 
 const sortFunction = (a: Contract, b: Contract) => {
@@ -41,7 +41,7 @@ export const createContractsSlice: StateCreator<ContractsSlice> = (set) => ({
       )
     }))
   },
-  removeContract: (contract: Contract) => {
+  removeContract: (contract: Pick<Contract, 'id'>) => {
     set((state) => ({
       contracts: state.contracts.filter((l) => l.id !== contract.id)
     }))

@@ -1,15 +1,8 @@
-import { getUrl } from '@lib/api'
-import { type ProviderOnContract } from '@lib/models'
+import { providerRelation } from './decode'
+import { arrayOf, request } from './http'
 
-export const getUserProviderOnContracts = async (userId: string) => {
-  const url = getUrl(`provider-on-contract?userId=${userId}`)
-
-  const response = await fetch(url, { cache: 'no-store' })
-  const contracts: ProviderOnContract[] = await response.json()
-
-  return contracts
-}
-
-export const providerOnContractSdk = {
-  get: getUserProviderOnContracts
-}
+export const getUserProviderOnContracts = async (
+  _userId?: string,
+  signal?: AbortSignal
+) => request('provider-on-contract', { signal }, arrayOf(providerRelation))
+export const providerOnContractSdk = { get: getUserProviderOnContracts }

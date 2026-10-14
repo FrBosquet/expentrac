@@ -1,17 +1,12 @@
 import { type Brand } from '@components/BrandAutocomplete'
-import { getUrl } from '@lib/api'
-import { type Provider } from '@lib/models'
 
-const add = async (body: Brand) => {
-  const result = await fetch(getUrl('/provider'), {
-    method: 'POST',
-    body: JSON.stringify(body)
-  })
+import { provider } from './decode'
+import { envelope, request } from './http'
 
-  const { data } = (await result.json()) as { data: Provider }
-  return data
-}
-
-export const providerSdk = {
-  add
-}
+const add = async (body: Brand) =>
+  request(
+    'provider',
+    { method: 'POST', body: JSON.stringify(body) },
+    envelope(provider)
+  )
+export const providerSdk = { add }
