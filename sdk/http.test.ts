@@ -50,3 +50,28 @@ test('writes are not retried after a network failure', async () => {
   })
   expect(fetchMock).toHaveBeenCalledTimes(1)
 })
+
+test('paged reads forward the cursor and reject duplicate rows', async () => {
+  const { allPages } = await import('./http')
+  const decode = (value: unknown) => value as { id: string }
+  fetchMock
+    .mockResolvedValueOnce(
+      Response.json(
+        Array.from({ length: 100 }, (_, id) => ({ id: String(id) }))
+      )
+    )
+    .mockResolvedValueOnce(Response.json([{ id: 'last' }]))
+  expect(await allPages('contract', decode)).toHaveLength(101)
+  expect(fetchMock.mock.calls[1][0]).toContain('cursor=99')
+  fetchMock
+    .mockReset()
+    .mockResolvedValueOnce(
+      Response.json(
+        Array.from({ length: 100 }, (_, id) => ({ id: String(id) }))
+      )
+    )
+    .mockResolvedValueOnce(Response.json([{ id: '99' }]))
+  await expect(allPages('contract', decode)).rejects.toMatchObject({
+    message: 'Inconsistent pagination'
+  })
+})

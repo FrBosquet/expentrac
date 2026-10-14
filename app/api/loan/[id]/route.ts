@@ -160,7 +160,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
       await notificationSdk.create(share.toId, true, {
         type: NOTIFICATION_TYPE.LOAN_SHARE,
         contract: updatedLoan as Contract,
-        share: share as Share
+        share: { id: share.id }
       })
     })
   )

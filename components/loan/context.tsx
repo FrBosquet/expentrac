@@ -16,9 +16,9 @@ export const useLoans = () => {
   const sharedLoans = sharesQuery.shares
     .filter(
       (share) =>
-        share.accepted === true && share.contract.type === CONTRACT_TYPE.LOAN
+        share.accepted === true && share.contract?.type === CONTRACT_TYPE.LOAN
     )
-    .map((share) => unwrapLoan(share.contract, date))
+    .map((share) => unwrapLoan(share.contract!, date))
   const allLoans = [...loans, ...sharedLoans].sort(
     (a, b) => a.time.payday - b.time.payday
   )

@@ -1,5 +1,6 @@
 import { CONTRACT_TYPE, subscriptionInclude } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
+import { safeDto } from '@lib/dto'
 import { type Contract } from '@lib/models'
 import { prisma } from '@lib/prisma'
 
@@ -76,7 +77,7 @@ export async function changeSubscriptionPeriod(
         where: { id },
         include: subscriptionInclude
       })
-      return updated as Contract
+      return safeDto(updated) as Contract
     },
     { isolationLevel: 'Serializable' }
   )

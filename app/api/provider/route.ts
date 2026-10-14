@@ -2,6 +2,7 @@ import { authOptions } from '@lib/auth'
 import { fetchBrandInfo } from '@lib/brandfetch'
 import { prisma } from '@lib/prisma'
 import { apiResponse, requireUser } from '@lib/server/api'
+import { pageOptions } from '@lib/server/pagination'
 import { identifier, jsonObject, text } from '@lib/server/validation'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -60,5 +61,8 @@ export const POST = (req: Request) => apiResponse(() => handlePOST(req))
 export const GET = (req: Request) =>
   apiResponse(async () => {
     await requireUser(req)
-    return prisma.provider.findMany({ orderBy: { name: 'asc' }, take: 200 })
+    return prisma.provider.findMany({
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      ...pageOptions(req)
+    })
   })

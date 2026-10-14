@@ -10,7 +10,7 @@ import { UserSearch } from '@components/UserSearch'
 import { euroFormatter } from '@lib/currency'
 import { toHTMLInputFormat } from '@lib/dates'
 import { getPaymentPlan, type Loan, type LoanFormData } from '@lib/loan'
-import { type RawUser } from '@lib/models'
+import { type PublicUser } from '@lib/models'
 import { Trash } from 'lucide-react'
 import {
   type ChangeEvent,
@@ -44,7 +44,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
     loan ? getFormData(loan) : { startDate: toHTMLInputFormat(new Date()) }
   )
 
-  const [sharedWith, setSharedWith] = useState<RawUser[]>(
+  const [sharedWith, setSharedWith] = useState<PublicUser[]>(
     loan?.shares.data.map(({ to }) => to) ?? []
   )
   const { providers } = useProviders()
@@ -78,7 +78,7 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
     )
   }, [formState])
 
-  const removeShareHolder = (user: RawUser) => {
+  const removeShareHolder = (user: PublicUser) => {
     setSharedWith((prev) => prev.filter((u) => u.id !== user.id))
   }
 

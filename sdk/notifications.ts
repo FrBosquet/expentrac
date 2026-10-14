@@ -1,13 +1,13 @@
 import { type SHARE_STATE } from '@types'
 
 import { notification } from './decode'
-import { arrayOf, envelope, request } from './http'
+import { allPages, envelope, request } from './http'
 
 const get = async (userId?: string, signal?: AbortSignal) =>
-  request(
+  allPages(
     `notification?${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
-    { signal },
-    arrayOf(notification)
+    notification,
+    signal
   )
 const ack = async (id: string, state?: SHARE_STATE) =>
   request(

@@ -1,4 +1,4 @@
-import { type User } from '@lib/models'
+import { type PublicUser } from '@lib/models'
 import { twMerge } from 'tailwind-merge'
 
 import { Avatar as UiAvatar, AvatarFallback, AvatarImage } from './ui/avatar'
@@ -7,7 +7,7 @@ export const Avatar = ({
   user,
   className
 }: {
-  user: User
+  user: PublicUser
   className: string
 }) => {
   return (

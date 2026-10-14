@@ -6,6 +6,7 @@ import { unwrapLoan } from '@lib/loan'
 import { type Notification as NotificationType, type Share } from '@lib/models'
 import { type LoanShareNotificationPayload } from '@lib/notification/loan-share'
 import { NOTIFICATION_TYPE, type NotificationBase, SHARE_STATE } from '@types'
+import Link from 'next/link'
 import { type ReactNode, useState } from 'react'
 
 import { NotificationWrapper } from './wrapper'
@@ -29,47 +30,24 @@ const Content = ({
 }: {
   payload: LoanShareNotificationPayload
 }): ReactNode => {
-  const { state, contract } = payload
-  const loan = unwrapLoan(contract)
-
-  const { loan: cachedLoan } = useLoan(loan.id)
-
-  const { user } = loan
-  switch (true) {
-    case state === SHARE_STATE.ACCEPTED:
-      return (
-        <p className="w-full">
-          You accepted the share request for{' '}
-          <LoanDetail
-            className="font-semibold text-expentrac-800"
-            loan={cachedLoan ?? loan}
-          />{' '}
-          by <strong>{user.name}</strong>
-        </p>
-      )
-    case state === SHARE_STATE.REJECTED:
-      return (
-        <p className="w-full">
-          You rejected the share request for{' '}
-          <LoanDetail
-            className="font-semibold text-expentrac-800"
-            loan={cachedLoan ?? loan}
-          />{' '}
-          by <strong>{user.name}</strong>
-        </p>
-      )
-    default:
-      return (
-        <p className="w-full">
-          <strong>{user.name}</strong> wants to share{' '}
-          <LoanDetail
-            className="font-semibold text-expentrac-800"
-            loan={loan}
-          />{' '}
-          with you ({euroFormatter.format(loan.fee.monthly)}/month)
-        </p>
-      )
-  }
+  const { preview, state } = payload
+  if (!preview) return <p>This invitation is unavailable.</p>
+  return (
+    <p>
+      <strong>{preview.owner.name}</strong>{' '}
+      {state === SHARE_STATE.ACCEPTED
+        ? 'shared'
+        : state === SHARE_STATE.REJECTED
+          ? 'offered to share'
+          : 'wants to share'}{' '}
+      {state === SHARE_STATE.ACCEPTED ? (
+        <Link href={`/dashboard/loans/${preview.id}`}>{preview.name}</Link>
+      ) : (
+        <strong>{preview.name}</strong>
+      )}{' '}
+      with you ({euroFormatter.format(preview.monthlyAmount)}/month).
+    </p>
+  )
 }
 
 export const LoanShareNotification = ({

@@ -1,11 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
+import { type ProfileUser } from '@lib/models'
 import { getUserInitials } from '@lib/session'
-import { User } from '@prisma/client'
 import { Pencil } from 'lucide-react'
 import Link from 'next/link'
 
 type Props = {
-  user: User
+  user: ProfileUser
 }
 
 export const ProfileHeader = ({ user }: Props) => {

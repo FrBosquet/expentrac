@@ -102,7 +102,7 @@ const handlePOST = async (req: Request) => {
       await notificationSdk.create(share.toId, true, {
         type: NOTIFICATION_TYPE.SUB_SHARE,
         contract: newSub as Contract,
-        share: share as Share
+        share: { id: share.id }
       })
     })
   )

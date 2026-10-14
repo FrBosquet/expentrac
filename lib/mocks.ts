@@ -14,16 +14,7 @@ export const baseContract: Contract = {
   periods: [],
   resources: [],
   shares: [],
-  user: {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: '0',
-    name: null,
-    email: null,
-    emailVerified: null,
-    image: null,
-    occupation: null
-  }
+  user: { id: 'fixture-user', name: 'Fixture', image: null }
 }
 
 export const basePeriod = {

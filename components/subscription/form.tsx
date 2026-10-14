@@ -9,7 +9,7 @@ import { Label } from '@components/ui/label'
 import { Separator } from '@components/ui/separator'
 import { Switch } from '@components/ui/switch'
 import { UserSearch } from '@components/UserSearch'
-import { type User } from '@lib/models'
+import { type PublicUser } from '@lib/models'
 import { type Subscription } from '@lib/sub'
 import { Trash } from 'lucide-react'
 import { type FormEventHandler, useState } from 'react'
@@ -98,11 +98,11 @@ export const SubscriptionForm = ({
 }: Props) => {
   const { providers } = useProviders()
 
-  const [sharedWith, setSharedWith] = useState<User[]>(
+  const [sharedWith, setSharedWith] = useState<PublicUser[]>(
     sub?.shares.data.map(({ to }) => to) ?? []
   )
 
-  const removeShareHolder = (user: User) => {
+  const removeShareHolder = (user: PublicUser) => {
     setSharedWith((prev) => prev.filter((u) => u.id !== user.id))
   }
 

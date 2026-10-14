@@ -1,3 +1,4 @@
+import { safeDto } from '@lib/dto'
 import { emailSdk } from '@lib/email'
 import { type Prisma, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
@@ -26,7 +27,7 @@ export const handleGeneric = async (
       user: {
         connect: { id: user.id }
       },
-      payload: JSON.stringify(payload),
+      payload: JSON.stringify(safeDto(payload)),
       type: NOTIFICATION_TYPE.GENERIC,
       ack: false,
       date: new Date().toISOString()

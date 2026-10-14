@@ -90,3 +90,32 @@ export function restoreDates(value: unknown): unknown {
     })
   )
 }
+
+export async function allPages<T extends { id: string }>(
+  path: string,
+  decode: (value: unknown) => T,
+  signal?: AbortSignal
+): Promise<T[]> {
+  const items: T[] = []
+  let cursor = ''
+  const seen = new Set<string>()
+  for (let page = 0; page < 100; page++) {
+    const separator = path.includes('?') ? '&' : '?'
+    const result = await request(
+      `${path}${separator}limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`,
+      { signal },
+      arrayOf(decode)
+    )
+    for (const item of result) {
+      if (seen.has(item.id)) throw new HttpError(200, 'Inconsistent pagination')
+      seen.add(item.id)
+    }
+    items.push(...result)
+    if (result.length < 100) return items
+    cursor = result[result.length - 1].id
+  }
+  throw new HttpError(
+    200,
+    'Too many records to display; narrow the requested data'
+  )
+}

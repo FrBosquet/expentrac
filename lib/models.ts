@@ -20,26 +20,33 @@ export type RawProvidersOnContract = PProvidersOnContract
 export type RawResource = PResource
 export type RawShare = PShare
 export type RawUser = PUser
+export type ProfileUser = Pick<
+  PUser,
+  'id' | 'name' | 'email' | 'image' | 'occupation'
+>
+export type PublicUser = Pick<PUser, 'id' | 'name' | 'image'> & {
+  email?: string | null
+}
 
 export type Contract = RawContract & {
   periods: RawPeriod[]
-  providers: ProviderOnContract[]
+  providers: Array<RawProvidersOnContract & { provider: Provider }>
   resources: RawResource[]
-  shares: Array<RawShare & { to: RawUser; from: RawUser; contract: Contract }>
-  user: RawUser
+  shares: Array<RawShare & { to: PublicUser }>
+  user: PublicUser
 }
 
 export type Share = RawShare & {
-  to: RawUser
-  from: RawUser
-  contract: Contract
+  to: PublicUser
+  from: PublicUser
+  contract: Contract | null
+  preview: import('./dto').ContractPreview
 }
 
 export type ProviderOnContract = RawProvidersOnContract & {
   provider: Provider
-  contract: Contract
 }
 
 export type Provider = RawProvider & {
-  providersOnContracts: ProviderOnContract[]
+  providersOnContracts?: ProviderOnContract[]
 }

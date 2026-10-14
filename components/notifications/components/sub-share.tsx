@@ -6,6 +6,7 @@ import { type Notification as NotificationType, type Share } from '@lib/models'
 import { type SubShareNotificationPayload } from '@lib/notification/sub-share'
 import { unwrapSub } from '@lib/sub'
 import { NOTIFICATION_TYPE, type NotificationBase, SHARE_STATE } from '@types'
+import Link from 'next/link'
 import { type ReactNode, useState } from 'react'
 
 import { NotificationWrapper } from './wrapper'
@@ -29,49 +30,26 @@ const Content = ({
 }: {
   payload: SubShareNotificationPayload
 }): ReactNode => {
-  const { contract, state } = payload
-
-  const sub = unwrapSub(contract)
-
-  const { sub: cachedSub } = useSub(sub.id)
-
-  const { user } = sub
-
-  switch (state) {
-    case SHARE_STATE.ACCEPTED:
-      return (
-        <p className="w-full">
-          You accepted the share request for{' '}
-          <SubscriptionDetail
-            className="font-semibold text-expentrac-800"
-            sub={cachedSub ?? sub}
-          />{' '}
-          by <strong>{user.name}</strong>
-        </p>
-      )
-    case SHARE_STATE.REJECTED:
-      return (
-        <p className="w-full">
-          You rejected the share request by {user.name} for{' '}
-          <SubscriptionDetail
-            className="font-semibold text-expentrac-800 "
-            sub={cachedSub ?? sub}
-          />{' '}
-          by <strong>{user.name}</strong>
-        </p>
-      )
-    default:
-      return (
-        <p className="w-full">
-          <strong>{user.name}</strong> wants to share{' '}
-          <SubscriptionDetail
-            className="font-semibold text-expentrac-800 hover:text-primary-800"
-            sub={sub}
-          />{' '}
-          with you ({euroFormatter.format(sub.fee.monthly)}/month)
-        </p>
-      )
-  }
+  const { preview, state } = payload
+  if (!preview) return <p>This invitation is unavailable.</p>
+  return (
+    <p>
+      <strong>{preview.owner.name}</strong>{' '}
+      {state === SHARE_STATE.ACCEPTED
+        ? 'shared'
+        : state === SHARE_STATE.REJECTED
+          ? 'offered to share'
+          : 'wants to share'}{' '}
+      {state === SHARE_STATE.ACCEPTED ? (
+        <Link href={`/dashboard/subscriptions/${preview.id}`}>
+          {preview.name}
+        </Link>
+      ) : (
+        <strong>{preview.name}</strong>
+      )}{' '}
+      with you ({euroFormatter.format(preview.monthlyAmount)}/month).
+    </p>
+  )
 }
 
 export const SubShareNotification = ({

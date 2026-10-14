@@ -30,7 +30,7 @@ export const getUser = (data: Session | null): User => {
   return data.user
 }
 
-export const getUserInitials = ({ name }: User): string => {
+export const getUserInitials = ({ name }: Pick<User, 'name'>): string => {
   return (
     name
       ?.split(' ')

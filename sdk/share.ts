@@ -1,11 +1,11 @@
 import { share } from './decode'
-import { arrayOf, envelope, request } from './http'
+import { allPages, envelope, request } from './http'
 
 const getUserShares = async (userId?: string, signal?: AbortSignal) =>
-  request(
+  allPages(
     `share?${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
-    { signal },
-    arrayOf(share)
+    share,
+    signal
   )
 const updateShare = async (id: string, accepted: boolean) =>
   request(

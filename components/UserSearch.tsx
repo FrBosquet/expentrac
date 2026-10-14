@@ -1,4 +1,4 @@
-import { type User } from '@lib/models'
+import { type PublicUser } from '@lib/models'
 import { getUsersByEmail } from '@sdk/user'
 import { ChevronsUpDown } from 'lucide-react'
 import {
@@ -22,8 +22,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Spinner } from './ui/spinner'
 
 interface Props {
-  onSelect: (user: User) => void
-  selectedUsers: User[]
+  onSelect: (user: PublicUser) => void
+  selectedUsers: PublicUser[]
 }
 
 export function UserSearch({ onSelect, selectedUsers }: Props) {

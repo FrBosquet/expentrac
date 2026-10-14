@@ -1,10 +1,11 @@
 import { authOptions } from '@lib/auth'
 import { subscriptionInclude } from '@lib/contract'
 import { prisma } from '@lib/prisma'
+import { apiResponse } from '@lib/server/api'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 
-export const DELETE = async (
+const handleDELETE = async (
   req: Request,
   { params }: { params: { id: string } }
 ) => {
@@ -66,7 +67,7 @@ export const DELETE = async (
   )
 }
 
-export const GET = async (
+const handleGET = async (
   req: Request,
   { params }: { params: { id: string } }
 ) => {
@@ -128,5 +129,17 @@ export const GET = async (
     )
   }
 
-  return NextResponse.json({ message: 'OK', data: contract }, { status: 200 })
+  const data =
+    session.user.id === contract.userId
+      ? contract
+      : {
+          ...contract,
+          shares: contract.shares.filter((share) => share.accepted === true)
+        }
+  return NextResponse.json({ message: 'OK', data }, { status: 200 })
 }
+
+export const GET = (req: Request, query: { params: { id: string } }) =>
+  apiResponse(() => handleGET(req, query))
+export const DELETE = (req: Request, query: { params: { id: string } }) =>
+  apiResponse(() => handleDELETE(req, query))

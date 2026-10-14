@@ -1,10 +1,10 @@
 import {
   type Contract,
   type Notification,
+  type ProfileUser,
   type Provider,
   type ProviderOnContract,
-  type Share,
-  type User
+  type Share
 } from '@lib/models'
 
 import { isObject, restoreDates } from './http'
@@ -34,7 +34,9 @@ export function share(value: unknown): Share {
     ![true, false, null].includes(data.accepted as boolean | null)
   )
     throw new Error('Invalid share')
-  data.contract = contract(data.contract)
+  if (data.contract !== null) data.contract = contract(data.contract)
+  else if (data.accepted === true)
+    throw new Error('Accepted share lacks contract')
   return data as Share
 }
 export function notification(value: unknown): Notification {
@@ -55,10 +57,9 @@ export function provider(value: unknown): Provider {
 }
 export function providerRelation(value: unknown): ProviderOnContract {
   const data = record(value)
-  data.contract = contract(data.contract)
   data.provider = provider(data.provider)
   return data as ProviderOnContract
 }
-export function user(value: unknown): User {
-  return record(value) as User
+export function user(value: unknown): ProfileUser {
+  return record(value) as ProfileUser
 }

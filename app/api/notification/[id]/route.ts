@@ -58,6 +58,26 @@ const handlePATCH = async (
     )
   }
 
+  if (body.state !== undefined) {
+    if (typeof body.state !== 'number')
+      throw new ApiError(400, 'Invalid notification state')
+    const payload =
+      typeof notification.payload === 'string'
+        ? JSON.parse(notification.payload)
+        : notification.payload
+    const share = payload?.share?.id
+      ? await prisma.share.findUnique({ where: { id: payload.share.id } })
+      : null
+    const expected =
+      share?.accepted === true
+        ? SHARE_STATE.ACCEPTED
+        : share?.accepted === false
+          ? SHARE_STATE.REJECTED
+          : SHARE_STATE.PENDING
+    if (!share || share.toId !== userId || body.state !== expected)
+      throw new ApiError(400, 'State does not match the invitation')
+  }
+
   const args: Prisma.NotificationUpdateArgs = {
     data: {
       ack: body.ack,

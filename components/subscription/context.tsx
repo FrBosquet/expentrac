@@ -15,9 +15,9 @@ export const useSubs = () => {
   const sharedSubs = shares.shares
     .filter(
       (s) =>
-        s.accepted === true && s.contract.type === CONTRACT_TYPE.SUBSCRIPTION
+        s.accepted === true && s.contract?.type === CONTRACT_TYPE.SUBSCRIPTION
     )
-    .map((s) => unwrapSub(s.contract, date))
+    .map((s) => unwrapSub(s.contract!, date))
   const allSubs = [...subs, ...sharedSubs]
   return {
     subs,

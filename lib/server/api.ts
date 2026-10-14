@@ -1,4 +1,5 @@
 import { authOptions } from '@lib/auth'
+import { safeDto } from '@lib/dto'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
@@ -24,7 +25,13 @@ export async function requireUser(req?: Request) {
 export async function apiResponse(operation: () => Promise<unknown>) {
   try {
     const result = await operation()
-    return result instanceof Response ? result : NextResponse.json(result)
+    if (result instanceof Response) {
+      if (result.status >= 400) return result
+      return NextResponse.json(safeDto(await result.json()), {
+        status: result.status
+      })
+    }
+    return NextResponse.json(safeDto(result))
   } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json(

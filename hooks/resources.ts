@@ -10,7 +10,7 @@ import { type Contract } from '@lib/models'
 import { type SubFormData } from '@lib/sub'
 import { contractSdk } from '@sdk/contract'
 import { contract, provider, user } from '@sdk/decode'
-import { arrayOf, envelope, request } from '@sdk/http'
+import { allPages, envelope, request } from '@sdk/http'
 import { loanSdk } from '@sdk/loan'
 import { notificationSdk } from '@sdk/notifications'
 import { providerSdk } from '@sdk/provider'
@@ -78,11 +78,7 @@ export function useProviderCatalog() {
   const query = useQuery({
     queryKey: keys.resource(id, 'providers'),
     queryFn: ({ signal }) =>
-      request(
-        `provider?userId=${encodeURIComponent(id)}`,
-        { signal },
-        arrayOf(provider)
-      ),
+      allPages(`provider?userId=${encodeURIComponent(id)}`, provider, signal),
     enabled: !!id
   })
   return { ...query, providers: query.data ?? empty }

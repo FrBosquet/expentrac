@@ -1,3 +1,4 @@
+import { safeDto } from '@lib/dto'
 import { emailSdk } from '@lib/email'
 import { type Contract, type Prisma, prisma, type User } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
@@ -28,7 +29,7 @@ export const handleSubShareAccept = async (
       user: {
         connect: { id: contract.user.id }
       },
-      payload: JSON.stringify(payload),
+      payload: JSON.stringify(safeDto(payload)),
       type: NOTIFICATION_TYPE.SUB_SHARE_ACCEPTED,
       ack: false,
       date: new Date().toISOString()

@@ -24,7 +24,9 @@ export const GET = async (req: Request) => {
       contract: {
         include: {
           user: true,
-          shares: true,
+          shares: {
+            include: { to: { select: { id: true, name: true, image: true } } }
+          },
           periods: true,
           providers: { include: { provider: true } },
           resources: true

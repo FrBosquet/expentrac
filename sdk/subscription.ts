@@ -1,16 +1,16 @@
 import { type SubFormData } from '@lib/sub'
 
 import { contract } from './decode'
-import { arrayOf, envelope, request } from './http'
+import { allPages, envelope, request } from './http'
 
 export const getUserSubscriptions = async (
   userId?: string,
   signal?: AbortSignal
 ) =>
-  request(
+  allPages(
     `contract?type=SUBSCRIPTION&${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
-    { signal },
-    arrayOf(contract)
+    contract,
+    signal
   )
 const create = async (body: SubFormData) =>
   request(

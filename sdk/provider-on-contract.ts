@@ -1,13 +1,13 @@
 import { providerRelation } from './decode'
-import { arrayOf, request } from './http'
+import { allPages, request } from './http'
 
 export const getUserProviderOnContracts = async (
   userId?: string,
   signal?: AbortSignal
 ) =>
-  request(
+  allPages(
     `provider-on-contract?${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
-    { signal },
-    arrayOf(providerRelation)
+    providerRelation,
+    signal
   )
 export const providerOnContractSdk = { get: getUserProviderOnContracts }
