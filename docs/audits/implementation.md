@@ -23,6 +23,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 - Dashboard resources moved to session-scoped Query clients and mutation invalidation; Zustand retains only date. Profile/WORK use client queries and mutations; bell is inside provider; loading/error/retry boundaries included.
 - Three real-session browser/API tests pass on synthetic localhost data: permissions/filtering, profile + navigation consistency, direct detail/reload/account isolation. Google OAuth itself remains untested.
 
+- Next 15.5.28 / React 19.3.1 stage: async route params and metadata, remote image patterns, current Radix/Query/form/toast peers. Unit tests, typecheck, lint, production build and real-session production-bundle browser checks pass. Next 15 dev served a truncated first-load layout chunk during recompilation; this remains a dev smoke check for the Next 16 stage. The codemod could not transform wrapped route exports; those were migrated manually and checked.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

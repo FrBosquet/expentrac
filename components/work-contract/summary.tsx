@@ -104,7 +104,7 @@ export const WorkContractSummary = ({ className }: Props) => {
       </CardMenu>
       <CardContent>
         {query.isLoading && <p>Loading...</p>}
-        {query.isError && <p>Error: {query.error.message}</p>}
+        {query.isError && <p>Error: {query.error?.message}</p>}
         {query.isSuccess && contracts.length === 0 && (
           <p>No work contracts yet.</p>
         )}

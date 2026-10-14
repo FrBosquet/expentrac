@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-test.beforeEach(async ({ context }) => {
+test.beforeEach(async ({ context, page }) => {
+  page.on('pageerror', (error) => console.error('Browser runtime error:', error.message))
+
   await context.addCookies([{ name: 'next-auth.session-token', value: 'browser-session-owner', url: 'http://127.0.0.1:3100' }])
 })
 

@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 const PostHeader = ({ title, date, image }: Post) => {
@@ -61,7 +61,11 @@ const PostHeader = ({ title, date, image }: Post) => {
   )
 }
 
-export default async function Page({ params: { slug } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params
+
+  const { slug } = params
+
   const { frontmatter, content } = await getPost(slug)
 
   return (
@@ -86,7 +90,8 @@ export async function generateStaticParams() {
   return filenames.map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
   const post = await getPost(params.slug)
 
   return {

@@ -45,8 +45,8 @@ export const Feature = ({
   image,
   alt
 }: {
-  title: string | JSX.Element
-  description: string | JSX.Element
+  title: string | React.JSX.Element
+  description: string | React.JSX.Element
   image: string
   alt: string
 }) => {

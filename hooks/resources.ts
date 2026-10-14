@@ -18,12 +18,29 @@ import { providerOnContractSdk } from '@sdk/provider-on-contract'
 import { shareSdk } from '@sdk/share'
 import { subscriptionSdk } from '@sdk/subscription'
 import { useQueryScope } from '@store'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult
+} from '@tanstack/react-query'
 import { type SHARE_STATE } from '@types'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 
 const empty: never[] = []
+function queryState<T>(query: UseQueryResult<T>) {
+  return {
+    data: query.data,
+    isPending: query.isPending,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    isSuccess: query.isSuccess,
+    error: query.error,
+    refetch: query.refetch
+  }
+}
 export const keys = {
   scope: (id: string) => ['private', id] as const,
   resource: (id: string, name: string) => ['private', id, name] as const
@@ -35,7 +52,7 @@ export function useContracts() {
     queryFn: ({ signal }) => contractSdk.get(id, signal),
     enabled: !!id
   })
-  return { ...query, contracts: query.data ?? empty }
+  return { ...queryState(query), contracts: query.data ?? empty }
 }
 export function useShareQuery() {
   const id = useQueryScope()
@@ -44,7 +61,7 @@ export function useShareQuery() {
     queryFn: ({ signal }) => shareSdk.get(id, signal),
     enabled: !!id
   })
-  return { ...query, shares: query.data ?? empty }
+  return { ...queryState(query), shares: query.data ?? empty }
 }
 export function useNotificationQuery() {
   const id = useQueryScope()
@@ -53,7 +70,7 @@ export function useNotificationQuery() {
     queryFn: ({ signal }) => notificationSdk.get(id, signal),
     enabled: !!id
   })
-  return { ...query, notifications: query.data ?? empty }
+  return { ...queryState(query), notifications: query.data ?? empty }
 }
 export function useProviderRelations() {
   const id = useQueryScope()
@@ -62,7 +79,7 @@ export function useProviderRelations() {
     queryFn: ({ signal }) => providerOnContractSdk.get(id, signal),
     enabled: !!id
   })
-  return { ...query, relations: query.data ?? empty }
+  return { ...queryState(query), relations: query.data ?? empty }
 }
 export function useProfile() {
   const id = useQueryScope()
@@ -81,7 +98,7 @@ export function useProviderCatalog() {
       allPages(`provider?userId=${encodeURIComponent(id)}`, provider, signal),
     enabled: !!id
   })
-  return { ...query, providers: query.data ?? empty }
+  return { ...queryState(query), providers: query.data ?? empty }
 }
 function useWrite<T, V>(operation: (value: V) => Promise<T>) {
   const id = useQueryScope()

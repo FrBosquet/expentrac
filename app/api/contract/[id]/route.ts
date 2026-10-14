@@ -7,7 +7,7 @@ import { getServerSession } from 'next-auth/next'
 
 const handleDELETE = async (
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   const session = await getServerSession(authOptions)
 
@@ -22,7 +22,7 @@ const handleDELETE = async (
     )
   }
 
-  const id = params.id
+  const { id } = await params
 
   if (!id) {
     return NextResponse.json(
@@ -69,7 +69,7 @@ const handleDELETE = async (
 
 const handleGET = async (
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   const session = await getServerSession(authOptions)
 
@@ -84,7 +84,7 @@ const handleGET = async (
     )
   }
 
-  const id = params.id
+  const { id } = await params
 
   if (!id) {
     return NextResponse.json(
@@ -139,7 +139,9 @@ const handleGET = async (
   return NextResponse.json({ message: 'OK', data }, { status: 200 })
 }
 
-export const GET = (req: Request, query: { params: { id: string } }) =>
+export const GET = (req: Request, query: { params: Promise<{ id: string }> }) =>
   apiResponse(() => handleGET(req, query))
-export const DELETE = (req: Request, query: { params: { id: string } }) =>
-  apiResponse(() => handleDELETE(req, query))
+export const DELETE = (
+  req: Request,
+  query: { params: Promise<{ id: string }> }
+) => apiResponse(() => handleDELETE(req, query))

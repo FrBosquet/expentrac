@@ -116,7 +116,8 @@ test.each([
       shares: [{ toId: 'recipient', accepted }]
     })
     expect(
-      (await detail(request(), { params: { id: 'contract' } })).status
+      (await detail(request(), { params: Promise.resolve({ id: 'contract' }) }))
+        .status
     ).toBe(status)
   }
 )
@@ -130,7 +131,7 @@ test('third user cannot modify a share or trigger email', async () => {
       method: 'PATCH',
       body: '{"accepted":true}'
     }),
-    { params: { id: 'share' } }
+    { params: Promise.resolve({ id: 'share' }) }
   )
   expect(response.status).toBe(403)
   expect(prisma.share.update).not.toHaveBeenCalled()
@@ -149,7 +150,7 @@ test.each(['true', 1, null])(
         method: 'PATCH',
         body: JSON.stringify({ accepted })
       }),
-      { params: { id: 'share' } }
+      { params: Promise.resolve({ id: 'share' }) }
     )
     expect(response.status).toBe(400)
     expect(prisma.share.update).not.toHaveBeenCalled()

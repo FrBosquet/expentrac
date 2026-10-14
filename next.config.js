@@ -5,7 +5,7 @@ const nextConfig = {
     mdxRs: true
   },
   images: {
-    domains: ['asset.brandfetch.io'],
+    remotePatterns: [{ protocol: 'https', hostname: 'asset.brandfetch.io' }],
   },
 }
 

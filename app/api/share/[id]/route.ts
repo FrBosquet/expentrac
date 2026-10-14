@@ -47,7 +47,7 @@ const getType = (contractType: string, accepted: boolean) => {
 
 const handlePATCH = async (
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   const session = await getServerSession(authOptions)
 
@@ -64,7 +64,7 @@ const handlePATCH = async (
 
   const userId = session.user.id
 
-  const id = params.id
+  const { id } = await params
 
   if (!id) {
     return NextResponse.json(
@@ -136,5 +136,7 @@ const handlePATCH = async (
   )
 }
 
-export const PATCH = (req: Request, query: { params: { id: string } }) =>
-  apiResponse(() => handlePATCH(req, query))
+export const PATCH = (
+  req: Request,
+  query: { params: Promise<{ id: string }> }
+) => apiResponse(() => handlePATCH(req, query))

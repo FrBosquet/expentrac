@@ -18,9 +18,7 @@ import { getServerSession } from 'next-auth'
 
 import { include } from '../include'
 interface Query {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>
 }
 
 const handlePATCH = async (req: Request, { params }: Query) => {
@@ -37,7 +35,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
     )
   }
 
-  const id = params.id
+  const { id } = await params
 
   if (!id) {
     return NextResponse.json(

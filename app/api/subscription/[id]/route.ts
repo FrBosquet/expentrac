@@ -21,9 +21,7 @@ import { getServerSession } from 'next-auth'
 import { subscriptionInclude } from '../include'
 
 interface Query {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>
 }
 
 // TODO: This looks almost exactly the same as loan patch. Can we combine them into Contract?
@@ -42,7 +40,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
     )
   }
 
-  const id = params.id
+  const { id } = await params
 
   if (!id) {
     return NextResponse.json(

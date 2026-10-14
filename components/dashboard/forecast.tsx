@@ -172,7 +172,7 @@ export const Forecast = ({ className }: Props) => {
             />
             <YAxis padding={{ top: 20 }} tick={tickStyle} />
             <YAxis hide yAxisId="2" />
-            <Tooltip content={TooltipContent} />
+            <Tooltip content={<TooltipContent />} />
             <Area
               dataKey="owed"
               fill="transparent"
