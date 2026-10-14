@@ -4,42 +4,16 @@ import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
 import { type Contract, type Prisma, prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
+import { apiResponse } from '@lib/server/api'
+import { readContracts } from '@lib/server/reads'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 
 import { subscriptionInclude } from './include'
 
-export const GET = async (req: Request) => {
-  const { searchParams } = new URL(req.url)
-  const userId = searchParams.get('userId')
-
-  if (!userId) {
-    return NextResponse.json(
-      {
-        message: 'userId is required'
-      },
-      {
-        status: 400
-      }
-    )
-  }
-
-  const subs = await prisma.contract.findMany({
-    where: {
-      userId,
-      type: CONTRACT_TYPE.SUBSCRIPTION
-    },
-    orderBy: [
-      {
-        name: 'asc'
-      }
-    ],
-    include: subscriptionInclude
-  })
-
-  return NextResponse.json(subs)
-}
+export const GET = (req: Request) =>
+  apiResponse(() => readContracts(req, CONTRACT_TYPE.SUBSCRIPTION))
 
 export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions)

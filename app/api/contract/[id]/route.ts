@@ -1,4 +1,5 @@
 import { authOptions } from '@lib/auth'
+import { subscriptionInclude } from '@lib/contract'
 import { prisma } from '@lib/prisma'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
@@ -97,7 +98,7 @@ export const GET = async (
 
   const contract = await prisma.contract.findUnique({
     where: { id },
-    include: { shares: true }
+    include: subscriptionInclude
   })
 
   if (!contract) {
@@ -112,9 +113,9 @@ export const GET = async (
   }
 
   if (
-    session.user.id !== contract?.userId ||
+    session.user.id !== contract?.userId &&
     !contract.shares.find((share) => {
-      return share.toId === session.user.id
+      return share.toId === session.user.id && share.accepted === true
     })
   ) {
     return NextResponse.json(

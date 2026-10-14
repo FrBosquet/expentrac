@@ -48,7 +48,6 @@ export const LoanDelete = ({
       const loan = await loanSdk.delete(id)
 
       removeLoan(loan)
-      void loanSdk.revalidate(loan.userId)
       setOpen(false)
       void sideEffect?.()
     } catch (e) {

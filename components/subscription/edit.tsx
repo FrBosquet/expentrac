@@ -50,7 +50,6 @@ export const SubEdit = ({
       const updatedSub = await subscriptionSdk.update(sub.id, formData)
 
       updateSub(updatedSub)
-      void subscriptionSdk.revalidate(sub.userId)
       setOpen(false)
     } catch (e) {
       // TODO: toast

@@ -51,7 +51,6 @@ export const LoanEdit = ({
       const updatedLoan = await loanSdk.update(loan.id, formData)
 
       updateLoan(updatedLoan)
-      void loanSdk.revalidate(loan.userId)
       setOpen(false)
     } catch (e) {
       // TODO: toast

@@ -45,7 +45,6 @@ export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR() }: Props) => {
       ) as unknown as LoanFormData
       const loan = await loanSdk.create(formData)
 
-      void loanSdk.revalidate(user.id)
       setOpen(false)
       addLoan(loan)
     } catch (err) {

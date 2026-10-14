@@ -5,17 +5,10 @@ import { type Contract } from '@lib/prisma'
 export const getUserLoans = async (userId: string) => {
   const url = getUrl(`loan?userId=${userId}`)
 
-  const response = await fetch(url, { next: { tags: [`loan:${userId}`] } })
+  const response = await fetch(url, { cache: 'no-store' })
   const loans: Contract[] = await response.json()
 
   return loans
-}
-
-export const revalidateUserLoans = async (userId: string) => {
-  const url = getUrl(`revalidate?tag=${getTag('loan', userId)}&secret=${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`)
-
-  const response = await fetch(url, { method: 'POST' })
-  return response
 }
 
 export const createLoan = async (body: LoanFormData) => {
@@ -24,7 +17,7 @@ export const createLoan = async (body: LoanFormData) => {
     body: JSON.stringify(body)
   })
 
-  const { data } = await result.json() as { data: Contract }
+  const { data } = (await result.json()) as { data: Contract }
   return data
 }
 
@@ -34,7 +27,7 @@ const update = async (id: string, body: LoanFormData) => {
     body: JSON.stringify(body)
   })
 
-  const { data } = await result.json() as { data: Contract }
+  const { data } = (await result.json()) as { data: Contract }
   return data
 }
 
@@ -43,14 +36,13 @@ const deleteLoan = async (id: string) => {
     method: 'DELETE'
   })
 
-  const { data } = await result.json() as { data: Contract }
+  const { data } = (await result.json()) as { data: Contract }
   return data
 }
 
 export const loanSdk = {
   get: getUserLoans,
   create: createLoan,
-  revalidate: revalidateUserLoans,
   delete: deleteLoan,
   update
 }

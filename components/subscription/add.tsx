@@ -35,7 +35,6 @@ export const SubscriptionAdd = () => {
 
       const sub = await subscriptionSdk.create(formData)
 
-      void subscriptionSdk.revalidate(user.id)
       setOpen(false)
       addSub(sub)
     } catch (e) {

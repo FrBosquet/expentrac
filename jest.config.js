@@ -2,14 +2,10 @@
 
 module.exports = {
   moduleNameMapper: {
-    "@types": [
-      "<rootDir>/types.ts"
-    ],
-    "@lib/(.*)": [
-      "<rootDir>/lib/$1.ts"
-    ]
+    "@types": ["<rootDir>/types.ts"],
+    "^@lib/(.*)$": "<rootDir>/lib/$1",
   },
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  moduleDirectories: ["node_modules", "<rootDir>"]
+  preset: "ts-jest",
+  testEnvironment: "node",
+  moduleDirectories: ["node_modules", "<rootDir>"],
 };

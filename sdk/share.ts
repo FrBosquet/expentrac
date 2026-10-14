@@ -4,7 +4,7 @@ import { type Share } from '@lib/prisma'
 const getUserShares = async (userId: string) => {
   const url = getUrl(`share?userId=${userId}`)
 
-  const response = await fetch(url, { next: { tags: [`loan:${userId}`] } })
+  const response = await fetch(url, { cache: 'no-store' })
   const shares: Share[] = await response.json()
 
   return shares

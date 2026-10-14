@@ -5,7 +5,7 @@ import { type SHARE_STATE } from '@types'
 const get = async (userId: string) => {
   const url = getUrl(`notification?userId=${userId}`)
 
-  const response = await fetch(url, { next: { tags: [`notification:${userId}`] } })
+  const response = await fetch(url, { cache: 'no-store' })
   const notifications: Notification[] = await response.json()
 
   return notifications

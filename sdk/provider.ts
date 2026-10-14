@@ -8,7 +8,7 @@ const add = async (body: Brand) => {
     body: JSON.stringify(body)
   })
 
-  const { data } = await result.json() as { data: Provider }
+  const { data } = (await result.json()) as { data: Provider }
   return data
 }
 

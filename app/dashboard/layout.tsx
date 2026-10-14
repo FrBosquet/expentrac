@@ -1,11 +1,14 @@
 import { DashboardLayout } from '@components/NavigationMenu'
 import { Toaster } from '@components/ui/sonner'
 import { authOptions } from '@lib/auth'
+import { type Contract, type ProviderOnContract, type Share } from '@lib/prisma'
+import {
+  readContracts,
+  readNotifications,
+  readProviderRelations,
+  readShares
+} from '@lib/server/reads'
 import { hasUser } from '@lib/session'
-import { notificationSdk } from '@sdk'
-import { contractSdk } from '@sdk/contract'
-import { providerOnContractSdk } from '@sdk/provider-on-contract'
-import { shareSdk } from '@sdk/share'
 import { StoreProvider } from '@store'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -21,24 +24,22 @@ export default async function Layout({ children }: Props) {
     redirect('/')
   }
 
-  const { user } = data
-
   const [contracts, shares, notifications, providersOnContracts] =
     await Promise.all([
-      contractSdk.get(user.id),
-      shareSdk.get(user.id),
-      notificationSdk.get(user.id),
-      providerOnContractSdk.get(user.id)
+      readContracts(),
+      readShares(),
+      readNotifications(),
+      readProviderRelations()
     ])
 
   return (
     <DashboardLayout>
       <Toaster />
       <StoreProvider
-        contracts={contracts}
+        contracts={contracts as Contract[]}
         notifications={notifications}
-        providersOnContracts={providersOnContracts}
-        shares={shares}
+        providersOnContracts={providersOnContracts as ProviderOnContract[]}
+        shares={shares as Share[]}
       >
         {children}
       </StoreProvider>

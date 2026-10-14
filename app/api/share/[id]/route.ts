@@ -89,7 +89,22 @@ export const PATCH = async (
     )
   }
 
-  const body: { accepted: boolean } = await req.json()
+  if (share.toId !== userId) {
+    return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
+  }
+
+  let body: { accepted?: unknown }
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ message: 'Invalid JSON' }, { status: 400 })
+  }
+  if (!body || typeof body.accepted !== 'boolean') {
+    return NextResponse.json(
+      { message: 'accepted must be boolean' },
+      { status: 400 }
+    )
+  }
   const { accepted } = body
 
   const updatedShare = await prisma.share.update({

@@ -50,7 +50,6 @@ export const SubDelete = ({
       const result = await subscriptionSdk.delete(id)
 
       removeSub(result)
-      void subscriptionSdk.revalidate(sub.userId)
 
       setOpen(false)
 
