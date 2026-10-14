@@ -2,6 +2,7 @@ import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk } from '@lib/notification'
 import { type Contract, prisma } from '@lib/prisma'
+import { apiResponse } from '@lib/server/api'
 import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -44,7 +45,7 @@ const getType = (contractType: string, accepted: boolean) => {
   )
 }
 
-export const PATCH = async (
+const handlePATCH = async (
   req: Request,
   { params }: { params: { id: string } }
 ) => {
@@ -56,7 +57,7 @@ export const PATCH = async (
         message: 'forbidden'
       },
       {
-        status: 403
+        status: 401
       }
     )
   }
@@ -111,6 +112,13 @@ export const PATCH = async (
     return NextResponse.json({ message: 'Unchanged', data: share })
   }
 
+  if (share.accepted !== null) {
+    return NextResponse.json(
+      { message: 'Invitation already answered' },
+      { status: 409 }
+    )
+  }
+
   const updatedShare = await prisma.share.update({
     where: { id },
     data: { accepted },
@@ -127,3 +135,6 @@ export const PATCH = async (
     { status: 200 }
   )
 }
+
+export const PATCH = (req: Request, query: { params: { id: string } }) =>
+  apiResponse(() => handlePATCH(req, query))

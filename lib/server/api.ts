@@ -23,12 +23,32 @@ export async function requireUser(req?: Request) {
 
 export async function apiResponse(operation: () => Promise<unknown>) {
   try {
-    return NextResponse.json(await operation())
+    const result = await operation()
+    return result instanceof Response ? result : NextResponse.json(result)
   } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json(
         { message: error.message },
         { status: error.status }
+      )
+    }
+    if (error && typeof error === 'object' && 'code' in error) {
+      const status =
+        error.code === 'P2002' || error.code === 'P2034'
+          ? 409
+          : error.code === 'P2025'
+            ? 404
+            : error.code === 'P2003'
+              ? 400
+              : 500
+      return NextResponse.json(
+        {
+          message:
+            status === 409
+              ? 'Conflicting change; refresh and retry'
+              : 'Unable to complete request'
+        },
+        { status }
       )
     }
     return NextResponse.json(

@@ -1,4 +1,5 @@
 import { authOptions } from '@lib/auth'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { type LoanFormData } from '@lib/loan'
 import { notificationSdk } from '@lib/notification'
 import {
@@ -9,6 +10,8 @@ import {
   type Share
 } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
+import { apiResponse } from '@lib/server/api'
+import { contractInput, jsonObject } from '@lib/server/validation'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -20,7 +23,7 @@ interface Query {
   }
 }
 
-export const PATCH = async (req: Request, { params }: Query) => {
+const handlePATCH = async (req: Request, { params }: Query) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -29,7 +32,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
         message: 'forbidden'
       },
       {
-        status: 403
+        status: 401
       }
     )
   }
@@ -49,7 +52,11 @@ export const PATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = (await req.json()) as LoanFormData
+  const body = (await contractInput(
+    await jsonObject(req),
+    CONTRACT_TYPE.LOAN,
+    userId
+  )) as unknown as LoanFormData
 
   const loan = await prisma.contract.findUnique({ where: { id }, include })
 
@@ -72,6 +79,13 @@ export const PATCH = async (req: Request, { params }: Query) => {
       {
         status: 403
       }
+    )
+  }
+
+  if (loan.type !== CONTRACT_TYPE.LOAN) {
+    return NextResponse.json(
+      { message: 'Invalid contract type' },
+      { status: 400 }
     )
   }
 
@@ -137,17 +151,19 @@ export const PATCH = async (req: Request, { params }: Query) => {
     include
   })
 
-  keysToCreate.forEach((toId) => {
-    const share = updatedLoan.shares.find((share) => share.toId === toId)
+  await Promise.all(
+    keysToCreate.map(async (toId) => {
+      const share = updatedLoan.shares.find((share) => share.toId === toId)
 
-    if (!share) return
+      if (!share) return
 
-    void notificationSdk.create(share.toId, true, {
-      type: NOTIFICATION_TYPE.LOAN_SHARE,
-      contract: updatedLoan as Contract,
-      share: share as Share
+      await notificationSdk.create(share.toId, true, {
+        type: NOTIFICATION_TYPE.LOAN_SHARE,
+        contract: updatedLoan as Contract,
+        share: share as Share
+      })
     })
-  })
+  )
 
   return NextResponse.json(
     { message: 'success', data: updatedLoan },
@@ -221,3 +237,6 @@ const getProviderUpdateArgs = (
     createMany
   }
 }
+
+export const PATCH = (req: Request, query: Query) =>
+  apiResponse(() => handlePATCH(req, query))

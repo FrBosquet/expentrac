@@ -7,7 +7,8 @@ type SessionWithUser = Session & {
 
 export const hasUser = (data: Session | null): data is SessionWithUser => {
   if (!data) return false
-  if (!data.user) return false
+  if (!data.user || typeof data.user.id !== 'string' || !data.user.id)
+    return false
 
   return true
 }

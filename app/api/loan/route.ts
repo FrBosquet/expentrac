@@ -5,6 +5,7 @@ import { type Contract, type Prisma, prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { apiResponse } from '@lib/server/api'
 import { readContracts } from '@lib/server/reads'
+import { contractInput, jsonObject } from '@lib/server/validation'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
@@ -14,7 +15,7 @@ import { include } from './include'
 export const GET = (req: Request) =>
   apiResponse(() => readContracts(req, CONTRACT_TYPE.LOAN))
 
-export const POST = async (req: Request) => {
+const handlePOST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -23,14 +24,18 @@ export const POST = async (req: Request) => {
         message: 'userId is required'
       },
       {
-        status: 400
+        status: 401
       }
     )
   }
 
   const userId = session.user.id
 
-  const body = await req.json()
+  const body = (await contractInput(
+    await jsonObject(req),
+    CONTRACT_TYPE.LOAN,
+    userId
+  )) as any
 
   const keysToCreate = Object.entries(body)
     .filter(([key]) => key.startsWith('sharedWith'))
@@ -88,16 +93,20 @@ export const POST = async (req: Request) => {
     include
   })
 
-  newLoan.shares.forEach((share) => {
-    void notificationSdk.create(share.toId, true, {
-      type: NOTIFICATION_TYPE.LOAN_SHARE,
-      contract: newLoan as Contract,
-      share: share as Share
+  await Promise.all(
+    newLoan.shares.map(async (share) => {
+      await notificationSdk.create(share.toId, true, {
+        type: NOTIFICATION_TYPE.LOAN_SHARE,
+        contract: newLoan as Contract,
+        share: share as Share
+      })
     })
-  })
+  )
 
   return NextResponse.json(
     { message: 'success', data: newLoan },
     { status: 201 }
   )
 }
+
+export const POST = (req: Request) => apiResponse(() => handlePOST(req))

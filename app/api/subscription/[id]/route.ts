@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { authOptions } from '@lib/auth'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
 import { notificationSdk } from '@lib/notification'
 import {
@@ -10,6 +11,8 @@ import {
   type Share
 } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
+import { apiResponse } from '@lib/server/api'
+import { contractInput, jsonObject } from '@lib/server/validation'
 import { type SubFormData } from '@lib/sub'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
@@ -25,7 +28,7 @@ interface Query {
 
 // TODO: This looks almost exactly the same as loan patch. Can we combine them into Contract?
 // Only difference is the Lender and that means nothing in terms of DB structure. Just using the patch from loan should work almost OOB
-export const PATCH = async (req: Request, { params }: Query) => {
+const handlePATCH = async (req: Request, { params }: Query) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -34,7 +37,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
         message: 'forbidden'
       },
       {
-        status: 403
+        status: 401
       }
     )
   }
@@ -54,7 +57,7 @@ export const PATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = (await req.json()) as SubFormData
+  const body = await contractInput(await jsonObject(req), CONTRACT_TYPE.SUBSCRIPTION, userId) as unknown as SubFormData
 
   const sub = await prisma.contract.findUnique({
     where: { id },
@@ -81,6 +84,10 @@ export const PATCH = async (req: Request, { params }: Query) => {
         status: 403
       }
     )
+  }
+
+  if (sub.type !== CONTRACT_TYPE.SUBSCRIPTION) {
+    return NextResponse.json({ message: 'Invalid contract type' }, { status: 400 })
   }
 
   // SHARES
@@ -159,17 +166,17 @@ export const PATCH = async (req: Request, { params }: Query) => {
     include: subscriptionInclude
   })
 
-  keysToCreate.forEach((toId) => {
+  await Promise.all(keysToCreate.map(async (toId) => {
     const share = updatedSub.shares.find((share) => share.toId === toId)
 
     if (!share) return
 
-    void notificationSdk.create(share.toId, true, {
+    await notificationSdk.create(share.toId, true, {
       type: NOTIFICATION_TYPE.SUB_SHARE,
       contract: updatedSub as Contract,
       share: share as Share
     })
-  })
+  }))
 
   return NextResponse.json(
     { message: 'success', data: updatedSub },
@@ -233,3 +240,5 @@ const getProviderUpdateArgs = (
     createMany
   }
 }
+
+export const PATCH = (req: Request, query: Query) => apiResponse(() => handlePATCH(req, query))

@@ -6,6 +6,7 @@ import { type Contract, type Prisma, prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { apiResponse } from '@lib/server/api'
 import { readContracts } from '@lib/server/reads'
+import { contractInput, jsonObject } from '@lib/server/validation'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
@@ -15,7 +16,7 @@ import { subscriptionInclude } from './include'
 export const GET = (req: Request) =>
   apiResponse(() => readContracts(req, CONTRACT_TYPE.SUBSCRIPTION))
 
-export const POST = async (req: Request) => {
+const handlePOST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -24,14 +25,18 @@ export const POST = async (req: Request) => {
         message: 'userId is required'
       },
       {
-        status: 400
+        status: 401
       }
     )
   }
 
   const userId = session.user.id
 
-  const body = await req.json()
+  const body = (await contractInput(
+    await jsonObject(req),
+    CONTRACT_TYPE.SUBSCRIPTION,
+    userId
+  )) as any
 
   const keysToCreate = Object.entries(body)
     .filter(([key]) => key.startsWith('sharedWith'))
@@ -92,16 +97,20 @@ export const POST = async (req: Request) => {
     include: subscriptionInclude
   })
 
-  newSub.shares.forEach((share) => {
-    void notificationSdk.create(share.toId, true, {
-      type: NOTIFICATION_TYPE.SUB_SHARE,
-      contract: newSub as Contract,
-      share: share as Share
+  await Promise.all(
+    newSub.shares.map(async (share) => {
+      await notificationSdk.create(share.toId, true, {
+        type: NOTIFICATION_TYPE.SUB_SHARE,
+        contract: newSub as Contract,
+        share: share as Share
+      })
     })
-  })
+  )
 
   return NextResponse.json(
     { message: 'success', data: newSub },
     { status: 201 }
   )
 }
+
+export const POST = (req: Request) => apiResponse(() => handlePOST(req))

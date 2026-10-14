@@ -6,6 +6,13 @@ import { Input } from '@components/ui/input'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { prisma } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
+import {
+  amount,
+  dateInput,
+  identifier,
+  integer,
+  text
+} from '@lib/server/validation'
 import { EuroIcon, Save } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
@@ -16,11 +23,11 @@ export default async function Page() {
     'use server'
     try {
       const user = await getUserData()
-      const name = formData.get('name') as string
-      const employer = formData.get('employer') as string
-      const salary = Number(formData.get('salary'))
-      const start = new Date(formData.get('start') as string)
-      const payday = Number(formData.get('payday'))
+      const name = text(formData.get('name'), 'name')
+      const employer = identifier(formData.get('employer'))
+      const salary = amount(formData.get('salary'), 'salary')
+      const start = dateInput(formData.get('start'))
+      const payday = integer(formData.get('payday'), 'payday', 1, 31)
 
       await prisma.contract.create({
         data: {
@@ -47,7 +54,7 @@ export default async function Page() {
         }
       })
     } catch (e: unknown) {
-      const message = (e as Error).message
+      const message = 'invalid-data'
 
       redirect(
         `/dashboard/profile/add-contract?error=${message}&timeframe=${Date.now()}`

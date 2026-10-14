@@ -1,11 +1,12 @@
-import { type Brand } from '@components/BrandAutocomplete'
 import { authOptions } from '@lib/auth'
 import { fetchBrandInfo } from '@lib/brandfetch'
 import { prisma } from '@lib/prisma'
+import { apiResponse } from '@lib/server/api'
+import { identifier, jsonObject, text } from '@lib/server/validation'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
-export const POST = async (req: Request) => {
+const handlePOST = async (req: Request) => {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -14,12 +15,23 @@ export const POST = async (req: Request) => {
         message: 'unauthorized'
       },
       {
-        status: 400
+        status: 401
       }
     )
   }
 
-  const body = (await req.json()) as Brand
+  const raw = await jsonObject(req)
+  const body = {
+    brandId: identifier(raw.brandId),
+    name: text(raw.name, 'name'),
+    domain: text(raw.domain, 'domain', 253)
+  }
+  if (
+    !/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(
+      body.domain
+    )
+  )
+    return NextResponse.json({ message: 'Invalid domain' }, { status: 400 })
 
   let data = await prisma.provider.findUnique({
     where: {
@@ -42,3 +54,5 @@ export const POST = async (req: Request) => {
 
   return NextResponse.json({ message: 'success', data }, { status: 201 })
 }
+
+export const POST = (req: Request) => apiResponse(() => handlePOST(req))

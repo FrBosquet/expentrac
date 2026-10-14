@@ -1,5 +1,7 @@
 import { Input } from '@components/ui/input'
 import { prisma } from '@lib/prisma'
+import { requireUser } from '@lib/server/api'
+import { text } from '@lib/server/validation'
 import { redirect } from 'next/navigation'
 
 import { getUserData } from '../getUser'
@@ -10,12 +12,15 @@ export default async function Page() {
 
   const handleSubmit = async (formData: FormData) => {
     'use server'
-    const name = formData.get('name') as string
-    const occupation = formData.get('occupation') as string
+    const userId = await requireUser()
+    const name = text(formData.get('name'), 'name')
+    const occupation = formData.get('occupation')
+      ? text(formData.get('occupation'), 'occupation')
+      : ''
 
     await prisma.user.update({
       where: {
-        id: user.id
+        id: userId
       },
       data: {
         name,
