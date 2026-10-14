@@ -1,12 +1,10 @@
+import { useAckWrite } from '@hooks/resources'
 import { type Notification as NotificationType } from '@lib/models'
-import { notificationSdk } from '@sdk'
 import { useLayoutEffect, useState } from 'react'
-
-import { useNotifications } from '../context'
 
 export const useAutoAck = (notification: NotificationType) => {
   const [loading, setLoading] = useState(false)
-  const { updateNotification } = useNotifications()
+  const acknowledge = useAckWrite()
 
   const { id, ack } = notification
 
@@ -15,13 +13,15 @@ export const useAutoAck = (notification: NotificationType) => {
 
     const ackNotificationAsync = async () => {
       setLoading(true)
-      const updatedNotification = await notificationSdk.ack(id)
-      setLoading(false)
-      updateNotification(updatedNotification)
+      try {
+        await acknowledge(id)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    void ackNotificationAsync()
-  }, [ack, id, updateNotification])
+    void ackNotificationAsync().catch(() => {})
+  }, [ack, id, acknowledge])
 
   return { loading }
 }

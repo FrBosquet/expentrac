@@ -1,6 +1,6 @@
-/* eslint-disable prettier/prettier */
 'use client'
 
+/* eslint-disable prettier/prettier */
 import { Button } from '@components/ui/button'
 import {
   Dialog,
@@ -10,14 +10,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useLoanWrites } from '@hooks/resources'
 import { type Loan, type LoanFormData } from '@lib/loan'
 import { cn } from '@lib/utils'
-import { loanSdk } from '@sdk'
 import { ButtonVariant } from '@types'
 import { Edit, EditIcon } from 'lucide-react'
 import { type FormEventHandler, useState } from 'react'
 
-import { useLoans } from './context'
 import { LoanForm } from './form'
 
 interface Props {
@@ -35,7 +34,7 @@ export const LoanEdit = ({
   variant = 'outline',
   triggerDecorator = TRIGGER_DECORATOR
 }: Props) => {
-  const { updateLoan } = useLoans()
+  const writes = useLoanWrites()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -48,9 +47,8 @@ export const LoanEdit = ({
         new FormData(e.currentTarget)
       ) as unknown as LoanFormData
 
-      const updatedLoan = await loanSdk.update(loan.id, formData)
+      await writes.update(loan.id, formData)
 
-      updateLoan(updatedLoan)
       setOpen(false)
     } catch (e) {
       // TODO: toast

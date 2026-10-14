@@ -1,79 +1,64 @@
 'use client'
 
-import {
-  type Contract,
-  type Notification,
-  type ProviderOnContract,
-  type Share
-} from '@lib/models'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { create } from 'zustand'
 
-import { type ContractsSlice, createContractsSlice } from './contracts'
 import { createDateSlice, type DateSlice } from './date'
-import { createNotificationSlice, type NotificationSlice } from './notification'
-import {
-  createProvidersOnContractsSlice,
-  type ProviderOnContractSlice
-} from './provider-on-contract'
-import { createShareSlice, type ShareSlice } from './share'
 
-type RootState = ShareSlice &
-  ContractsSlice &
-  DateSlice &
-  NotificationSlice &
-  ProviderOnContractSlice
+export const useStore = create<DateSlice>((...args) => createDateSlice(...args))
+const Scope = createContext('')
+export const useQueryScope = () => useContext(Scope)
 
-const queryClient = new QueryClient()
-
-export const useStore = create<RootState>((...a) => ({
-  ...createShareSlice(...a),
-  ...createContractsSlice(...a),
-  ...createDateSlice(...a),
-  ...createNotificationSlice(...a),
-  ...createProvidersOnContractsSlice(...a)
-}))
-
-interface Props {
+function SessionQueries({
+  children,
+  userId
+}: {
   children: React.ReactNode
-  contracts: Contract[]
-  notifications: Notification[]
-  shares: Share[]
-  providersOnContracts: ProviderOnContract[]
+  userId: string
+}) {
+  const [client] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60_000,
+            retry: (count, error) =>
+              count < 2 && (!('status' in error) || Number(error.status) >= 500)
+          },
+          mutations: { retry: false }
+        }
+      })
+  )
+  useEffect(
+    () => () => {
+      void client.cancelQueries()
+      client.clear()
+    },
+    [client]
+  )
+  return (
+    <Scope.Provider value={userId}>
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    </Scope.Provider>
+  )
 }
 
-export const StoreProvider = ({
+export function StoreProvider({
   children,
-  shares,
-  contracts,
-  notifications,
-  providersOnContracts
-}: Props) => {
-  const setShares = useStore((store) => store.setShares)
-  const setContracts = useStore((store) => store.setContracts)
-  const setNotifications = useStore((store) => store.setNotifications)
-  const setProvidersOnContracts = useStore(
-    (store) => store.setProvidersOnContracts
-  )
-
-  useEffect(() => {
-    setShares(shares)
-    setContracts(contracts)
-    setNotifications(notifications)
-    setProvidersOnContracts(providersOnContracts)
-  }, [
-    shares,
-    contracts,
-    notifications,
-    providersOnContracts,
-    setShares,
-    setContracts,
-    setNotifications,
-    setProvidersOnContracts
-  ])
-
+  userId
+}: {
+  children: React.ReactNode
+  userId: string
+}) {
+  const { data: session, status } = useSession()
+  if (status === 'loading') return <p role="status">Loading your session…</p>
+  const currentUserId = session?.user?.id
+  if (!currentUserId) return <p>Please sign in to continue.</p>
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <SessionQueries key={currentUserId} userId={currentUserId}>
+      {children}
+    </SessionQueries>
   )
 }

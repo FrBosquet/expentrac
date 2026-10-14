@@ -1,0 +1,47 @@
+import { expect, test } from '@playwright/test'
+
+test.beforeEach(async ({ context }) => {
+  await context.addCookies([{ name: 'next-auth.session-token', value: 'browser-session-owner', url: 'http://127.0.0.1:3100' }])
+})
+
+test('real session APIs enforce owner, accepted recipient, and third-user policies', async ({ request }) => {
+  const cookie = (role: string) => ({ Cookie: `next-auth.session-token=browser-session-${role}` })
+  expect((await request.get('/api/contract')).status()).toBe(401)
+  expect((await request.get('/api/contract?userId=browser-third', { headers: cookie('owner') })).status()).toBe(403)
+  const owner = await request.get('/api/contract/browser-loan', { headers: cookie('owner') })
+  expect(owner.status()).toBe(200)
+  expect((await request.get('/api/contract/browser-loan', { headers: cookie('recipient') })).status()).toBe(403)
+  expect((await request.patch('/api/share/browser-share', { headers: cookie('third'), data: { accepted: true } })).status()).toBe(403)
+  expect((await request.patch('/api/share/browser-share', { headers: cookie('recipient'), data: { accepted: 'true' } })).status()).toBe(400)
+  expect((await request.patch('/api/share/browser-share', { headers: cookie('recipient'), data: { accepted: true } })).status()).toBe(200)
+  expect((await request.get('/api/contract/browser-loan', { headers: cookie('recipient') })).status()).toBe(200)
+  expect((await request.get('/api/contract/browser-loan', { headers: cookie('third') })).status()).toBe(403)
+  expect((await request.get('/api/notification/cron')).status()).toBe(401)
+  const subs = await (await request.get('/api/contract?type=SUBSCRIPTION', { headers: cookie('owner') })).json()
+  expect(subs.map((item: { type: string }) => item.type)).toEqual(['SUBSCRIPTION'])
+})
+
+test('profile mutation updates profile and navigation without hard reload', async ({ page }) => {
+  await page.goto('/dashboard/profile')
+  await expect(page.getByRole('heading', { name: 'owner Fixture', exact: true, level: 1 })).toBeVisible()
+  await page.locator('a[href="profile/edit"]').click()
+  await page.locator('#name').fill('Updated owner')
+  await page.locator('#occupation').fill('Test role')
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })).toBeVisible()
+  await expect(page.getByText('Test role', { exact: true })).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })).toBeVisible()
+})
+
+test('contract detail survives direct navigation and reload; fresh account cannot see owner data', async ({ page, context }) => {
+  await page.goto('/dashboard/loans/browser-loan')
+  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toBeVisible()
+  await context.clearCookies()
+  await context.addCookies([{ name: 'next-auth.session-token', value: 'browser-session-third', url: 'http://127.0.0.1:3100' }])
+  await page.goto('/dashboard/loans/browser-loan')
+  await expect(page.getByText('Resource not found or no longer shared with you.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toHaveCount(0)
+})

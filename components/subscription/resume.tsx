@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useSubscriptionWrites } from '@hooks/resources'
 import { toHTMLInputFormat } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
@@ -18,8 +19,6 @@ import { ButtonVariant } from '@types'
 import { Play } from 'lucide-react'
 import { useState } from 'react'
 
-import { resumeSubscription } from './actions'
-import { useSubs } from './context'
 import { SubscriptionFormPeriodicity } from './form'
 
 interface Props {
@@ -43,7 +42,7 @@ export const SubResume = ({
 }: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { updateSub } = useSubs()
+  const writes = useSubscriptionWrites()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -53,9 +52,8 @@ export const SubResume = ({
       const form = e.currentTarget
       const formData = new FormData(form)
 
-      const response = await resumeSubscription(formData)
+      await writes.resume(formData)
 
-      updateSub(response)
       setOpen(false)
     } catch (e) {
       // TODO: toast

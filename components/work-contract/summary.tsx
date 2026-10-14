@@ -1,9 +1,5 @@
 'use client'
 
-import { fetchWorkContracts } from '@actions/work-contract'
-import { useDate } from '@components/date/context'
-import { useLoans } from '@components/loan/context'
-import { COLUMN } from '@components/loan/item'
 import { Button } from '@components/ui/button'
 import {
   Card,
@@ -13,14 +9,14 @@ import {
   CardMenu,
   CardTitle
 } from '@components/ui/card'
+import { useContracts } from '@hooks/resources'
+import { CONTRACT_TYPE } from '@lib/contract'
 import { euroFormatter } from '@lib/currency'
 import { Contract } from '@lib/models'
 import { Provider } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
 import { PlusIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
 
 interface Props {
   className?: string
@@ -54,19 +50,19 @@ const getCurrentPeriod = (contract: Contract) => {
 }
 
 const WorkContractRow = ({ contract }: { contract: Contract }) => {
-  const provider = contract.providers[0].provider
-  const image = getLogo(provider)
+  const provider = contract.providers[0]?.provider
+  const image = provider ? getLogo(provider) : null
 
   const currentPeriod = getCurrentPeriod(contract)
 
   return (
     <li className="grid grid-cols-[auto_1fr_auto] grid-rows-2 gap-4">
       <div className="relative row-span-2 aspect-square overflow-hidden rounded-md">
-        {image && <Image fill alt={provider.name} src={image} />}
+        {image && <Image fill alt={provider?.name ?? 'Employer'} src={image} />}
       </div>
       <h2 className="flex-1 font-semibold uppercase">{contract.name}</h2>
       <p className="col-start-2 row-start-2 text-slate-300">
-        At {provider.name}
+        At {provider?.name ?? 'Unknown employer'}
         {currentPeriod &&
           `, since ${new Date(currentPeriod.from).toLocaleDateString(
             'default',
@@ -85,17 +81,10 @@ const WorkContractRow = ({ contract }: { contract: Contract }) => {
 }
 
 export const WorkContractSummary = ({ className }: Props) => {
-  const { date, month } = useDate()
-  const { allLoans } = useLoans()
-  const [activeColumn, setActiveColumn] = useState(COLUMN.FEE)
-  const query = useQuery({
-    queryKey: ['work-contracts'],
-    queryFn: async () => await fetchWorkContracts()
-  })
-
-  const ongoingLoans = allLoans.filter((loan) => {
-    return loan.time.isOngoing
-  })
+  const query = useContracts()
+  const contracts = query.contracts.filter(
+    (contract) => contract.type === CONTRACT_TYPE.WORK
+  )
 
   return (
     <Card className={className}>
@@ -116,9 +105,12 @@ export const WorkContractSummary = ({ className }: Props) => {
       <CardContent>
         {query.isLoading && <p>Loading...</p>}
         {query.isError && <p>Error: {query.error.message}</p>}
+        {query.isSuccess && contracts.length === 0 && (
+          <p>No work contracts yet.</p>
+        )}
         {query.isSuccess && (
           <ul>
-            {query.data.map((contract) => {
+            {contracts.map((contract) => {
               return (
                 <WorkContractRow
                   key={contract.id}

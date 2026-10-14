@@ -3,8 +3,12 @@ import { type LoanFormData } from '@lib/loan'
 import { contract } from './decode'
 import { arrayOf, envelope, request } from './http'
 
-export const getUserLoans = async (_userId?: string, signal?: AbortSignal) =>
-  request('loan', { signal }, arrayOf(contract))
+export const getUserLoans = async (userId?: string, signal?: AbortSignal) =>
+  request(
+    `loan?${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
+    { signal },
+    arrayOf(contract)
+  )
 export const createLoan = async (body: LoanFormData) =>
   request(
     'loan',

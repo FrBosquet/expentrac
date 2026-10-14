@@ -10,15 +10,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useSubscriptionWrites } from '@hooks/resources'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
-import { subscriptionSdk } from '@sdk'
 import { ButtonVariant } from '@types'
 import { Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-
-import { useSubs } from './context'
 
 interface Props {
   sub: Subscription
@@ -38,7 +36,7 @@ export const SubDelete = ({
   afterDeleteUrl
 }: Props) => {
   const { id, name } = sub
-  const { removeSub } = useSubs()
+  const writes = useSubscriptionWrites()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
@@ -47,9 +45,7 @@ export const SubDelete = ({
     setLoading(true)
 
     try {
-      const result = await subscriptionSdk.delete(id)
-
-      removeSub(result)
+      await writes.remove(id)
 
       setOpen(false)
 

@@ -10,12 +10,11 @@ import {
   DialogTrigger
 } from '@components/ui/dialog'
 import { useUser } from '@components/user/hooks'
+import { useLoanWrites } from '@hooks/resources'
 import { type LoanFormData } from '@lib/loan'
-import { loanSdk } from '@sdk'
 import { PlusIcon } from 'lucide-react'
 import { type FormEventHandler, useState } from 'react'
 
-import { useLoans } from './context'
 import { LoanForm } from './form'
 
 const TRIGGER_DECORATOR = () => (
@@ -33,7 +32,7 @@ export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR() }: Props) => {
 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { addLoan } = useLoans()
+  const writes = useLoanWrites()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -43,10 +42,9 @@ export const LoanAdd = ({ triggerDecorator = TRIGGER_DECORATOR() }: Props) => {
       const formData = Object.fromEntries(
         new FormData(e.currentTarget)
       ) as unknown as LoanFormData
-      const loan = await loanSdk.create(formData)
+      await writes.create(formData)
 
       setOpen(false)
-      addLoan(loan)
     } catch (err) {
       // TODO: toast
       // eslint-disable-next-line no-console

@@ -1,18 +1,7 @@
 'use client'
-
-import { useStore } from '@store'
-import { getPendingNotifications } from '@store/notification'
-
+import { useNotificationQuery } from '@hooks/resources'
 export const useNotifications = () => {
-  const notifications = useStore((state) => state.notifications)
-  const updateNotification = useStore((state) => state.updateNotification)
-
-  const pendingNotifications = useStore(getPendingNotifications)
-
-  return {
-    notifications,
-    updateNotification,
-    hasPending: pendingNotifications.length > 0,
-    pending: pendingNotifications.length
-  }
+  const query = useNotificationQuery()
+  const pending = query.notifications.filter((n) => !n.ack).length
+  return { ...query, hasPending: pending > 0, pending }
 }

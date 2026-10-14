@@ -9,14 +9,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useSubscriptionWrites } from '@hooks/resources'
 import { type SubFormData, type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
-import { subscriptionSdk } from '@sdk'
 import { ButtonVariant } from '@types'
 import { Edit } from 'lucide-react'
 import { type FormEventHandler, useState } from 'react'
 
-import { useSubs } from './context'
 import { SubscriptionForm } from './form'
 
 interface Props {
@@ -36,7 +35,7 @@ export const SubEdit = ({
 }: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { updateSub } = useSubs()
+  const writes = useSubscriptionWrites()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -47,9 +46,8 @@ export const SubEdit = ({
         new FormData(e.currentTarget)
       ) as unknown as SubFormData
 
-      const updatedSub = await subscriptionSdk.update(sub.id, formData)
+      await writes.update(sub.id, formData)
 
-      updateSub(updatedSub)
       setOpen(false)
     } catch (e) {
       // TODO: toast

@@ -4,9 +4,14 @@ import { contract } from './decode'
 import { arrayOf, envelope, request } from './http'
 
 export const getUserSubscriptions = async (
-  _userId?: string,
+  userId?: string,
   signal?: AbortSignal
-) => request('contract?type=SUBSCRIPTION', { signal }, arrayOf(contract))
+) =>
+  request(
+    `contract?type=SUBSCRIPTION&${userId ? `userId=${encodeURIComponent(userId)}` : ''}`,
+    { signal },
+    arrayOf(contract)
+  )
 const create = async (body: SubFormData) =>
   request(
     'subscription',

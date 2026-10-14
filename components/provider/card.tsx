@@ -1,8 +1,8 @@
 'use client'
 
 import { Card } from '@components/ui/card'
+import { type Provider as ProviderWithContracts } from '@lib/models'
 import { getAccentColor } from '@lib/provider'
-import { type ProviderWithContracts } from '@store/provider-on-contract'
 import { type BrandExtendedInfo } from '@types'
 import { HelpCircle } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'

@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useProviderWrite } from '@hooks/resources'
 import { type Provider } from '@lib/models'
 import { cn } from '@lib/utils'
-import { providerSdk } from '@sdk/provider'
 import { useState } from 'react'
 
 export const ProviderDialog = ({
@@ -26,13 +26,14 @@ export const ProviderDialog = ({
   setOpen: (open: boolean) => void
   sideEffect?: (userProvider: Provider) => void
 }) => {
+  const create = useProviderWrite()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (brand: Brand) => {
     try {
       setLoading(true)
 
-      const provider = await providerSdk.add(brand)
+      const provider = await create.mutateAsync(brand)
 
       sideEffect?.(provider)
       setOpen(false)

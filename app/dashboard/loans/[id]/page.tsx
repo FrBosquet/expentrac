@@ -15,9 +15,11 @@ export default function Page() {
   const { push } = useRouter()
   const params = useParams()
   const id = params.id
-  const { loan } = useLoan(id as string)
+  const { loan, isLoading, error } = useLoan(id as string)
 
-  if (!loan) return null
+  if (isLoading) return <p role="status">Loading…</p>
+  if (error) return <p role="alert">{error.message}</p>
+  if (!loan) return <p>Resource not found or no longer shared with you.</p>
 
   const {
     resources: { link }

@@ -18,9 +18,11 @@ import { useParams } from 'next/navigation'
 export default function Page() {
   const params = useParams()
   const id = params.id
-  const { sub } = useSub(id as string)
+  const { sub, isLoading, error } = useSub(id as string)
 
-  if (!sub) return null
+  if (isLoading) return <p role="status">Loading…</p>
+  if (error) return <p role="alert">{error.message}</p>
+  if (!sub) return <p>Resource not found or no longer shared with you.</p>
 
   const {
     resources: { link },

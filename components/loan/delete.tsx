@@ -10,14 +10,12 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useLoanWrites } from '@hooks/resources'
 import { type Loan } from '@lib/loan'
 import { cn } from '@lib/utils'
-import { loanSdk } from '@sdk'
 import { ButtonVariant } from '@types'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
-
-import { useLoans } from './context'
 
 interface Props {
   loan: Loan
@@ -39,15 +37,14 @@ export const LoanDelete = ({
   const { id, name } = loan
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { removeLoan } = useLoans()
+  const writes = useLoanWrites()
 
   const handleDelete = async () => {
     setLoading(true)
 
     try {
-      const loan = await loanSdk.delete(id)
+      await writes.remove(id)
 
-      removeLoan(loan)
       setOpen(false)
       void sideEffect?.()
     } catch (e) {

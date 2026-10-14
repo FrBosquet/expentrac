@@ -1,71 +1,31 @@
+'use client'
 import { ErrorToaster } from '@components/error-toaster'
 import { DaySelect } from '@components/form/DaySelect'
 import { ProviderInput } from '@components/provider-input'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
-import { CONTRACT_TYPE } from '@lib/contract'
-import { prisma } from '@lib/prisma'
-import { PROVIDER_TYPE } from '@lib/provider'
-import {
-  amount,
-  dateInput,
-  identifier,
-  integer,
-  text
-} from '@lib/server/validation'
+import { useWorkWrite } from '@hooks/resources'
 import { EuroIcon, Save } from 'lucide-react'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { type FormEvent } from 'react'
 
-import { getUserData } from '../getUser'
-
-export default async function Page() {
-  const registerWorkContract = async (formData: FormData) => {
-    'use server'
+export default function Page() {
+  const mutation = useWorkWrite()
+  const router = useRouter()
+  const registerWorkContract = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     try {
-      const user = await getUserData()
-      const name = text(formData.get('name'), 'name')
-      const employer = identifier(formData.get('employer'))
-      const salary = amount(formData.get('salary'), 'salary')
-      const start = dateInput(formData.get('start'))
-      const payday = integer(formData.get('payday'), 'payday', 1, 31)
-
-      await prisma.contract.create({
-        data: {
-          user: {
-            connect: {
-              id: user.id
-            }
-          },
-          name,
-          type: CONTRACT_TYPE.WORK,
-          periods: {
-            create: {
-              from: start.toISOString(),
-              payday,
-              fee: salary
-            }
-          },
-          providers: {
-            create: {
-              providerId: employer,
-              as: PROVIDER_TYPE.EMPLOYER
-            }
-          }
-        }
-      })
-    } catch (e: unknown) {
-      const message = 'invalid-data'
-
-      redirect(
-        `/dashboard/profile/add-contract?error=${message}&timeframe=${Date.now()}`
+      await mutation.mutateAsync(
+        Object.fromEntries(new FormData(event.currentTarget))
       )
+      router.push('/dashboard/profile')
+    } catch {
+      /* Retain draft; mutation exposes the error below. */
     }
-
-    redirect('/dashboard/profile')
   }
-
   return (
-    <form action={registerWorkContract} className="contents">
+    <form className="contents" onSubmit={registerWorkContract}>
+      {mutation.isError && <p role="alert">{mutation.error.message}</p>}
       <ErrorToaster
         errors={{
           'invalid-data': 'Invalid data provided. Please try again.'
@@ -119,7 +79,11 @@ export default async function Page() {
         </label>
         <DaySelect required defaultValue={28} name="payday" />
       </fieldset>
-      <Button className="mt-6 max-xl:col-span-2 xl:col-start-4" type="submit">
+      <Button
+        className="mt-6 max-xl:col-span-2 xl:col-start-4"
+        disabled={mutation.isPending}
+        type="submit"
+      >
         <Save className="mr-2" size={16} />
         <span>Sign</span>
       </Button>

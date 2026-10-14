@@ -1,39 +1,36 @@
+'use client'
 import { Input } from '@components/ui/input'
-import { prisma } from '@lib/prisma'
-import { requireUser } from '@lib/server/api'
-import { text } from '@lib/server/validation'
-import { redirect } from 'next/navigation'
+import { useProfile, useProfileWrite } from '@hooks/resources'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { type FormEvent } from 'react'
+export default function Page() {
+  const query = useProfile()
 
-import { getUserData } from '../getUser'
-import { SubmitButton } from './submitButton'
-
-export default async function Page() {
-  const user = await getUserData()
-
-  const handleSubmit = async (formData: FormData) => {
-    'use server'
-    const userId = await requireUser()
-    const name = text(formData.get('name'), 'name')
-    const occupation = formData.get('occupation')
-      ? text(formData.get('occupation'), 'occupation')
-      : ''
-
-    await prisma.user.update({
-      where: {
-        id: userId
-      },
-      data: {
-        name,
-        occupation
-      }
-    })
-
-    redirect('/dashboard/profile')
+  const mutation = useProfileWrite()
+  const { update } = useSession()
+  const router = useRouter()
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    try {
+      await mutation.mutateAsync({
+        name: String(data.get('name') ?? ''),
+        occupation: String(data.get('occupation') ?? '')
+      })
+      await update()
+      router.push('/dashboard/profile')
+    } catch {
+      /* Mutation error is displayed; keep the draft intact. */
+    }
   }
+  if (query.isPending) return <p role="status">Loading profile…</p>
+  if (query.isError) return <p role="alert">{query.error.message}</p>
+  const user = query.data
 
   return (
     <>
-      <form action={handleSubmit} className="col-span-4 flex gap-8">
+      <form className="col-span-4 flex gap-8" onSubmit={handleSubmit}>
         <fieldset className="flex flex-1 flex-col justify-center gap-2">
           <label className="text-xs uppercase text-theme-light" htmlFor="name">
             Name
@@ -70,7 +67,10 @@ export default async function Page() {
             type="text"
           />
         </fieldset>
-        <SubmitButton />
+        <button disabled={mutation.isPending} type="submit">
+          {mutation.isPending ? 'Saving…' : 'Save'}
+        </button>
+        {mutation.isError && <p role="alert">{mutation.error.message}</p>}
       </form>
     </>
   )

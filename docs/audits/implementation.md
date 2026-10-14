@@ -19,6 +19,10 @@ Development credentials point to production. Do not run migration, seed, mainten
 - Patched baseline: Next/MDX/plugin 14.2.35, NextAuth 4.24.15, Node 24.21.0 and pnpm 10.20.0 pinned. Explicit lint/typecheck/tests/build CI; invalid TS config and missing script removed; development Prisma singleton and shared type module. Build passes with fake credentials and no database.
 - Baseline Next 14 build output: landing first-load JS 125 kB, blog 96.5 kB, dashboard 262 kB. These are build-reported estimates, not live TTFB measurements.
 
+- Runtime mutation validation and authenticated serializable pause/resume/price actions; provider metadata timeout and validation; consistent transport errors, DTO envelope checks and encoded IDs.
+- Dashboard resources moved to session-scoped Query clients and mutation invalidation; Zustand retains only date. Profile/WORK use client queries and mutations; bell is inside provider; loading/error/retry boundaries included.
+- Three real-session browser/API tests pass on synthetic localhost data: permissions/filtering, profile + navigation consistency, direct detail/reload/account isolation. Google OAuth itself remains untested.
+
 ## Remaining work
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

@@ -10,11 +10,10 @@ import {
   DialogTrigger
 } from '@components/ui/dialog'
 import { useUser } from '@components/user/hooks'
+import { useSubscriptionWrites } from '@hooks/resources'
 import { type SubFormData } from '@lib/sub'
-import { subscriptionSdk } from '@sdk'
 import { type FormEventHandler, useState } from 'react'
 
-import { useSubs } from './context'
 import { SubscriptionForm } from './form'
 
 export const SubscriptionAdd = () => {
@@ -22,7 +21,7 @@ export const SubscriptionAdd = () => {
 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { addSub } = useSubs()
+  const writes = useSubscriptionWrites()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -33,10 +32,9 @@ export const SubscriptionAdd = () => {
         new FormData(e.currentTarget)
       ) as unknown as SubFormData
 
-      const sub = await subscriptionSdk.create(formData)
+      await writes.create(formData)
 
       setOpen(false)
-      addSub(sub)
     } catch (e) {
       // TODO: toast
       // eslint-disable-next-line no-console

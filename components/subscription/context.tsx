@@ -1,65 +1,49 @@
 'use client'
 
 import { useDate } from '@components/date/context'
+import { useContracts, useShareQuery } from '@hooks/resources'
 import { CONTRACT_TYPE } from '@lib/contract'
-import { type Subscription, unwrapSub } from '@lib/sub'
-import { useStore } from '@store'
-import { getSub, getSubs } from '@store/contracts'
+import { unwrapSub } from '@lib/sub'
 
 export const useSubs = () => {
   const { date } = useDate()
-  const subs = useStore(getSubs(date))
-  const addSub = useStore((state) => state.addContract)
-  const removeSub = useStore((state) => state.removeContract)
-  const updateSub = useStore((state) => state.updateContract)
-  const shares = useStore((state) => state.shares)
-
-  // TODO: Move to a selector in shares store
-  const sharedSubs = shares
-    .filter((share) => {
-      return (
-        share.accepted && share.contract.type === CONTRACT_TYPE.SUBSCRIPTION
-      )
-    })
-    .map((share) => unwrapSub(share.contract, date))
-
-  const allSubs = [...subs, ...sharedSubs] as Subscription[]
-
-  const hasOwnSubs = subs.length > 0
-  const hasSharedSubs = sharedSubs.length > 0
-  const hasAnySubs = hasOwnSubs || hasSharedSubs
-
-  const activeSubs = allSubs.filter((sub) => sub.periods.isActive)
-  const pausedSubs = allSubs.filter((sub) => sub.periods.isInactive)
-
+  const query = useContracts()
+  const shares = useShareQuery()
+  const subs = query.contracts
+    .filter((c) => c.type === CONTRACT_TYPE.SUBSCRIPTION)
+    .map((c) => unwrapSub(c, date))
+  const sharedSubs = shares.shares
+    .filter(
+      (s) =>
+        s.accepted === true && s.contract.type === CONTRACT_TYPE.SUBSCRIPTION
+    )
+    .map((s) => unwrapSub(s.contract, date))
+  const allSubs = [...subs, ...sharedSubs]
   return {
     subs,
-    addSub,
-    removeSub,
-    updateSub,
     allSubs,
-    hasOwnSubs,
-    hasSharedSubs,
-    hasAnySubs,
-    activeSubs,
-    pausedSubs
+    activeSubs: allSubs.filter((s) => s.periods.isActive),
+    pausedSubs: allSubs.filter((s) => s.periods.isInactive),
+    hasOwnSubs: subs.length > 0,
+    hasSharedSubs: sharedSubs.length > 0,
+    hasAnySubs: allSubs.length > 0,
+    isLoading: query.isPending || shares.isPending,
+    error: query.error ?? shares.error
   }
 }
-
 export const useSub = (id: string) => {
-  const shares = useStore((state) => state.shares)
-
-  let sub = useStore(getSub(id))
-
-  if (!sub) {
-    const share = shares.find((share) => share.contract.id === id)
-
-    if (share) {
-      sub = unwrapSub(share.contract)
-    }
-  }
-
+  const { date } = useDate()
+  const query = useContracts()
+  const shares = useShareQuery()
+  const contract =
+    query.contracts.find(
+      (c) => c.id === id && c.type === CONTRACT_TYPE.SUBSCRIPTION
+    ) ??
+    shares.shares.find((s) => s.accepted === true && s.contractId === id)
+      ?.contract
   return {
-    sub
+    sub: contract ? unwrapSub(contract, date) : null,
+    isLoading: query.isPending || shares.isPending,
+    error: query.error ?? shares.error
   }
 }

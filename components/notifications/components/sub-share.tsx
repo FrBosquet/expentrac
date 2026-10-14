@@ -1,13 +1,10 @@
-import { useNotifications } from '@components/notifications/context'
-import { useShares } from '@components/share/hooks'
 import { useSub } from '@components/subscription/context'
 import { SubscriptionDetail } from '@components/subscription/detail'
+import { useAckWrite, useShareWrite } from '@hooks/resources'
 import { euroFormatter } from '@lib/currency'
 import { type Notification as NotificationType, type Share } from '@lib/models'
 import { type SubShareNotificationPayload } from '@lib/notification/sub-share'
 import { unwrapSub } from '@lib/sub'
-import { notificationSdk } from '@sdk/notifications'
-import { shareSdk } from '@sdk/share'
 import { NOTIFICATION_TYPE, type NotificationBase, SHARE_STATE } from '@types'
 import { type ReactNode, useState } from 'react'
 
@@ -83,8 +80,8 @@ export const SubShareNotification = ({
   notification: NotificationType
 }) => {
   const [loading, setLoading] = useState(false)
-  const { updateShare } = useShares()
-  const { updateNotification } = useNotifications()
+  const respond = useShareWrite()
+  const acknowledge = useAckWrite()
 
   const { id, ack, createdAt } = notification
   const payload = JSON.parse(
@@ -93,32 +90,26 @@ export const SubShareNotification = ({
 
   const handleAccept = async () => {
     setLoading(true)
-
-    const updatedShare = await shareSdk.update(payload.share.id, true)
-    const updatedNotification = await notificationSdk.ack(
-      id,
-      SHARE_STATE.ACCEPTED
-    )
-
-    updateShare(updatedShare)
-    updateNotification(updatedNotification)
-
-    setLoading(false)
+    try {
+      await respond(payload.share.id, true)
+      await acknowledge(id, SHARE_STATE.ACCEPTED)
+    } catch {
+      /* Mutation hook displays the error. */
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleReject = async () => {
     setLoading(true)
-
-    const updatedShare = await shareSdk.update(payload.share.id, false)
-    const updatedNotification = await notificationSdk.ack(
-      id,
-      SHARE_STATE.REJECTED
-    )
-
-    updateShare(updatedShare)
-    updateNotification(updatedNotification)
-
-    setLoading(false)
+    try {
+      await respond(payload.share.id, false)
+      await acknowledge(id, SHARE_STATE.REJECTED)
+    } catch {
+      /* Mutation hook displays the error. */
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

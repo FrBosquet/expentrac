@@ -20,12 +20,12 @@ export const createDateSlice: StateCreator<DateSlice> = (set) => ({
   },
   nextMonth: () => {
     set((state) => ({
-      date: new Date(state.date.setMonth(state.date.getMonth() + 1))
+      date: new Date(state.date.getFullYear(), state.date.getMonth() + 1, 1)
     }))
   },
   prevMonth: () => {
     set((state) => ({
-      date: new Date(state.date.setMonth(state.date.getMonth() - 1))
+      date: new Date(state.date.getFullYear(), state.date.getMonth() - 1, 1)
     }))
   }
 })

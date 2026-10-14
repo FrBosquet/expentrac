@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@components/ui/dialog'
+import { useSubscriptionWrites } from '@hooks/resources'
 import { toHTMLInputFormat } from '@lib/dates'
 import { type Subscription } from '@lib/sub'
 import { cn } from '@lib/utils'
@@ -17,9 +18,6 @@ import { type Period } from '@prisma/client'
 import { ButtonVariant } from '@types'
 import { DollarSign } from 'lucide-react'
 import { useState } from 'react'
-
-import { updateSubscriptionPrice } from './actions'
-import { useSubs } from './context'
 
 interface Props {
   sub: Subscription
@@ -42,7 +40,7 @@ export const SubUpdatePrice = ({
 }: Props) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { updateSub } = useSubs()
+  const writes = useSubscriptionWrites()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,9 +50,8 @@ export const SubUpdatePrice = ({
       const form = e.currentTarget
       const formData = new FormData(form)
 
-      const response = await updateSubscriptionPrice(formData)
+      await writes.price(formData)
 
-      updateSub(response)
       setOpen(false)
     } catch (e) {
       // TODO: toast
