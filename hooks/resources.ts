@@ -26,7 +26,6 @@ import {
   type UseQueryResult
 } from '@tanstack/react-query'
 import { type SHARE_STATE } from '@types'
-import { useCallback } from 'react'
 import { toast } from 'sonner'
 
 const empty: never[] = []
@@ -151,23 +150,15 @@ export function useSubscriptionWrites() {
   }
 }
 export function useShareWrite() {
-  const { mutateAsync } = useWrite(
-    ({ id, accepted }: { id: string; accepted: boolean }) =>
-      shareSdk.update(id, accepted)
-  )
-  return useCallback(
-    (id: string, accepted: boolean) => mutateAsync({ id, accepted }),
-    [mutateAsync]
+  return useWrite(({ id, accepted }: { id: string; accepted: boolean }) =>
+    shareSdk.update(id, accepted)
   )
 }
 export function useAckWrite() {
-  const { mutateAsync } = useWrite(
+  return useWrite(
     ({ id, state }: { id: string; state?: SHARE_STATE }) =>
-      notificationSdk.ack(id, state)
-  )
-  return useCallback(
-    (id: string, state?: SHARE_STATE) => mutateAsync({ id, state }),
-    [mutateAsync]
+      notificationSdk.ack(id, state),
+    ['notifications']
   )
 }
 export const useProviderWrite = () => useWrite(providerSdk.add, ['providers'])

@@ -16,7 +16,7 @@ export const LoanShareRejectedNotification = ({
     notification.payload as string
   ) as LoanShareAcceptNotificationPayload
 
-  const { loading } = useAutoAck(notification)
+  const { loading, error, retry } = useAutoAck(notification)
 
   const loan = unwrapLoan(contract)
 
@@ -26,6 +26,8 @@ export const LoanShareRejectedNotification = ({
       acknowledged={ack}
       date={createdAt}
       loading={loading}
+      error={error}
+      retry={retry}
     >
       <p className="w-full">
         {shareHolder.name} refused to share{' '}

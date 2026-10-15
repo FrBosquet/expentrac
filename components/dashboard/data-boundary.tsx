@@ -43,15 +43,23 @@ function Contracts({
 }
 function Providers({ children }: { children: React.ReactNode }) {
   const query = useProviderRelations()
+  const contracts = useContracts()
+  const shares = useShareQuery()
   return (
     <QueryState
       skeleton={<PageSkeleton kind="list" />}
-      hasData={query.data !== undefined}
-      fetching={query.isFetching}
-      error={query.error}
-      pending={query.isPending}
+      hasData={
+        query.data !== undefined &&
+        contracts.data !== undefined &&
+        shares.data !== undefined
+      }
+      fetching={query.isFetching || contracts.isFetching || shares.isFetching}
+      error={query.error ?? contracts.error ?? shares.error}
+      pending={query.isPending || contracts.isPending || shares.isPending}
       retry={() => {
         void query.refetch()
+        void contracts.refetch()
+        void shares.refetch()
       }}
     >
       {children}

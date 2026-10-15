@@ -1,6 +1,7 @@
 import { notificationSdk } from '@lib/notification'
 import { prisma } from '@lib/prisma'
-import { NOTIFICATION_TYPE } from '@types'
+import { acknowledgeShareInvitations } from './share-notifications'
+import { NOTIFICATION_TYPE, SHARE_STATE } from '@types'
 import { recordInvitations } from './invitations'
 import { deliverOutbox } from './outbox'
 import { createAuthUser } from './auth-user'
@@ -78,6 +79,115 @@ suite('isolated database transactions', () => {
   afterAll(async () => {
     await prisma.$disconnect()
   })
+
+  test.each([true, false])(
+    'invitation response %s and acknowledgement commit or roll back together',
+    async (accepted) => {
+      const suffix = String(accepted)
+      const ownerId = `atomic-share-owner-${suffix}`
+      const shareId = `atomic-share-${suffix}`
+      await prisma.user.create({ data: { id: ownerId } })
+      await prisma.contract.create({
+        data: {
+          id: `atomic-contract-${suffix}`,
+          userId: ownerId,
+          type: 'LOAN',
+          name: 'Atomic fixture',
+          feeCents: 0,
+          shares: {
+            create: { id: shareId, fromId: ownerId, toId: 'fixture-user' }
+          }
+        }
+      })
+      const invitation = await prisma.notification.create({
+        data: {
+          userId: 'fixture-user',
+          type: NOTIFICATION_TYPE.LOAN_SHARE,
+          date: new Date(),
+          payload: JSON.stringify({
+            share: { id: shareId },
+            state: SHARE_STATE.PENDING,
+            preview: { name: 'Preserved preview' }
+          })
+        }
+      })
+      const unrelated = await prisma.notification.create({
+        data: {
+          userId: 'fixture-user',
+          type: NOTIFICATION_TYPE.LOAN_SHARE,
+          date: new Date(),
+          payload: JSON.stringify({ share: { id: 'another-share' } })
+        }
+      })
+      const otherUser = await prisma.notification.create({
+        data: {
+          userId: ownerId,
+          type: NOTIFICATION_TYPE.LOAN_SHARE,
+          date: new Date(),
+          payload: JSON.stringify({ share: { id: shareId } })
+        }
+      })
+      await expect(
+        prisma.$transaction(async (db) => {
+          await db.share.update({ where: { id: shareId }, data: { accepted } })
+          await acknowledgeShareInvitations(
+            db,
+            'fixture-user',
+            shareId,
+            accepted
+          )
+          throw new Error('Forced rollback')
+        })
+      ).rejects.toThrow('Forced rollback')
+      expect(
+        (await prisma.share.findUniqueOrThrow({ where: { id: shareId } }))
+          .accepted
+      ).toBeNull()
+      expect(
+        (
+          await prisma.notification.findUniqueOrThrow({
+            where: { id: invitation.id }
+          })
+        ).ack
+      ).toBe(false)
+      await prisma.$transaction(async (db) => {
+        await db.share.update({ where: { id: shareId }, data: { accepted } })
+        await acknowledgeShareInvitations(db, 'fixture-user', shareId, accepted)
+      })
+      const confirmed = await prisma.notification.findUniqueOrThrow({
+        where: { id: invitation.id }
+      })
+      expect(confirmed.ack).toBe(true)
+      expect(JSON.parse(confirmed.payload as string)).toMatchObject({
+        state: accepted ? SHARE_STATE.ACCEPTED : SHARE_STATE.REJECTED,
+        preview: { name: 'Preserved preview' }
+      })
+      expect(
+        (
+          await prisma.notification.findUniqueOrThrow({
+            where: { id: unrelated.id }
+          })
+        ).ack
+      ).toBe(false)
+      expect(
+        (
+          await prisma.notification.findUniqueOrThrow({
+            where: { id: otherUser.id }
+          })
+        ).ack
+      ).toBe(false)
+      await prisma.$transaction((db) =>
+        acknowledgeShareInvitations(db, 'fixture-user', shareId, accepted)
+      )
+      expect(
+        (
+          await prisma.notification.findUniqueOrThrow({
+            where: { id: invitation.id }
+          })
+        ).payload
+      ).toEqual(confirmed.payload)
+    }
+  )
 
   test('notification and email snapshot are committed together', async () => {
     const notification = await notificationSdk.create('fixture-user', true, {

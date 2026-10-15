@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQueryScope } from '@store'
 import { keys } from '@lib/query-policy'
 import { getUsersByEmail } from '@sdk/user'
@@ -17,6 +17,22 @@ function useSearchTerm(value: string) {
   return { term, waiting: term !== normalized }
 }
 
+function useSearchCancellation(
+  resource: string,
+  term: string,
+  enabled: boolean
+) {
+  const id = useQueryScope()
+  const client = useQueryClient()
+  useEffect(() => {
+    if (!enabled)
+      void client.cancelQueries({
+        queryKey: keys.search(id, resource, term),
+        exact: true
+      })
+  }, [client, id, resource, term, enabled])
+}
+
 export function useUserSearch(value: string, open: boolean) {
   const id = useQueryScope()
   const { term, waiting } = useSearchTerm(value)
@@ -29,6 +45,7 @@ export function useUserSearch(value: string, open: boolean) {
     staleTime: 30_000,
     gcTime: 60_000
   })
+  useSearchCancellation('users', term, enabled)
   return {
     query,
     results: enabled ? (query.data ?? []) : [],
@@ -48,6 +65,7 @@ export function useBrandSearch(value: string, active: boolean) {
     staleTime: 60_000,
     gcTime: 60_000
   })
+  useSearchCancellation('brands', term, enabled)
   return {
     query,
     results: enabled ? (query.data ?? []) : [],

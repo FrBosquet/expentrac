@@ -1,4 +1,5 @@
 'use client'
+import { RowsSkeleton } from '@components/dashboard/skeletons'
 
 import { type PublicUser } from '@lib/models'
 import { useUserSearch } from '@hooks/search'
@@ -11,7 +12,8 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem
+  CommandItem,
+  CommandList
 } from './ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
@@ -29,6 +31,7 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          aria-label="Find mates"
           aria-expanded={open}
           className="w-[200px] justify-between font-normal"
           role="combobox"
@@ -45,9 +48,10 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
             value={value}
             onValueChange={setValue}
           />
+          <CommandList>
           {searching && (
-            <div role="status" className="p-3">
-              Searching…
+            <div className="p-3">
+              <RowsSkeleton label="Searching users" rows={2} />
             </div>
           )}
           {enabled && query.isError && (
@@ -63,7 +67,7 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
               </button>
             </div>
           )}
-          {!searching && !query.isError && (
+          {!searching && !(enabled && query.isError) && (
             <CommandEmpty>
               {value.trim().length < 3
                 ? 'At least three characters'
@@ -74,7 +78,7 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
             {results.map((user) => (
               <CommandItem
                 key={user.id}
-                className="flex cursor-pointer flex-col items-start data-[disabled]:opacity-40"
+                className="flex cursor-pointer flex-col items-start data-[disabled=true]:opacity-40"
                 disabled={selectedUsers.some((u) => u.id === user.id)}
                 onSelect={() => {
                   onSelect(user)
@@ -87,6 +91,7 @@ export function UserSearch({ onSelect, selectedUsers }: Props) {
               </CommandItem>
             ))}
           </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

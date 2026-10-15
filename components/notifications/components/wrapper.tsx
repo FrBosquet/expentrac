@@ -10,6 +10,8 @@ interface Props {
   loading: boolean
   acknowledged?: boolean
   date: Date
+  error?: Error | null
+  retry?: () => void
 }
 
 const todayFormater = new Intl.DateTimeFormat('en-US', {
@@ -51,7 +53,9 @@ export const NotificationWrapper = ({
   reject,
   loading,
   acknowledged,
-  date
+  date,
+  error,
+  retry
 }: Props) => {
   const dateString = getDateString(new Date(date))
 
@@ -64,7 +68,19 @@ export const NotificationWrapper = ({
       <p className="flex w-14 items-center justify-center text-xs text-theme-light">
         {dateString}
       </p>
-      <section className={twMerge('flex-1 w-full')}>{children}</section>
+      <section className={twMerge('flex-1 w-full')}>
+        {children}
+        {error && (
+          <div role="alert">
+            <p>{error.message}</p>
+            {retry && (
+              <Button size="sm" disabled={loading} onClick={retry}>
+                Try again
+              </Button>
+            )}
+          </div>
+        )}
+      </section>
       {acknowledged ? (
         <CheckCheck className="text-theme-light" size={14} />
       ) : loading ? (
@@ -73,6 +89,7 @@ export const NotificationWrapper = ({
         <>
           {accept ? (
             <Button
+              aria-label="Accept invitation"
               className={'h-auto p-2'}
               disabled={loading}
               variant="default"
@@ -83,6 +100,7 @@ export const NotificationWrapper = ({
           ) : null}
           {reject ? (
             <Button
+              aria-label="Reject invitation"
               className={'h-auto p-2'}
               disabled={loading}
               variant="destructive"

@@ -16,7 +16,7 @@ export const LoanShareAcceptedNotification = ({
     notification.payload as string
   ) as LoanShareAcceptNotificationPayload
 
-  const { loading } = useAutoAck(notification)
+  const { loading, error, retry } = useAutoAck(notification)
 
   // TODO: Notification should be created with a contract link, then use the loan detail component to show it here
   return (
@@ -25,6 +25,8 @@ export const LoanShareAcceptedNotification = ({
       acknowledged={ack}
       date={createdAt}
       loading={loading}
+      error={error}
+      retry={retry}
     >
       <p className="w-full">
         {shareHolder.name} accepted to share{' '}

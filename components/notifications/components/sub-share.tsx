@@ -1,13 +1,13 @@
 import { useSub } from '@components/subscription/context'
 import { SubscriptionDetail } from '@components/subscription/detail'
-import { useAckWrite, useShareWrite } from '@hooks/resources'
+import { useShareWrite } from '@hooks/resources'
 import { euroFormatter } from '@lib/currency'
 import { type Notification as NotificationType, type Share } from '@lib/models'
 import { type SubShareNotificationPayload } from '@lib/notification/sub-share'
 import { unwrapSub } from '@lib/sub'
 import { NOTIFICATION_TYPE, type NotificationBase, SHARE_STATE } from '@types'
 import Link from 'next/link'
-import { type ReactNode, useState } from 'react'
+import { type ReactNode } from 'react'
 
 import { NotificationWrapper } from './wrapper'
 
@@ -57,49 +57,36 @@ export const SubShareNotification = ({
 }: {
   notification: NotificationType
 }) => {
-  const [loading, setLoading] = useState(false)
   const respond = useShareWrite()
-  const acknowledge = useAckWrite()
 
   const { id, ack, createdAt } = notification
   const payload = JSON.parse(
     notification.payload as string
   ) as SubShareNotificationPayload
 
-  const handleAccept = async () => {
-    setLoading(true)
+  const handleResponse = async (accepted: boolean) => {
     try {
-      await respond(payload.share.id, true)
-      await acknowledge(id, SHARE_STATE.ACCEPTED)
+      await respond.mutateAsync({ id: payload.share.id, accepted })
     } catch {
-      /* Mutation hook displays the error. */
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleReject = async () => {
-    setLoading(true)
-    try {
-      await respond(payload.share.id, false)
-      await acknowledge(id, SHARE_STATE.REJECTED)
-    } catch {
-      /* Mutation hook displays the error. */
-    } finally {
-      setLoading(false)
+      /* Keep the invitation available for retry; mutation exposes the error. */
     }
   }
 
   return (
     <NotificationWrapper
       key={id}
-      accept={handleAccept}
+      accept={() => {
+        void handleResponse(true)
+      }}
       acknowledged={ack}
       date={createdAt}
-      loading={loading}
-      reject={handleReject}
+      loading={respond.isPending}
+      reject={() => {
+        void handleResponse(false)
+      }}
     >
       <Content payload={payload} />
+      {respond.isError && <p role="alert">{respond.error.message}</p>}
     </NotificationWrapper>
   )
 }

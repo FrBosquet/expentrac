@@ -18,7 +18,7 @@ export const DailyNotification = ({
     notification.payload as string
   ) as DailyNotificationPayload
 
-  const { loading } = useAutoAck(notification)
+  const { loading, error, retry } = useAutoAck(notification)
 
   return (
     <NotificationWrapper
@@ -26,6 +26,8 @@ export const DailyNotification = ({
       acknowledged={ack}
       date={createdAt}
       loading={loading}
+      error={error}
+      retry={retry}
     >
       <p className="w-full">Today, you are paying for:</p>
       <ul className="flex w-full flex-col gap-2 p-1">

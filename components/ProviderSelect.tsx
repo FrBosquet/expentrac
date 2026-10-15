@@ -74,7 +74,8 @@ export const ProviderSelect = ({
         <SelectContent className="max-h-48 overflow-y-scroll">
           <SelectItem value={SELECT_OPTIONS.NONE}>None</SelectItem>
           <SelectItem value={SELECT_OPTIONS.CREATE}>Create</SelectItem>
-          {newProvider ? (
+          {newProvider &&
+          !items.some((item) => item.value === newProvider.id) ? (
             <SelectItem value={newProvider.id}>{newProvider.name}</SelectItem>
           ) : null}
           <Separator />

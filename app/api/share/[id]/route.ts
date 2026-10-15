@@ -1,3 +1,4 @@
+import { acknowledgeShareInvitations } from '@lib/server/share-notifications'
 import { assertDatabaseReady } from '@lib/server/schema-state'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
@@ -111,6 +112,9 @@ const handlePATCH = async (
   const { accepted } = body
 
   if (share.accepted === accepted) {
+    await prisma.$transaction((db) =>
+      acknowledgeShareInvitations(db, userId, id, accepted)
+    )
     return NextResponse.json({ message: 'Unchanged', data: share })
   }
 
@@ -134,6 +138,7 @@ const handlePATCH = async (
         where: { id },
         include
       })
+      await acknowledgeShareInvitations(db, userId, id, accepted)
       const notification = await notificationSdk.create(
         userId,
         true,

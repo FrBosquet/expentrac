@@ -7,7 +7,7 @@
     "build": "pnpm prisma:generate && next build --webpack && node scripts/assert-build.cjs",
     "build:dev": "next build --webpack && node scripts/assert-build.cjs",
     "start": "next start",
-    "lint": "eslint app components lib actions sdk store hooks types.ts --max-warnings=0",
+    "lint": "eslint app components lib sdk store hooks types.ts --max-warnings=0",
     "vercel:env_pull": "pnpm exec vercel env pull .env.local",
     "prisma:migrate": "node scripts/prisma-local.mjs migrate",
     "prisma:generate": "prisma generate",

@@ -1,4 +1,5 @@
 'use client'
+import { RowsSkeleton } from '@components/dashboard/skeletons'
 
 import { Search, ServerOff, X } from 'lucide-react'
 import { type ChangeEvent, type FormEvent, useState } from 'react'
@@ -91,9 +92,9 @@ export const BrandAutocomplete = ({ loading = false, onSelect }: Props) => {
         {value.active && value.text !== '' && (
           <div className="absolute inset-x-0 max-h-[200px] overflow-y-auto rounded-md border  bg-background p-2 shadow-lg">
             {searching ? (
-              <p role="status" className="p-3">
-                Searching…
-              </p>
+              <div className="p-3">
+                <RowsSkeleton label="Searching brands" rows={2} />
+              </div>
             ) : enabled && search.isError ? (
               <div role="alert" className="p-3">
                 <p>{search.error.message}</p>
