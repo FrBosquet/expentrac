@@ -193,6 +193,10 @@ test('invitation deletion cannot reset the sliding-hour limit; edits without new
   const second = await request.get('/api/notification/cron', { headers })
   expect(second.status()).toBe(200)
   expect((await second.json()).queued).toBe(0)
+  expect((await request.get('/api/notification/outbox')).status()).toBe(401)
+  const worker = await request.get('/api/notification/outbox', { headers })
+  expect(worker.status()).toBe(200)
+  expect((await worker.json()).pending).toBeGreaterThan(0)
   const notifications = await (
     await request.get('/api/notification', { headers: cookie('limit') })
   ).json()
