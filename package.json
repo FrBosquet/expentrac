@@ -26,7 +26,9 @@
     "migration:production": "node scripts/migrate-production.mjs",
     "test:emails": "node --import tsx scripts/test-emails.tsx",
     "test:maintenance": "node scripts/test-database.mjs node scripts/maintenance-test.mjs",
-    "migration:paydays": "node --import tsx scripts/backfill-paydays.cjs"
+    "migration:paydays": "node --import tsx scripts/backfill-paydays.cjs",
+    "migration:annual-months": "node scripts/repair-yearly-months.mjs",
+    "test:annual-months": "node scripts/test-database.mjs node scripts/repair-yearly-months-test.mjs"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
