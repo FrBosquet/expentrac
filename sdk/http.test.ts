@@ -33,7 +33,11 @@ test('date DTO fields are restored for domain calculations', async () => {
         id: 'c',
         userId: 'u',
         type: 'WORK',
-        periods: [{ from: '2026-10-14T00:00:00.000Z' }],
+        feeCents: null,
+        user: { id: 'u', name: null, image: null },
+        periods: [
+          { from: '2026-10-14T00:00:00.000Z', to: null, feeCents: 100 }
+        ],
         providers: [],
         shares: [],
         resources: []
@@ -74,4 +78,37 @@ test('paged reads forward the cursor and reject duplicate rows', async () => {
   await expect(allPages('contract', decode)).rejects.toMatchObject({
     message: 'Inconsistent pagination'
   })
+})
+
+test('nested accepted-share decoding preserves already restored dates', async () => {
+  const { share } = await import('./decode')
+  const raw = {
+    id: 'share',
+    fromId: 'owner',
+    toId: 'recipient',
+    accepted: true,
+    contract: {
+      id: 'loan',
+      userId: 'owner',
+      type: 'LOAN',
+      feeCents: 501,
+      user: { id: 'owner', name: 'Owner', image: null },
+      periods: [
+        {
+          from: '2026-01-15T00:00:00.000Z',
+          to: '2028-12-31T00:00:00.000Z',
+          feeCents: 1002
+        }
+      ],
+      providers: [],
+      shares: [],
+      resources: []
+    }
+  }
+  const decoded = share(raw)
+  expect(decoded.contract!.periods[0].from).toBeInstanceOf(Date)
+  expect(decoded.contract!.periods[0].from.toISOString()).toBe(
+    raw.contract.periods[0].from
+  )
+  expect(share(decoded).contract!.periods[0].from).toBeInstanceOf(Date)
 })
