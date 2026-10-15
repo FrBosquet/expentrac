@@ -1,6 +1,6 @@
 # Technology audit remediation
 
-Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline from 2026-10-13. Code remediation is implemented, production data has been migrated and the matching release is live. A real production backup was restored and rehearsed before cutover. See the [production release record](production-release.md). Remaining work includes real authenticated/provider smoke, scheduler execution monitoring, review of legacy reconciliation exceptions and any later destructive retirement. No manual email delivery was performed.
+Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline from 2026-10-13. Code remediation is implemented, production data has been migrated and the matching release is live. A real production backup was restored and rehearsed before cutover. See the [production release record](production-release.md). Remaining work includes provider delivery verification, scheduler execution monitoring, resolution of the remaining legacy business decisions and any later destructive retirement. No manual email delivery was performed.
 
 ## Agreed decisions
 
@@ -31,7 +31,7 @@ Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline fr
 | P2 blog | Metadata parsed independently of MDX; published inventory allowlist, request-memoized content, static pages and explicit 404 | Metadata/traversal tests plus built public page/unknown-slug browser checks |
 | P2 dependencies/toolchain | Staged framework/ORM/UI/email upgrades, pinned Node/pnpm, coherent lock, explicit checks/CI, unused dependencies removed | Frozen install; clean archived checkout install/build with fake env and unreachable DB; runtime audit clean; two unpatched development advisories documented |
 | P2 docs/config | AGENTS.md, current README/env template/reference, coherent TS/ESLint config, safe local Prisma wrappers and offline scripts | Local command bypass guards and optional payday dry-run/apply/idempotency tested |
-| Legacy retirement | Consumers inventoried; read-only equivalence/mapping tool and rollback/retirement procedure provided; all old tables retained | Restored-production reconciliation: 27 checked, six matching, 21 exceptions requiring review; no DROP TABLE or inferred imports |
+| Legacy retirement | Consumers inventoried; read-only equivalence/mapping tool and rollback/retirement procedure provided; all old tables retained | Record review: 25 migrated identities established; two historical-record decisions and three missing annual months remain; no DROP TABLE or inferred imports |
 
 ## Current stack and migration evidence
 
@@ -56,8 +56,8 @@ Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline fr
 
 Production migration and coordinated deployment completed on 2026-10-15. The actual backup was restored locally, all migrations rehearsed, traffic/cron stopped for the final backup and conversion, then the matching staged release was promoted and traffic/cron resumed. See [release evidence and recovery](production-release.md).
 
-1. Complete real Google OAuth and owner/recipient dashboard smoke with the user's login; verify an intended provider delivery. The first automatic worker execution returned HTTP 200.
-2. Review all 21 production legacy reconciliation exceptions, including mapping/import and historical scheduling decisions. Preserve legacy rows and private reports until resolved.
+1. The user confirmed the requested authenticated smoke works. Verify an intended provider delivery and continue monitoring the worker; its first automatic execution returned HTTP 200.
+2. Resolve the two historical subscription decisions and three missing annual billing months described in the [record-by-record legacy review](legacy-review.md). Migration provenance is established for 25 of 27 rows. Preserve legacy rows and private reports until the remaining business information is supplied.
 3. Monitor production connection usage, backlog and scheduler errors under real traffic. The per-process cap is not an aggregate capacity guarantee.
 4. Prepare destructive legacy retirement only after exception resolution, explicit import decisions and backup/restore review. Any rollback must restore both the old data units and matching application, accounting for intervening writes.
 5. Git commits remain local; a Git push has not been performed.

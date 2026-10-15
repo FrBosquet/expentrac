@@ -29,8 +29,12 @@ Before retiring tables:
 3. Save the reviewed report/mapping and take a restorable pre-retirement backup. Rehearse restore, row counts, owner/recipient access and financial totals against both application versions.
 4. Prepare a separate destructive migration only after review. Preserve the dump and mapping for the agreed retention period. Restore the backup with the compatible old application to recover; do not recreate empty tables as a rollback.
 
-No DROP TABLE migration is included because production equivalence and prior migration history are currently unverified. Integer-cent conversion and nonunique read indexes can be deployed while retaining these rows, using the production migration runner and maintenance procedure.
+No DROP TABLE migration is included because historical exceptions and retention decisions remain unresolved. Integer-cent conversion and nonunique read indexes can be deployed while retaining these rows, using the production migration runner and maintenance procedure.
 
 ## Production snapshot reviewed on 2026-10-15
 
 The real backup was restored into isolated localhost PostgreSQL and reconciliation checked 27 records: six matched, 21 require review. Private reports remain with the release backups outside Git; see the [release record](production-release.md). All legacy rows were retained through the production cents migration. No mappings were inferred, imports performed or tables dropped.
+
+## Record-by-record follow-up
+
+The [subsequent review](legacy-review.md) established migration provenance for 25 of 27 records using preserved IDs, owner/type/creation timestamps and the historical migration code. The initial 21 exceptions do not mean 21 missing migrations. Two missing-ID subscriptions need an owner decision, and three open annual schedules have no recoverable billing month. Current values and all legacy rows remain unchanged pending those answers.

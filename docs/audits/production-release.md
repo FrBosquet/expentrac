@@ -14,7 +14,7 @@ Deployed source commit: `d8a5702`. Vercel deployment: `dpl_5b9XviQqi8B1KyFDL3cG5
 - The guarded production runner took a fresh private backup, applied all pending migrations, and verified integer types, unchanged monetary row/non-null counts and exact expected cent totals. Contract, Period and retained Loan/Subscription money columns are now INTEGER cents. Independent checks found required outbox/invitation tables and zero failed migrations.
 - Promoted the prepared matching application while paused. The user confirmed Vercel's interactive resume; the project API verified `paused=false` and the correct production deployment.
 - Re-enabled cron: daily digest at 10:00 UTC, retry worker every five minutes. Scheduler definitions target the new deployment. The automatic outbox invocation at 07:30:35 UTC returned HTTP 200; the observed release logs contain no HTTP 5xx responses.
-- Browser smoke: homepage renders and hydrates; anonymous dashboard redirects home and the private contract API returns 401 (verified in runtime logs); Google sign-in reaches Google's login page with the correct production callback. A real authenticated callback/dashboard requires the user's Google login. No synthetic production user or financial record was created.
+- Browser smoke: homepage renders and hydrates; anonymous dashboard redirects home and the private contract API returns 401 (verified in runtime logs); Google sign-in reaches Google's login page with the correct production callback. The user subsequently confirmed the app works, completing the requested authenticated smoke check. No synthetic production user or financial record was created.
 
 ## Backups and reconciliation
 
@@ -24,9 +24,9 @@ Legacy reconciliation checked 27 records: six matched the scripted comparisons a
 
 ## Remaining verification and follow-up
 
-- Complete a real Google callback and owner/recipient dashboard smoke with the user's login. Test actual provider delivery through an intended product action; this release did not manually send emails or trigger the daily digest.
+- The user confirmed the requested authenticated smoke works. Actual provider delivery still needs an intended product action; this release did not manually send emails or trigger the daily digest.
 - Continue monitoring worker backlog/failures; the first automatic invocation returned HTTP 200. Actual provider delivery and the daily digest have not been manually triggered.
-- Review all 21 legacy reconciliation exceptions before deciding on import or retirement. Do not overwrite evolved current records from stale legacy snapshots.
+- The [follow-up legacy review](legacy-review.md) established 25 migrated identities. Resolve the two missing-record decisions and three missing annual months with the owner; preserve evolved current records and all legacy rows meanwhile.
 - Check aggregate connection use under actual concurrency. The per-process cap does not establish total deployment capacity.
 - Two unpatched development-only dependency advisories remain documented. Runtime auth initialization emits Node's DEP0169 dependency deprecation warning; observed sign-in requests succeeded. It is not an application request failure and has not been suppressed.
 - Implementation commits and this release record remain local until a separately approved Git push.
