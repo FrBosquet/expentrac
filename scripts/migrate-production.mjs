@@ -16,7 +16,12 @@ if (!connection)
   throw new Error(
     'Set EXPENTRAC_MIGRATION_URL explicitly to a direct PostgreSQL connection'
   )
-const target = new URL(connection)
+let target
+try {
+  target = new URL(connection)
+} catch {
+  throw new Error('Invalid migration URL; connection details are not logged')
+}
 if (!['postgres:', 'postgresql:'].includes(target.protocol))
   throw new Error('PostgreSQL connection required')
 const pgEnvironment = Object.fromEntries(

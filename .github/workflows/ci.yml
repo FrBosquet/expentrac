@@ -27,6 +27,7 @@ jobs:
       - run: pnpm test:db
       - run: pnpm test:queries
       - run: pnpm test:legacy
+      - run: pnpm test:maintenance
       - run: pnpm test:money
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium

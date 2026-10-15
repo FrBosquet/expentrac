@@ -22,7 +22,7 @@ const env = {
   POSTGRES_URL_NON_POOLING: 'postgresql://audit:audit@127.0.0.1:55432/audit',
   DATABASE_URL: 'postgresql://audit:audit@127.0.0.1:55432/audit',
   EXPENTRAC_TEST_DB: 'true',
-  RESEND_KEY: 're_local_test',
+  RESEND_KEY: '',
   CRON_SECRET: 'local-test-secret'
 }
 function run(command, args, quiet = false) {
