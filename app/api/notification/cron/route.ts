@@ -75,5 +75,8 @@ export const GET = async (req: Request) => {
   await prisma.notification.deleteMany({
     where: { createdAt: { lt: new Date(Date.now() - 30 * 86_400_000) } }
   })
+  await prisma.invitationEvent.deleteMany({
+    where: { createdAt: { lt: new Date(Date.now() - 86_400_000) } }
+  })
   return NextResponse.json({ day, queued, users: users.size, delivery })
 }

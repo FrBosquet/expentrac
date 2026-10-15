@@ -1,5 +1,7 @@
 'use client'
 
+import { useQueryScope } from '@store'
+
 import { Button } from '@components/ui/button'
 import {
   Dialog,
@@ -58,10 +60,14 @@ export const LoanEdit = ({
     }
   }
 
+  const viewerId = useQueryScope()
+  if (loan.userId !== viewerId) return null
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
+          aria-label="Edit loan"
           className={cn('p-2 h-auto', className)}
           variant={variant}
           onClick={() => {

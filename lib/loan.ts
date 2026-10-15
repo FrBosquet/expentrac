@@ -7,6 +7,7 @@ import { monthBeetween } from './dates'
 import { type Contract, type Provider } from './models'
 
 export type LoanFormData = {
+  payday?: string
   id?: string
   name: string
   fee: string

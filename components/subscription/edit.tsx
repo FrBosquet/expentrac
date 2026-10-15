@@ -1,5 +1,7 @@
 'use client'
 
+import { useQueryScope } from '@store'
+
 import { Button } from '@components/ui/button'
 import {
   Dialog,
@@ -58,11 +60,21 @@ export const SubEdit = ({
     }
   }
 
+  const viewerId = useQueryScope()
+  if (sub.userId !== viewerId) return null
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           className={cn('p-2 h-auto', className)}
+          aria-label="Edit subscription"
+          disabled={!sub.periods.isActive}
+          title={
+            sub.periods.isActive
+              ? 'Edit subscription'
+              : 'Resume before editing billing settings'
+          }
           variant={variant}
           onClick={() => {
             setOpen(true)

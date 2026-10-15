@@ -1,8 +1,10 @@
+import { updateContractLink } from '@lib/server/contract-relations'
+import { recordInvitations } from '@lib/server/invitations'
 import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { type LoanFormData } from '@lib/loan'
-import { notificationSdk } from '@lib/notification'
+import { notificationSdk, deliverNotifications } from '@lib/notification'
 import {
   type Contract,
   type Prisma,
@@ -11,7 +13,7 @@ import {
   type Share
 } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
-import { apiResponse } from '@lib/server/api'
+import { apiResponse, ApiError } from '@lib/server/api'
 import { contractInput, jsonObject } from '@lib/server/validation'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
 import { NextResponse } from 'next/server'
@@ -51,123 +53,129 @@ const handlePATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = (await contractInput(
-    await jsonObject(req),
-    CONTRACT_TYPE.LOAN,
-    userId
-  )) as unknown as LoanFormData
+  const raw = await jsonObject(req)
+  const notificationIds: string[] = []
+  const response = await prisma.$transaction(
+    async (db) => {
+      const loan = await db.contract.findUnique({ where: { id }, include })
 
-  const loan = await prisma.contract.findUnique({ where: { id }, include })
-
-  if (!loan) {
-    return NextResponse.json(
-      {
-        message: 'loan not found'
-      },
-      {
-        status: 404
-      }
-    )
-  }
-
-  if (userId !== loan?.userId) {
-    return NextResponse.json(
-      {
-        message: 'user does not own this resource'
-      },
-      {
-        status: 403
-      }
-    )
-  }
-
-  if (loan.type !== CONTRACT_TYPE.LOAN) {
-    return NextResponse.json(
-      { message: 'Invalid contract type' },
-      { status: 400 }
-    )
-  }
-
-  // SHARES
-  const sharedWithKeys = Object.entries(body)
-    .filter(([key]) => key.startsWith('sharedWith'))
-    .map(([_, value]) => value)
-  const keysToDelete = loan.shares
-    .filter((share) => !sharedWithKeys.includes(share.toId))
-    .map((share) => ({ id: share.id }))
-  const keysToCreate = sharedWithKeys.filter(
-    (id) => !loan.shares.some((share) => share.toId === id)
-  )
-
-  const updatedLoan = await prisma.contract.update({
-    where: {
-      id
-    },
-    data: {
-      name: body.name,
-      feeCents: eurosToCents(body.initial),
-      periods: {
-        updateMany: {
-          where: {
-            id: loan.periods[0].id
+      if (!loan) {
+        return NextResponse.json(
+          {
+            message: 'loan not found'
           },
-          data: {
-            to: new Date(body.endDate).toISOString(),
-            from: new Date(body.startDate).toISOString(),
-            feeCents: eurosToCents(body.fee)
+          {
+            status: 404
           }
-        }
-      },
-      providers: getProviderUpdateArgs(loan, body),
-      shares: {
-        createMany: {
-          data: keysToCreate.map((toId) => ({
-            fromId: userId,
-            toId
-          }))
+        )
+      }
+
+      if (userId !== loan?.userId) {
+        return NextResponse.json(
+          {
+            message: 'user does not own this resource'
+          },
+          {
+            status: 403
+          }
+        )
+      }
+
+      if (loan.type !== CONTRACT_TYPE.LOAN) {
+        return NextResponse.json(
+          { message: 'Invalid contract type' },
+          { status: 400 }
+        )
+      }
+
+      if (loan.periods.length !== 1)
+        throw new ApiError(
+          409,
+          'Loan periods require reconciliation before editing'
+        )
+
+      const body = (await contractInput(
+        raw,
+        CONTRACT_TYPE.LOAN,
+        userId,
+        db
+      )) as unknown as LoanFormData
+
+      // SHARES
+      const sharedWithKeys = Object.entries(body)
+        .filter(([key]) => key.startsWith('sharedWith'))
+        .map(([_, value]) => value)
+      const keysToDelete = loan.shares
+        .filter((share) => !sharedWithKeys.includes(share.toId))
+        .map((share) => ({ id: share.id }))
+      const keysToCreate = sharedWithKeys.filter(
+        (id) => !loan.shares.some((share) => share.toId === id)
+      )
+
+      await recordInvitations(db, userId, keysToCreate.length)
+
+      const updatedLoan = await db.contract.update({
+        where: {
+          id
         },
-        deleteMany: {
-          OR: keysToDelete
-        }
-      },
-      resources: {
-        upsert: {
-          where: {
-            id: loan.resources.find((resource) => resource.type === 'LINK')?.id,
-            type: 'LINK'
+        data: {
+          name: body.name,
+          feeCents: eurosToCents(body.initial),
+          periods: {
+            updateMany: {
+              where: {
+                id: loan.periods[0].id
+              },
+              data: {
+                to: new Date(body.endDate).toISOString(),
+                from: new Date(body.startDate).toISOString(),
+                feeCents: eurosToCents(body.fee),
+                payday: Number(body.payday)
+              }
+            }
           },
-          update: {
-            url: body.link
+          providers: getProviderUpdateArgs(loan, body),
+          shares: {
+            createMany: {
+              data: keysToCreate.map((toId) => ({
+                fromId: userId,
+                toId
+              }))
+            },
+            deleteMany: {
+              OR: keysToDelete
+            }
           },
-          create: {
-            name: 'link',
-            type: 'LINK',
-            url: body.link
-          }
-        }
-      }
-    },
-    include
-  })
-
-  await Promise.all(
-    keysToCreate.map(async (toId) => {
-      const share = updatedLoan.shares.find((share) => share.toId === toId)
-
-      if (!share) return
-
-      await notificationSdk.create(share.toId, true, {
-        type: NOTIFICATION_TYPE.LOAN_SHARE,
-        contract: updatedLoan as Contract,
-        share: { id: share.id }
+          resources: updateContractLink(loan.resources, body.link)
+        },
+        include
       })
-    })
-  )
 
-  return NextResponse.json(
-    { message: 'success', data: updatedLoan },
-    { status: 200 }
+      for (const toId of keysToCreate) {
+        const share = updatedLoan.shares.find((share) => share.toId === toId)
+        if (!share) continue
+        const notification = await notificationSdk.create(
+          share.toId,
+          true,
+          {
+            type: NOTIFICATION_TYPE.LOAN_SHARE,
+            contract: updatedLoan as Contract,
+            share: { id: share.id }
+          },
+          db
+        )
+        if (notification) notificationIds.push(notification.id)
+      }
+
+      return NextResponse.json(
+        { message: 'success', data: updatedLoan },
+        { status: 200 }
+      )
+    },
+    { isolationLevel: 'Serializable', timeout: 20000 }
   )
+  await deliverNotifications(notificationIds)
+  return response
 }
 
 const getProviderUpdateArgs = (

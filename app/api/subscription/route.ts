@@ -1,8 +1,9 @@
+import { recordInvitations } from '@lib/server/invitations'
 import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
-import { notificationSdk } from '@lib/notification'
+import { notificationSdk, deliverNotifications } from '@lib/notification'
 import { type Contract, type Prisma, prisma, type Share } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
 import { apiResponse } from '@lib/server/api'
@@ -33,85 +34,102 @@ const handlePOST = async (req: Request) => {
 
   const userId = session.user.id
 
-  const body = (await contractInput(
-    await jsonObject(req),
-    CONTRACT_TYPE.SUBSCRIPTION,
-    userId
-  )) as any
+  const raw = await jsonObject(req)
+  const notificationIds: string[] = []
+  const response = await prisma.$transaction(
+    async (db) => {
+      const body = (await contractInput(
+        raw,
+        CONTRACT_TYPE.SUBSCRIPTION,
+        userId,
+        db
+      )) as any
 
-  const keysToCreate = Object.entries(body)
-    .filter(([key]) => key.startsWith('sharedWith'))
-    .map(([_, value]) => value as string)
+      const keysToCreate = Object.entries(body)
+        .filter(([key]) => key.startsWith('sharedWith'))
+        .map(([_, value]) => value as string)
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
 
-  const isYearly = body.yearly === 'on'
+      const isYearly = body.yearly === 'on'
 
-  const newSub = await prisma.contract.create({
-    data: {
-      user: {
-        connect: {
-          id: userId
-        }
-      },
-      type: CONTRACT_TYPE.SUBSCRIPTION,
-      name: body.name,
-      feeCents: eurosToCents(body.initial),
-      periods: {
-        create: {
-          from: today,
-          feeCents: eurosToCents(body.fee),
-          payday: body.payday ? Number(body.payday) : undefined,
-          paymonth: body.paymonth !== undefined ? Number(body.paymonth) : null,
-          periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
-        }
-      },
-      providers: {
-        createMany: {
-          data: [
-            body.vendorId !== SELECT_OPTIONS.NONE
-              ? { as: PROVIDER_TYPE.VENDOR, providerId: body.vendorId }
-              : undefined,
-            body.platformId !== SELECT_OPTIONS.NONE
-              ? { as: PROVIDER_TYPE.PLATFORM, providerId: body.platformId }
-              : undefined
-          ].filter(Boolean) as Prisma.ProvidersOnContractCreateManyInput[]
-        }
-      },
-      shares: {
-        createMany: {
-          data: keysToCreate.map((toId) => ({
-            fromId: userId,
-            toId
-          }))
-        }
-      },
-      resources: {
-        create: {
-          name: 'link',
-          type: 'LINK',
-          url: body.link
-        }
-      }
-    },
-    include: subscriptionInclude
-  })
+      await recordInvitations(db, userId, keysToCreate.length)
 
-  await Promise.all(
-    newSub.shares.map(async (share) => {
-      await notificationSdk.create(share.toId, true, {
-        type: NOTIFICATION_TYPE.SUB_SHARE,
-        contract: newSub as Contract,
-        share: { id: share.id }
+      const newSub = await db.contract.create({
+        data: {
+          user: {
+            connect: {
+              id: userId
+            }
+          },
+          type: CONTRACT_TYPE.SUBSCRIPTION,
+          name: body.name,
+          feeCents: eurosToCents(body.initial),
+          periods: {
+            create: {
+              from: today,
+              feeCents: eurosToCents(body.fee),
+              payday: body.payday ? Number(body.payday) : undefined,
+              paymonth:
+                body.paymonth !== undefined ? Number(body.paymonth) : null,
+              periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
+            }
+          },
+          providers: {
+            createMany: {
+              data: [
+                body.vendorId !== SELECT_OPTIONS.NONE
+                  ? { as: PROVIDER_TYPE.VENDOR, providerId: body.vendorId }
+                  : undefined,
+                body.platformId !== SELECT_OPTIONS.NONE
+                  ? { as: PROVIDER_TYPE.PLATFORM, providerId: body.platformId }
+                  : undefined
+              ].filter(Boolean) as Prisma.ProvidersOnContractCreateManyInput[]
+            }
+          },
+          shares: {
+            createMany: {
+              data: keysToCreate.map((toId) => ({
+                fromId: userId,
+                toId
+              }))
+            }
+          },
+          resources: {
+            create: {
+              name: 'link',
+              type: 'LINK',
+              url: body.link
+            }
+          }
+        },
+        include: subscriptionInclude
       })
-    })
-  )
 
-  return NextResponse.json(
-    { message: 'success', data: newSub },
-    { status: 201 }
+      for (const share of newSub.shares) {
+        const notification = await notificationSdk.create(
+          share.toId,
+          true,
+          {
+            type: NOTIFICATION_TYPE.SUB_SHARE,
+            contract: newSub as Contract,
+            share: { id: share.id }
+          },
+          db
+        )
+        if (notification) notificationIds.push(notification.id)
+      }
+
+      return NextResponse.json(
+        { message: 'success', data: newSub },
+        { status: 201 }
+      )
+    },
+    { isolationLevel: 'Serializable', timeout: 20000 }
   )
+  await deliverNotifications(notificationIds)
+  return response
 }
 
 export const POST = (req: Request) => apiResponse(() => handlePOST(req))

@@ -1,5 +1,7 @@
 'use client'
 
+import { useQueryScope } from '@store'
+
 import { SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
 import {
@@ -56,10 +58,14 @@ export const LoanDelete = ({
     }
   }
 
+  const viewerId = useQueryScope()
+  if (loan.userId !== viewerId) return null
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
+          aria-label="Delete loan"
           className={cn('p-2 h-auto', className)}
           variant={variant}
           onClick={() => {

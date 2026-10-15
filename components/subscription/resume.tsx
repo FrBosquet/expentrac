@@ -1,5 +1,7 @@
 'use client'
 
+import { useQueryScope } from '@store'
+
 import { centsToEuros } from '@lib/money'
 import { FormField, SubmitButton } from '@components/Form'
 import { Button } from '@components/ui/button'
@@ -72,10 +74,14 @@ export const SubResume = ({
     return newDate > prevDate ? period : acc
   })
 
+  const viewerId = useQueryScope()
+  if (sub.userId !== viewerId) return null
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
+          aria-label="Resume subscription"
           className={cn('p-2 h-auto', className)}
           variant={variant}
           onClick={() => {

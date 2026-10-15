@@ -24,11 +24,23 @@ const job = {
 }
 
 beforeEach(() => {
+  process.env.RESEND_KEY = 'unit-test-only'
   jest.clearAllMocks()
   ;(Resend as jest.Mock).mockImplementation(() => ({ emails: { send } }))
   ;(prisma.emailOutbox.findMany as jest.Mock).mockResolvedValue([job])
   ;(prisma.emailOutbox.updateMany as jest.Mock).mockResolvedValue({ count: 1 })
   send.mockResolvedValue({ data: { id: 'sent' }, error: null })
+})
+
+afterEach(() => {
+  delete process.env.RESEND_KEY
+})
+
+test('missing delivery configuration leaves durable jobs pending without claiming them', async () => {
+  delete process.env.RESEND_KEY
+  expect(await deliverOutbox()).toEqual({ sent: 0, failed: 0, pending: 1 })
+  expect(prisma.emailOutbox.updateMany).not.toHaveBeenCalled()
+  expect(send).not.toHaveBeenCalled()
 })
 
 test('worker uses stable provider key and persists delivery', async () => {

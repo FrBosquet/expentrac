@@ -58,6 +58,7 @@ model User {
   contracts          Contract[]
   sharesSent         Share[]             @relation("SharesSent")
   sharesReceived     Share[]             @relation("SharesReceived")
+  invitationEvents   InvitationEvent[]
 }
 
 model VerificationToken {
@@ -266,4 +267,14 @@ model EmailOutbox {
   errorCode      String?
 
   @@index([status, nextAttemptAt])
+}
+
+// Keep invitation attempts after shares/contracts are removed, for a sliding-hour limit.
+model InvitationEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

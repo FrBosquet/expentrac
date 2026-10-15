@@ -12,6 +12,7 @@ jest.mock('@lib/server/outbox', () => ({
 jest.mock('@lib/prisma', () => ({
   prisma: {
     period: { findMany: jest.fn() },
+    invitationEvent: { deleteMany: jest.fn() },
     notification: { findUnique: jest.fn(), deleteMany: jest.fn() }
   }
 }))

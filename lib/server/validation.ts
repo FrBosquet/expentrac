@@ -1,6 +1,6 @@
 import { eurosToCents, centsToEuros } from '@lib/money'
 import { CONTRACT_TYPE } from '@lib/contract'
-import { prisma } from '@lib/prisma'
+import { prisma, type Prisma } from '@lib/prisma'
 import { SELECT_OPTIONS } from '@types'
 
 import { ApiError } from './api'
@@ -84,7 +84,8 @@ export function optionalUrl(value: unknown) {
 export async function contractInput(
   raw: Record<string, unknown>,
   type: CONTRACT_TYPE,
-  userId: string
+  userId: string,
+  db: Prisma.TransactionClient = prisma
 ) {
   const body: Record<string, unknown> = {
     ...raw,
@@ -122,7 +123,7 @@ export async function contractInput(
   const uniqueProviders = [...new Set(providerIds)]
   if (
     uniqueProviders.length &&
-    (await prisma.provider.count({
+    (await db.provider.count({
       where: { id: { in: uniqueProviders } }
     })) !== uniqueProviders.length
   )
@@ -138,21 +139,9 @@ export async function contractInput(
     throw new ApiError(400, 'Invalid share recipients')
   if (
     recipients.length &&
-    (await prisma.user.count({ where: { id: { in: recipients } } })) !==
+    (await db.user.count({ where: { id: { in: recipients } } })) !==
       recipients.length
   )
     throw new ApiError(400, 'Unknown share recipient')
-  if (
-    recipients.length &&
-    (await prisma.share.count({
-      where: {
-        fromId: userId,
-        createdAt: { gte: new Date(Date.now() - 3_600_000) }
-      }
-    })) +
-      recipients.length >
-      20
-  )
-    throw new ApiError(429, 'Invitation limit reached; try again later')
   return body
 }

@@ -1,8 +1,10 @@
+import { updateContractLink } from '@lib/server/contract-relations'
+import { recordInvitations } from '@lib/server/invitations'
 import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { PERIODICITY } from '@lib/dates'
-import { notificationSdk } from '@lib/notification'
+import { notificationSdk, deliverNotifications } from '@lib/notification'
 import {
   type Contract,
   type Prisma,
@@ -11,7 +13,7 @@ import {
   type Share
 } from '@lib/prisma'
 import { PROVIDER_TYPE } from '@lib/provider'
-import { apiResponse } from '@lib/server/api'
+import { apiResponse, ApiError } from '@lib/server/api'
 import { contractInput, jsonObject } from '@lib/server/validation'
 import { type SubFormData } from '@lib/sub'
 import { NOTIFICATION_TYPE, SELECT_OPTIONS } from '@types'
@@ -55,141 +57,137 @@ const handlePATCH = async (req: Request, { params }: Query) => {
 
   const userId = session.user.id
 
-  const body = (await contractInput(
-    await jsonObject(req),
-    CONTRACT_TYPE.SUBSCRIPTION,
-    userId
-  )) as unknown as SubFormData
-
-  const sub = await prisma.contract.findUnique({
-    where: { id },
-    include: subscriptionInclude
-  })
-
-  if (!sub) {
-    return NextResponse.json(
-      {
-        message: 'sub not found'
-      },
-      {
-        status: 404
-      }
-    )
-  }
-
-  if (userId !== sub?.userId) {
-    return NextResponse.json(
-      {
-        message: 'user does not own this resource'
-      },
-      {
-        status: 403
-      }
-    )
-  }
-
-  if (sub.type !== CONTRACT_TYPE.SUBSCRIPTION) {
-    return NextResponse.json(
-      { message: 'Invalid contract type' },
-      { status: 400 }
-    )
-  }
-
-  // SHARES
-  const sharedWithKeys = Object.entries(body)
-    .filter(([key]) => key.startsWith('sharedWith'))
-    .map(([_, value]) => value as string)
-  const keysToDelete = sub.shares
-    .filter((share) => !sharedWithKeys.includes(share.toId))
-    .map((share) => ({ id: share.id }))
-  const keysToCreate = sharedWithKeys.filter(
-    (id) => !sub.shares.some((share) => share.toId === id)
-  )
-
-  const isYearly = body.yearly === 'on'
-
-  const updatedSub = await prisma.contract.update({
-    where: {
-      id
-    },
-    data: {
-      name: body.name,
-      feeCents: eurosToCents(body.initial),
-      periods: {
-        updateMany: {
-          where: {
-            id: sub.periods[0].id
-          },
-          data: {
-            feeCents: eurosToCents(body.fee),
-            payday: body.payday ? Number(body.payday) : undefined,
-            paymonth:
-              body.paymonth !== undefined ? Number(body.paymonth) : null,
-            periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
-          }
-        }
-      },
-      providers: getProviderUpdateArgs(sub, body),
-      shares: {
-        createMany: {
-          data: keysToCreate.map((toId) => ({
-            fromId: userId,
-            toId
-          }))
-        },
-        deleteMany: {
-          OR: keysToDelete
-        }
-      },
-      resources:
-        sub.resources.length === 0
-          ? // THIS IS A FIX FOR THE CARRYOVER OF SUBSCRIPTIONS TO CONTRACTS NOT HAVING LINKS
-            {
-              create: {
-                name: 'link',
-                type: 'LINK',
-                url: body.link
-              }
-            }
-          : {
-              upsert: {
-                where: {
-                  id: sub.resources.find((resource) => resource.type === 'LINK')
-                    ?.id,
-                  type: 'LINK'
-                },
-                update: {
-                  url: body.link
-                },
-                create: {
-                  name: 'link',
-                  type: 'LINK',
-                  url: body.link
-                }
-              }
-            }
-    },
-    include: subscriptionInclude
-  })
-
-  await Promise.all(
-    keysToCreate.map(async (toId) => {
-      const share = updatedSub.shares.find((share) => share.toId === toId)
-
-      if (!share) return
-
-      await notificationSdk.create(share.toId, true, {
-        type: NOTIFICATION_TYPE.SUB_SHARE,
-        contract: updatedSub as Contract,
-        share: { id: share.id }
+  const raw = await jsonObject(req)
+  const notificationIds: string[] = []
+  const response = await prisma.$transaction(
+    async (db) => {
+      const sub = await db.contract.findUnique({
+        where: { id },
+        include: subscriptionInclude
       })
-    })
-  )
 
-  return NextResponse.json(
-    { message: 'success', data: updatedSub },
-    { status: 200 }
+      if (!sub) {
+        return NextResponse.json(
+          {
+            message: 'sub not found'
+          },
+          {
+            status: 404
+          }
+        )
+      }
+
+      if (userId !== sub?.userId) {
+        return NextResponse.json(
+          {
+            message: 'user does not own this resource'
+          },
+          {
+            status: 403
+          }
+        )
+      }
+
+      if (sub.type !== CONTRACT_TYPE.SUBSCRIPTION) {
+        return NextResponse.json(
+          { message: 'Invalid contract type' },
+          { status: 400 }
+        )
+      }
+
+      const activePeriods = sub.periods.filter((period) => period.to === null)
+      if (activePeriods.length !== 1)
+        throw new ApiError(
+          409,
+          'Resume the subscription before editing billing settings'
+        )
+      const activePeriod = activePeriods[0]
+
+      const body = (await contractInput(
+        raw,
+        CONTRACT_TYPE.SUBSCRIPTION,
+        userId,
+        db
+      )) as unknown as SubFormData
+
+      // SHARES
+      const sharedWithKeys = Object.entries(body)
+        .filter(([key]) => key.startsWith('sharedWith'))
+        .map(([_, value]) => value as string)
+      const keysToDelete = sub.shares
+        .filter((share) => !sharedWithKeys.includes(share.toId))
+        .map((share) => ({ id: share.id }))
+      const keysToCreate = sharedWithKeys.filter(
+        (id) => !sub.shares.some((share) => share.toId === id)
+      )
+
+      const isYearly = body.yearly === 'on'
+
+      await recordInvitations(db, userId, keysToCreate.length)
+
+      const updatedSub = await db.contract.update({
+        where: {
+          id
+        },
+        data: {
+          name: body.name,
+          feeCents: eurosToCents(body.initial),
+          periods: {
+            updateMany: {
+              where: {
+                id: activePeriod.id
+              },
+              data: {
+                feeCents: eurosToCents(body.fee),
+                payday: body.payday ? Number(body.payday) : undefined,
+                paymonth:
+                  body.paymonth !== undefined ? Number(body.paymonth) : null,
+                periodicity: isYearly ? PERIODICITY.YEARLY : PERIODICITY.MONTHLY
+              }
+            }
+          },
+          providers: getProviderUpdateArgs(sub, body),
+          shares: {
+            createMany: {
+              data: keysToCreate.map((toId) => ({
+                fromId: userId,
+                toId
+              }))
+            },
+            deleteMany: {
+              OR: keysToDelete
+            }
+          },
+          resources: updateContractLink(sub.resources, body.link)
+        },
+        include: subscriptionInclude
+      })
+
+      for (const toId of keysToCreate) {
+        const share = updatedSub.shares.find((share) => share.toId === toId)
+        if (!share) continue
+        const notification = await notificationSdk.create(
+          share.toId,
+          true,
+          {
+            type: NOTIFICATION_TYPE.SUB_SHARE,
+            contract: updatedSub as Contract,
+            share: { id: share.id }
+          },
+          db
+        )
+        if (notification) notificationIds.push(notification.id)
+      }
+
+      return NextResponse.json(
+        { message: 'success', data: updatedSub },
+        { status: 200 }
+      )
+    },
+    { isolationLevel: 'Serializable', timeout: 20000 }
   )
+  await deliverNotifications(notificationIds)
+  return response
 }
 
 const getProviderUpdateArgs = (

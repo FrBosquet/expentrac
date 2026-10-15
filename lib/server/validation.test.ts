@@ -70,13 +70,20 @@ test('unknown relations and self-sharing are rejected before contract writes', a
     )
   ).rejects.toMatchObject({ status: 400 })
 })
-test('share invitation bursts are limited', async () => {
-  ;(prisma.share.count as jest.Mock).mockResolvedValue(20)
+test('more than twenty recipients in one mutation are rejected', async () => {
   await expect(
     contractInput(
-      { ...loan, 'sharedWith:0': 'recipient' },
+      {
+        ...loan,
+        ...Object.fromEntries(
+          Array.from({ length: 21 }, (_, index) => [
+            `sharedWith:${index}`,
+            `recipient-${index}`
+          ])
+        )
+      },
       CONTRACT_TYPE.LOAN,
       'owner'
     )
-  ).rejects.toMatchObject({ status: 429 })
+  ).rejects.toMatchObject({ status: 400 })
 })

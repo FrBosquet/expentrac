@@ -5,12 +5,12 @@ import { Resend } from 'resend'
 const RETRY_WINDOW = 23 * 60 * 60 * 1000
 const MAX_ATTEMPTS = 5
 
-export async function deliverOutbox(id?: string) {
+export async function deliverOutbox(id?: string | string[]) {
   const deadline = Date.now() + 45_000
   const now = new Date()
   const jobs = await prisma.emailOutbox.findMany({
     where: {
-      id,
+      id: Array.isArray(id) ? { in: id } : id,
       status: { in: ['pending', 'sending'] },
       nextAttemptAt: { lte: now },
       OR: [{ leaseUntil: null }, { leaseUntil: { lt: now } }]
@@ -19,6 +19,8 @@ export async function deliverOutbox(id?: string) {
     take: 50
   })
   const metrics = { sent: 0, failed: 0, pending: 0 }
+  if (!jobs.length) return metrics
+  if (!process.env.RESEND_KEY) return { ...metrics, pending: jobs.length }
   const resend = new Resend(process.env.RESEND_KEY)
   // Sequential delivery bounds connections and external API concurrency.
   for (const job of jobs) {
@@ -29,6 +31,8 @@ export async function deliverOutbox(id?: string) {
     const claim = await prisma.emailOutbox.updateMany({
       where: {
         id: job.id,
+        attempts: job.attempts,
+        nextAttemptAt: { lte: new Date() },
         status: { in: ['pending', 'sending'] },
         OR: [{ leaseUntil: null }, { leaseUntil: { lt: now } }]
       },
@@ -64,7 +68,12 @@ export async function deliverOutbox(id?: string) {
           subject: job.subject,
           html: job.html
         },
-        { idempotencyKey: job.id, signal: AbortSignal.timeout(15_000) }
+        {
+          idempotencyKey: job.id,
+          signal: AbortSignal.timeout(
+            Math.max(1, Math.min(15_000, deadline - Date.now()))
+          )
+        }
       )
       if (result.error || !result.data) throw new Error('delivery_failed')
       await prisma.emailOutbox.update({

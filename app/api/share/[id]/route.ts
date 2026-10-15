@@ -1,8 +1,8 @@
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
-import { notificationSdk } from '@lib/notification'
+import { notificationSdk, deliverNotifications } from '@lib/notification'
 import { type Contract, prisma } from '@lib/prisma'
-import { apiResponse } from '@lib/server/api'
+import { apiResponse, ApiError } from '@lib/server/api'
 import { NOTIFICATION_TYPE } from '@types'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -119,16 +119,34 @@ const handlePATCH = async (
     )
   }
 
-  const updatedShare = await prisma.share.update({
-    where: { id },
-    data: { accepted },
-    include
-  })
-
-  await notificationSdk.create(userId, true, {
-    type: getType(share.contract.type, accepted),
-    contract: share.contract as Contract
-  })
+  const notificationIds: string[] = []
+  const updatedShare = await prisma.$transaction(
+    async (db) => {
+      const changed = await db.share.updateMany({
+        where: { id, toId: userId, accepted: null },
+        data: { accepted }
+      })
+      if (!changed.count)
+        throw new ApiError(409, 'Invitation already answered or removed')
+      const updated = await db.share.findUniqueOrThrow({
+        where: { id },
+        include
+      })
+      const notification = await notificationSdk.create(
+        userId,
+        true,
+        {
+          type: getType(updated.contract.type, accepted),
+          contract: updated.contract as Contract
+        },
+        db
+      )
+      if (notification) notificationIds.push(notification.id)
+      return updated
+    },
+    { isolationLevel: 'Serializable', timeout: 20000 }
+  )
+  await deliverNotifications(notificationIds)
 
   return NextResponse.json(
     { message: 'Updated', data: updatedShare },

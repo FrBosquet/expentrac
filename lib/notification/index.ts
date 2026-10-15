@@ -1,4 +1,4 @@
-import { prisma } from '@lib/prisma'
+import { prisma, type Prisma } from '@lib/prisma'
 import { deliverOutbox } from '@lib/server/outbox'
 import { NOTIFICATION_TYPE } from '@types'
 
@@ -36,9 +36,10 @@ type NotificationData =
 const create = async (
   userId: string,
   shouldEmail: boolean,
-  data: NotificationData
+  data: NotificationData,
+  transaction?: Prisma.TransactionClient
 ) => {
-  const user = await prisma.user.findUnique({
+  const user = await (transaction ?? prisma).user.findUnique({
     where: {
       id: userId
     }
@@ -49,7 +50,7 @@ const create = async (
 
   const { type } = data
 
-  const notification = await prisma.$transaction(async (db) => {
+  const persist = async (db: Prisma.TransactionClient) => {
     switch (type) {
       case NOTIFICATION_TYPE.GENERIC: {
         return await handleGeneric(user, shouldEmail, data, db)
@@ -88,8 +89,17 @@ const create = async (
         return await handleDaily(user, shouldEmail, data, db)
       }
     }
-  })
-  if (notification && shouldEmail) {
+  }
+  const notification = transaction
+    ? await persist(transaction)
+    : await prisma.$transaction(persist)
+  // Cron queues every digest before entering its one bounded delivery pass.
+  if (
+    notification &&
+    shouldEmail &&
+    !transaction &&
+    type !== NOTIFICATION_TYPE.DAILY
+  ) {
     try {
       await deliverOutbox(notification.id)
     } catch {
@@ -102,4 +112,14 @@ const create = async (
 
 export const notificationSdk = {
   create
+}
+
+export async function deliverNotifications(ids: string[]) {
+  if (!ids.length) return
+  try {
+    await deliverOutbox(ids)
+  } catch {
+    // eslint-disable-next-line no-console -- private delivery state remains in the outbox
+    console.error('Email delivery deferred; mutation was committed')
+  }
 }

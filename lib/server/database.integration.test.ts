@@ -1,11 +1,31 @@
 import { notificationSdk } from '@lib/notification'
 import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
+import { recordInvitations } from './invitations'
+import { deliverOutbox } from './outbox'
+
+jest.mock('@lib/auth', () => ({ authOptions: {} }))
 
 let failRender = false
 jest.mock('@lib/server/outbox', () => ({ deliverOutbox: jest.fn() }))
 jest.mock('@lib/email', () => ({
   emailSdk: {
+    sendDailyEmail: async (
+      _to: string,
+      _name: string,
+      _loans: unknown,
+      _subs: unknown,
+      db: typeof prisma,
+      id: string
+    ) =>
+      db.emailOutbox.create({
+        data: {
+          id,
+          to: 'fixture@example.test',
+          subject: 'Daily fixture',
+          html: '<p>Daily</p>'
+        }
+      }),
     sendGenericEmail: async (
       _to: string,
       _name: string,
@@ -78,5 +98,88 @@ suite('isolated database transactions', () => {
     await expect(prisma.emailOutbox.create({ data })).rejects.toMatchObject({
       code: 'P2002'
     })
+  })
+
+  test('render failure rolls back the domain mutation and invitation accounting too', async () => {
+    failRender = true
+    await expect(
+      prisma.$transaction(
+        async (db) => {
+          await recordInvitations(db, 'fixture-user', 1)
+          await db.contract.create({
+            data: {
+              id: 'must-rollback',
+              userId: 'fixture-user',
+              name: 'Rollback fixture',
+              type: 'LOAN'
+            }
+          })
+          await notificationSdk.create(
+            'fixture-user',
+            true,
+            { type: NOTIFICATION_TYPE.GENERIC, message: 'Rollback all' },
+            db
+          )
+        },
+        { isolationLevel: 'Serializable' }
+      )
+    ).rejects.toThrow('render failure')
+    failRender = false
+    expect(
+      await prisma.contract.findUnique({ where: { id: 'must-rollback' } })
+    ).toBeNull()
+    expect(await prisma.invitationEvent.count()).toBe(0)
+  })
+
+  test('invitation quota counts persisted attempts and leaves existing recipients free', async () => {
+    await prisma.$transaction(
+      (db) => recordInvitations(db, 'fixture-user', 20),
+      { isolationLevel: 'Serializable' }
+    )
+    await expect(
+      prisma.$transaction((db) => recordInvitations(db, 'fixture-user', 0))
+    ).resolves.toBeUndefined()
+    await expect(
+      prisma.$transaction((db) => recordInvitations(db, 'fixture-user', 1), {
+        isolationLevel: 'Serializable'
+      })
+    ).rejects.toMatchObject({ status: 429 })
+    expect(await prisma.invitationEvent.count()).toBe(20)
+  })
+
+  test('concurrent invitation bursts cannot exceed the quota', async () => {
+    await prisma.user.create({ data: { id: 'concurrent-owner' } })
+    const outcomes = await Promise.allSettled(
+      [1, 2].map(() =>
+        prisma.$transaction(
+          (db) => recordInvitations(db, 'concurrent-owner', 12),
+          { isolationLevel: 'Serializable' }
+        )
+      )
+    )
+    expect(
+      outcomes.filter((outcome) => outcome.status === 'fulfilled')
+    ).toHaveLength(1)
+    expect(
+      await prisma.invitationEvent.count({
+        where: { userId: 'concurrent-owner' }
+      })
+    ).toBe(12)
+  })
+
+  test('daily digests enqueue without a per-user delivery pass', async () => {
+    jest.clearAllMocks()
+    await notificationSdk.create('fixture-user', true, {
+      type: NOTIFICATION_TYPE.DAILY,
+      day: '2026-10-15',
+      loans: [],
+      subs: []
+    })
+    expect(
+      await prisma.emailOutbox.findUnique({
+        where: { id: 'daily/fixture-user/2026-10-15' }
+      })
+    ).not.toBeNull()
+    expect(deliverOutbox).not.toHaveBeenCalled()
   })
 })
