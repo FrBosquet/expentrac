@@ -3,6 +3,7 @@ import { prisma } from '@lib/prisma'
 import { NOTIFICATION_TYPE } from '@types'
 import { recordInvitations } from './invitations'
 import { deliverOutbox } from './outbox'
+import { createAuthUser } from './auth-user'
 
 jest.mock('@lib/auth', () => ({ authOptions: {} }))
 
@@ -10,6 +11,22 @@ let failRender = false
 jest.mock('@lib/server/outbox', () => ({ deliverOutbox: jest.fn() }))
 jest.mock('@lib/email', () => ({
   emailSdk: {
+    sendWelcome: async (
+      _to: string,
+      _name: string,
+      db: typeof prisma,
+      id: string
+    ) => {
+      if (failRender) throw new Error('render failure')
+      return db.emailOutbox.create({
+        data: {
+          id,
+          to: 'fixture@example.test',
+          subject: 'Welcome fixture',
+          html: '<p>Welcome</p>'
+        }
+      })
+    },
     sendDailyEmail: async (
       _to: string,
       _name: string,
@@ -181,5 +198,39 @@ suite('isolated database transactions', () => {
       })
     ).not.toBeNull()
     expect(deliverOutbox).not.toHaveBeenCalled()
+  })
+
+  test('new OAuth users and welcome work commit together without provider delivery', async () => {
+    jest.clearAllMocks()
+    const user = await createAuthUser({
+      email: 'auth-fixture@example.test',
+      name: 'Auth fixture',
+      image: null,
+      emailVerified: null
+    })
+    expect(
+      await prisma.emailOutbox.findUnique({
+        where: { id: `welcome/${user.id}` }
+      })
+    ).not.toBeNull()
+    expect(deliverOutbox).not.toHaveBeenCalled()
+  })
+
+  test('welcome rendering failure cannot leave a new unlinked OAuth user behind', async () => {
+    failRender = true
+    await expect(
+      createAuthUser({
+        email: 'auth-rollback@example.test',
+        name: 'Rollback fixture',
+        image: null,
+        emailVerified: null
+      })
+    ).rejects.toThrow('render failure')
+    failRender = false
+    expect(
+      await prisma.user.findUnique({
+        where: { email: 'auth-rollback@example.test' }
+      })
+    ).toBeNull()
   })
 })

@@ -3,10 +3,10 @@ import { prisma } from '@lib/prisma'
 import { type AuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
-import { emailSdk } from './email'
+import { createAuthUser } from './server/auth-user'
 import { deliverOutbox } from './server/outbox'
 
-const adapter = PrismaAdapter(prisma)
+const adapter = { ...PrismaAdapter(prisma), createUser: createAuthUser }
 
 export const authOptions: AuthOptions = {
   adapter,
@@ -32,12 +32,6 @@ export const authOptions: AuthOptions = {
   events: {
     async createUser(message) {
       if (message.user.email) {
-        await emailSdk.sendWelcome(
-          message.user.email,
-          message.user.name!,
-          prisma,
-          `welcome/${message.user.id}`
-        )
         try {
           await deliverOutbox(`welcome/${message.user.id}`)
         } catch {
