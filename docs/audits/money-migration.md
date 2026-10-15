@@ -10,6 +10,27 @@ Splits operate on each payment's integer cents. The owner receives the first rem
 
 ## Production sequence — not executed
 
+The release entry point is `scripts/migrate-production.mjs`. It never loads `.env` or `.env.local`: inject `EXPENTRAC_MIGRATION_URL` securely with a direct PostgreSQL connection. Run from the repository root with pinned Node/pnpm versions. Preserve required SSL settings. Install PostgreSQL client tools at least as new as the server.
+
+```sh
+# Read-only inspection: no schema or data writes.
+pnpm migration:production
+```
+
+First run on an isolated restored copy. The report contains money counts, invalid values, expected rounded cent totals, duplicate share groups and legacy inventory. Invalid money or mixed units cause a nonzero exit. Counts do not establish legacy equivalence: separately reconcile Loans/Subscriptions/UserProviders against Contracts, periods, provider links and acceptance states. The runner preserves all legacy rows.
+
+After stopping application traffic and cron, set `EXPENTRAC_MAINTENANCE_CONFIRMED=true`, `EXPENTRAC_RESTORE_REHEARSED=true` (only after rehearsal), and `EXPENTRAC_MIGRATION_BACKUP_DIR` to a **new** directory outside the repository on durable encrypted storage with sufficient space.
+
+```sh
+pnpm migration:production --apply
+```
+
+Apply takes an advisory lock against concurrent runners, repeats inspection, exclusively creates a private backup directory, writes `before.json`, takes `before.dump` with `pg_dump`, applies **all pending checked-in Prisma migrations**, verifies integer column types, unchanged row/non-null counts and exact expected cent totals, and writes `after.json`. Credentials go to PostgreSQL tools through environment variables, never command arguments or reports. Existing backup directories are rejected. Prisma history prevents conversion from running twice; already converted integers are inspected in cents. Failed backups stop deployment. Later failures leave the backup intact and return nonzero. Preserve the dump securely: it contains private application data.
+
+The advisory lock prevents simultaneous runners, not application writes: enforce maintenance operationally. Counts/totals do not replace a restore rehearsal or application smoke checks. On failure, keep traffic stopped and inspect Prisma migration history privately before retrying. Do not mark a failed migration applied without verifying its transaction state.
+
+Recovery: restore `before.dump` using `pg_restore --no-owner --no-acl --exit-on-error --dbname <isolated-recovery-database>` into an empty replacement database with secure credential injection. Verify it, switch the previous application version to that database, then reopen traffic. Never blindly restore over a live database. The dump includes migration history, so units and history recover together. A down migration cannot recover discarded fractional cents.
+
 1. Confirm provider/server version, available connections, backup retention and a successful restore into an isolated database. Confirm restored row counts and sums before continuing.
 2. Run a read-only reconciliation against the restored copy: counts, monetary ranges, rounding deltas, orphan/duplicate shares and legacy→Contract equivalence. Review every exception. A synthetic fixture does not validate actual production data.
 3. Schedule a maintenance window and disable writes/financial reads. This migration changes units in place: old application code cannot run against converted columns.

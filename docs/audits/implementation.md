@@ -37,6 +37,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 ## Remaining work
 
+- Production migration runner added: explicit direct URL, read-only inspection by default, exclusive private backup, maintenance/restore attestations, deploy and post-conversion counts/totals. Its real backup is restored in the synthetic money fixture; repeated deployment checks prevent double conversion. Production execution remains a release step.
+
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.
 - Reproducible Node/pnpm/CI baseline and patched supported framework; Next 14→15→16 / React 19.
 - Common browser transport; React Query for all remote dashboard resources; session-scoped cache and mutations.

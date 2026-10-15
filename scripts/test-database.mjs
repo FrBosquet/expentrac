@@ -81,6 +81,18 @@ try {
     )
     env.TEST_DUMP_DIRECTORY = directory
     await run(process.execPath, ['scripts/money-migration-test.mjs', 'seed'])
+    env.EXPENTRAC_MIGRATION_URL = env.POSTGRES_URL_NON_POOLING
+    env.EXPENTRAC_MIGRATION_BACKUP_DIR = join(directory, 'release-backup')
+    await run(process.execPath, ['scripts/migrate-production.mjs'], true)
+    await run(process.execPath, [
+      'scripts/money-migration-test.mjs',
+      'preflight'
+    ])
+    env.EXPENTRAC_MAINTENANCE_CONFIRMED = 'true'
+    env.EXPENTRAC_RESTORE_REHEARSED = 'true'
+    await run(process.execPath, ['scripts/migrate-production.mjs', '--apply'])
+    env.EXPENTRAC_MIGRATION_BACKUP_DIR = join(directory, 'repeat-backup')
+    await run(process.execPath, ['scripts/migrate-production.mjs', '--apply'])
   }
   await run(
     process.execPath,
