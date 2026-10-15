@@ -1,4 +1,5 @@
-import { DashboardDataBoundary } from '@components/dashboard/data-boundary'
+import { PrivateHydration } from '@components/dashboard/private-hydration'
+import { prefetchDashboard } from '@lib/server/dashboard-prefetch'
 import { DashboardLayout } from '@components/NavigationMenu'
 import { Toaster } from '@components/ui/sonner'
 import { TooltipProvider } from '@components/ui/tooltip'
@@ -16,14 +17,17 @@ export default async function Layout({
 }) {
   const data = await getServerSession(authOptions)
   if (!hasUser(data)) redirect('/')
+  const state = await prefetchDashboard(['notifications'])
   return (
-    <StoreProvider userId={data.user.id}>
-      <TooltipProvider delayDuration={75}>
-        <DashboardLayout>
-          <Toaster />
-          <DashboardDataBoundary>{children}</DashboardDataBoundary>
-        </DashboardLayout>
-      </TooltipProvider>
+    <StoreProvider session={data}>
+      <PrivateHydration state={state}>
+        <TooltipProvider delayDuration={75}>
+          <DashboardLayout>
+            <Toaster />
+            {children}
+          </DashboardLayout>
+        </TooltipProvider>
+      </PrivateHydration>
     </StoreProvider>
   )
 }

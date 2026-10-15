@@ -2,6 +2,23 @@
 
 Fecha: 13 de octubre de 2026. Análisis estático del checkout actual. No se modifica código, dependencias ni datos. Se ha leído `.cursor/REFERENCE.md`; no se ha encontrado un `AGENTS.md` en el repositorio. Las instrucciones globales proporcionadas en la conversación siguen aplicando.
 
+## Revisión de implementación — 15 de octubre de 2026
+
+Las secciones originales conservan el análisis histórico del 13 de octubre. El checkout ya tenía parte de la migración al comenzar esta revisión. Se ha completado el consumo privado mediante React Query v5, conservando la UI actual y, por elección del usuario, prefetch servidor con hidratación inicial.
+
+- `lib/server/dashboard-prefetch.ts` utiliza servicios autorizados de `lib/server/reads.ts`, DTOs saneados y un QueryClient nuevo por petición. Lee todas las páginas antes de hidratar una lista completa; no utiliza HTTP interno ni SDK desde RSC.
+- El shell precarga notificaciones para la campana. Los layouts de cada recurso precargan contratos/shares, perfil, catálogo o relaciones según la pantalla. `PrivateHydration` filtra los datos por la sesión actual antes de `HydrationBoundary`.
+- `lib/query-policy.ts` mantiene un cliente estable por sesión en el navegador, incluso cuando React descarta un render inicial suspendido. Logout y cambio de cuenta cancelan y borran la caché anterior. SSR nunca comparte ese cliente.
+- `hooks/resources.ts` centraliza queries y mutations. WORK se deriva de la lista canónica de contratos; ya no hay una copia independiente `contracts/WORK`. Perfil y catálogo tienen cinco minutos de frescura, notificaciones veinte segundos y contratos/shares un minuto; retención de cinco minutos. Sólo se reintentan lecturas con errores transitorios y nunca escrituras automáticamente.
+- Las mutations exponen `isPending` y errores al UI, conservan borradores al fallar y esperan la invalidación de recursos dependientes. Se han retirado los lectores laborales y formularios servidor obsoletos. Zustand sólo conserva la fecha.
+- Accept/reject confirma share y acknowledgement de la invitación en una transacción servidor; el cliente realiza una sola mutation. Ack automático expone error y reintento. Se conserva la entrega de emails posterior al commit.
+- Hay skeletons de página, detalle, perfil, formularios, catálogo y resultados de búsqueda. Los refetches conservan datos existentes, muestran actualización en curso y ofrecen recuperación del error. El catálogo de proveedores es compartido por todos los formularios.
+- Búsquedas de usuarios y marcas utilizan debounce, keys por término/sesión y AbortSignal. Se han corregido el nombre accesible del selector y el estilo de items `data-disabled=false`, que impedía seleccionar resultados con el cmdk actual.
+
+Validación: `pnpm check`, `pnpm test:db`, `pnpm build` y el suite de navegador contra PostgreSQL desechable en localhost. Las pruebas cubren permisos existentes, rollback de share/ack, aislamiento de SSR y de cuentas, ausencia de lecturas cliente duplicadas al hidratar, frescura después de mutations, errores/refetch sin perder contenido, borradores y búsquedas con respuestas fuera de orden. Las medidas de localhost son sintéticas; no se afirma una mejora de rendimiento en producción. Siguen pendientes la comprobación real de OAuth, Brandfetch/email y despliegue con datos de producción.
+
+El patrón de hidratación sigue la [guía oficial de TanStack para App Router](https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr); los datos saneados conservan fechas compatibles con React Flight y con la restauración de fechas del SDK HTTP.
+
 ## Resultado
 
 React Query está instalado y tiene un provider en el dashboard, pero **sólo existe un `useQuery` y ninguna `useMutation`**. La mayoría de datos remotos se cargan en un layout RSC, se copian a Zustand al montar y se actualizan manualmente después de cada escritura. Perfil y contratos laborales usan además RSC y Server Actions. Hay tres mecanismos de actualización con distinta frescura y gestión de errores.

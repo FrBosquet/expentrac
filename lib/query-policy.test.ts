@@ -1,5 +1,11 @@
 import { QueryObserver } from '@tanstack/react-query'
-import { createQueryClient, invalidateResources, keys } from './query-policy'
+import {
+  createQueryClient,
+  invalidateResources,
+  keys,
+  getSessionQueryClient,
+  clearSessionQueryClient
+} from './query-policy'
 
 test('writes refresh dependent resources without invalidating another account or catalog', async () => {
   const client = createQueryClient()
@@ -79,4 +85,31 @@ test('only transient failures retry and mutations never retry automatically', ()
   }
   expect(client.getDefaultOptions().mutations?.retry).toBe(false)
   client.clear()
+})
+
+test('browser client survives render retries while account changes clear the old cache', () => {
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: {} })
+  try {
+    const owner = getSessionQueryClient('owner')
+    const key = keys.resource('owner', 'contracts')
+    owner.setQueryData(key, ['private'])
+    expect(getSessionQueryClient('owner')).toBe(owner)
+    const recipient = getSessionQueryClient('recipient')
+    expect(recipient).not.toBe(owner)
+    expect(owner.getQueryData(key)).toBeUndefined()
+    expect(recipient.getQueryData(key)).toBeUndefined()
+    clearSessionQueryClient()
+    expect(getSessionQueryClient('recipient')).not.toBe(recipient)
+  } finally {
+    clearSessionQueryClient()
+    if (original) Object.defineProperty(globalThis, 'window', original)
+    else Reflect.deleteProperty(globalThis, 'window')
+  }
+})
+
+test('server renders never share a query client even for the same account', () => {
+  expect(getSessionQueryClient('owner')).not.toBe(
+    getSessionQueryClient('owner')
+  )
 })

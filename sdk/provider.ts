@@ -1,4 +1,4 @@
-import { type Brand } from '@components/BrandAutocomplete'
+import { type Brand } from './brands'
 
 import { provider } from './decode'
 import { allPages, envelope, request } from './http'

@@ -1,7 +1,6 @@
 'use client'
 
-import { useProviders } from '@components/provider/context'
-import { ProviderSelect } from '@components/ProviderSelect'
+import { ProviderInput } from '@components/provider-input'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
 import { Label } from '@components/ui/label'
@@ -47,12 +46,6 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
   const [sharedWith, setSharedWith] = useState<PublicUser[]>(
     loan?.shares.data.map(({ to }) => to) ?? []
   )
-  const { providers } = useProviders()
-
-  const brandOptions = providers.map((provider) => ({
-    value: provider.id,
-    label: provider.name
-  }))
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target
@@ -121,10 +114,9 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
             <Label className="text-center text-xs" htmlFor="vendorId">
               Vendor
             </Label>
-            <ProviderSelect
+            <ProviderInput
               required
               defaultValue={loan?.providers.vendor?.id}
-              items={brandOptions}
               name="vendorId"
             />
           </span>
@@ -133,10 +125,9 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
             <Label className="text-center text-xs" htmlFor="platformId">
               Platform
             </Label>
-            <ProviderSelect
+            <ProviderInput
               required
               defaultValue={loan?.providers.platform?.id}
-              items={brandOptions}
               name="platformId"
             />
           </span>
@@ -145,10 +136,9 @@ export const LoanForm = ({ loan, onSubmit, disabled = false }: Props) => {
             <Label className="text-center text-xs" htmlFor="lenderId">
               Lender
             </Label>
-            <ProviderSelect
+            <ProviderInput
               required
               defaultValue={loan?.providers.lender?.id}
-              items={brandOptions}
               name="lenderId"
             />
           </span>

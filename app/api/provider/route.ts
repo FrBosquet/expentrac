@@ -1,8 +1,8 @@
 import { authOptions } from '@lib/auth'
 import { fetchBrandInfo } from '@lib/brandfetch'
 import { prisma } from '@lib/prisma'
-import { apiResponse, requireUser } from '@lib/server/api'
-import { pageOptions } from '@lib/server/pagination'
+import { apiResponse } from '@lib/server/api'
+import { readProviders } from '@lib/server/reads'
 import { identifier, jsonObject, text } from '@lib/server/validation'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -58,11 +58,4 @@ const handlePOST = async (req: Request) => {
 
 export const POST = (req: Request) => apiResponse(() => handlePOST(req))
 
-export const GET = (req: Request) =>
-  apiResponse(async () => {
-    await requireUser(req)
-    return prisma.provider.findMany({
-      orderBy: [{ name: 'asc' }, { id: 'asc' }],
-      ...pageOptions(req)
-    })
-  })
+export const GET = (req: Request) => apiResponse(() => readProviders(req))

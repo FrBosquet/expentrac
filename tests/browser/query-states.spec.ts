@@ -10,9 +10,15 @@ test.beforeEach(async ({ context }) => {
   ])
 })
 
-test('cold detail displays a skeleton while data loads, then the confirmed contract', async ({
-  page
+test('an uncached account shows a skeleton while its first query loads', async ({
+  page,
+  context
 }) => {
+  await page.goto('/dashboard/loans/browser-loan')
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toBeVisible()
+  await page.waitForLoadState('networkidle')
   let release!: () => void
   const gate = new Promise<void>((resolve) => {
     release = resolve
@@ -20,20 +26,37 @@ test('cold detail displays a skeleton while data loads, then the confirmed contr
   await page.route('**/api/contract?**', async (route) => {
     const response = await route.fetch()
     await gate
-    await route.fulfill({ response })
+    await route.fulfill({ response }).catch(() => {})
   })
-  await page.goto('/dashboard/loans/browser-loan')
-  await expect(page.getByRole('status', { name: 'Loading page' })).toBeVisible()
-  await expect(
-    page.getByRole('heading', { name: 'Private owner loan' })
-  ).not.toBeVisible()
-  release()
-  await expect(
-    page.getByRole('heading', { name: 'Private owner loan' })
-  ).toBeVisible()
-  await expect(
-    page.getByRole('status', { name: 'Loading page' })
-  ).not.toBeVisible()
+  try {
+    await context.clearCookies()
+    await context.addCookies([
+      {
+        name: 'next-auth.session-token',
+        value: 'browser-session-third',
+        url: 'http://127.0.0.1:3100'
+      }
+    ])
+    await page.evaluate(() =>
+      document.dispatchEvent(new Event('visibilitychange', { bubbles: true }))
+    )
+    await expect(
+      page.getByRole('status', { name: 'Loading page' })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Private owner loan' })
+    ).not.toBeVisible()
+    await page.screenshot({ path: '/private/tmp/expentrac-query-skeleton.png' })
+    release()
+    await expect(
+      page.getByText('Resource not found or no longer shared with you.')
+    ).toBeVisible()
+    await expect(
+      page.getByRole('status', { name: 'Loading page' })
+    ).not.toBeVisible()
+  } finally {
+    release()
+  }
 })
 
 test('failed profile refetch retains content and exposes a retry that recovers', async ({
@@ -204,7 +227,11 @@ for (const accepted of [true, false])
         })
       })
       .last()
-    const confirmed = page.waitForResponse(response => response.url().endsWith(`/api/share/${shareId}`) && response.request().method() === 'PATCH')
+    const confirmed = page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/api/share/${shareId}`) &&
+        response.request().method() === 'PATCH'
+    )
     await card
       .getByRole('button', {
         name: accepted ? 'Accept invitation' : 'Reject invitation',
@@ -241,3 +268,88 @@ for (const accepted of [true, false])
       ).status()
     ).toBe(200)
   })
+
+test('private data is rendered on the server and hydration avoids duplicate browser reads', async ({
+  page
+}) => {
+  const reads: string[] = []
+  page.on('request', (request) => {
+    const path = new URL(request.url()).pathname
+    if (
+      request.method() === 'GET' &&
+      [
+        '/api/contract',
+        '/api/share',
+        '/api/notification',
+        '/api/profile'
+      ].includes(path)
+    )
+      reads.push(path)
+  })
+  const response = await page.goto('/dashboard/loans/browser-loan')
+  const html = await response!.text()
+  const renderedOnServer = await page.evaluate((source) => {
+    const document = new DOMParser().parseFromString(source, 'text/html')
+    return [...document.querySelectorAll('h1')].some((heading) =>
+      heading.textContent?.includes('Private owner loan')
+    )
+  }, html)
+  expect(renderedOnServer).toBe(true)
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toBeVisible()
+  await page.waitForLoadState('networkidle')
+  expect(reads).toEqual([])
+})
+
+test('changing accounts in a mounted layout discards previous account hydration', async ({
+  page,
+  context
+}) => {
+  await page.goto('/dashboard/loans/browser-loan')
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toBeVisible()
+  await context.clearCookies()
+  await context.addCookies([
+    {
+      name: 'next-auth.session-token',
+      value: 'browser-session-third',
+      url: 'http://127.0.0.1:3100'
+    }
+  ])
+  await page.evaluate(() =>
+    document.dispatchEvent(new Event('visibilitychange', { bubbles: true }))
+  )
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).not.toBeVisible()
+  await expect(
+    page.getByText('Resource not found or no longer shared with you.')
+  ).toBeVisible()
+})
+
+test('creating WORK updates the canonical contracts cache and provider relations without a reload', async ({
+  page
+}) => {
+  await page.goto('/dashboard/profile/add-contract')
+  await page.locator('#name').fill('Hydrated work fixture')
+  await page.getByRole('combobox').first().click()
+  await page
+    .getByRole('option', { name: 'Fixture employer', exact: true })
+    .click()
+  await page.locator('#salary').fill('1500.25')
+  await page.locator('#start').fill('2026-01-01')
+  await page.getByRole('button', { name: 'Sign', exact: true }).click()
+  await expect(page).toHaveURL(/\/dashboard\/profile$/)
+  await expect(
+    page.getByRole('heading', { name: 'Hydrated work fixture', exact: true })
+  ).toBeVisible()
+  await page
+    .getByRole('link', { name: 'Providers', exact: true })
+    .first()
+    .click()
+  await expect(
+    page.getByRole('heading', { name: 'Fixture employer', exact: true })
+  ).toBeVisible()
+})

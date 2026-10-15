@@ -82,7 +82,7 @@ export function PageSkeleton({
           >
             <Skeleton
               className={
-                kind === 'profile' ? 'size-20 rounded-full' : 'h-10 w-2/3'
+                kind === 'profile' ? 'size-48 rounded-full' : 'h-10 w-2/3'
               }
             />
             <Skeleton className="h-6 w-1/3" />

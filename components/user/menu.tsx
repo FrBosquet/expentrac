@@ -1,5 +1,6 @@
 'use client'
 
+import { clearSessionQueryClient } from '@lib/query-policy'
 import { useNotifications } from '@components/notifications/context'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import {
@@ -26,6 +27,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
     .join('')
 
   const handleSignOut = () => {
+    clearSessionQueryClient()
     void signOut()
   }
 
@@ -39,7 +41,10 @@ export const UserMenu = ({ className }: { className?: string }) => {
               className
             )}
           >
-            <AvatarImage alt={user?.name ?? 'Member'} src={user?.image ?? undefined} />
+            <AvatarImage
+              alt={user?.name ?? 'Member'}
+              src={user?.image ?? undefined}
+            />
             <AvatarFallback>{fallback}</AvatarFallback>
           </Avatar>
         </article>

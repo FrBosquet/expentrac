@@ -2,9 +2,13 @@
 
 import { QueryClientProvider } from '@tanstack/react-query'
 import { PageSkeleton } from '@components/dashboard/skeletons'
-import { createQueryClient } from '@lib/query-policy'
-import { useSession } from 'next-auth/react'
-import { createContext, useContext, useEffect, useState } from 'react'
+import {
+  getSessionQueryClient,
+  clearSessionQueryClient
+} from '@lib/query-policy'
+import { useSession, SessionProvider } from 'next-auth/react'
+import { type Session } from 'next-auth'
+import { createContext, useContext, useEffect } from 'react'
 import { create } from 'zustand'
 
 import { createDateSlice, type DateSlice } from './date'
@@ -20,14 +24,7 @@ function SessionQueries({
   children: React.ReactNode
   userId: string
 }) {
-  const [client] = useState(createQueryClient)
-  useEffect(
-    () => () => {
-      void client.cancelQueries()
-      client.clear()
-    },
-    [client]
-  )
+  const client = getSessionQueryClient(userId)
   return (
     <Scope.Provider value={userId}>
       <QueryClientProvider client={client}>{children}</QueryClientProvider>
@@ -35,20 +32,31 @@ function SessionQueries({
   )
 }
 
-export function StoreProvider({
-  children,
-  userId
-}: {
-  children: React.ReactNode
-  userId: string
-}) {
+function SessionStore({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
-  if (status === 'loading') return <PageSkeleton />
   const currentUserId = session?.user?.id
+  useEffect(() => {
+    if (status === 'unauthenticated') clearSessionQueryClient()
+  }, [status])
+  if (status === 'loading') return <PageSkeleton />
   if (!currentUserId) return <p>Please sign in to continue.</p>
   return (
     <SessionQueries key={currentUserId} userId={currentUserId}>
       {children}
     </SessionQueries>
+  )
+}
+
+export function StoreProvider({
+  children,
+  session
+}: {
+  children: React.ReactNode
+  session: Session
+}) {
+  return (
+    <SessionProvider session={session}>
+      <SessionStore>{children}</SessionStore>
+    </SessionProvider>
   )
 }

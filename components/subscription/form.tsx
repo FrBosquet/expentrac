@@ -2,8 +2,7 @@
 
 import { DaySelect } from '@components/form/DaySelect'
 import { MonthSelect } from '@components/form/MonthSelect'
-import { useProviders } from '@components/provider/context'
-import { ProviderSelect } from '@components/ProviderSelect'
+import { ProviderInput } from '@components/provider-input'
 import { Button } from '@components/ui/button'
 import { Label } from '@components/ui/label'
 import { Separator } from '@components/ui/separator'
@@ -96,8 +95,6 @@ export const SubscriptionForm = ({
   onSubmit,
   disabled = false
 }: Props) => {
-  const { providers } = useProviders()
-
   const [sharedWith, setSharedWith] = useState<PublicUser[]>(
     sub?.shares.data.map(({ to }) => to) ?? []
   )
@@ -105,11 +102,6 @@ export const SubscriptionForm = ({
   const removeShareHolder = (user: PublicUser) => {
     setSharedWith((prev) => prev.filter((u) => u.id !== user.id))
   }
-
-  const brandOptions = providers.map((provider) => ({
-    value: provider.id,
-    label: provider.name
-  }))
 
   const defaultFee = sub
     ? sub.time.isYearly
@@ -143,10 +135,9 @@ export const SubscriptionForm = ({
             <Label className="text-center text-xs" htmlFor="vendorId">
               Vendor
             </Label>
-            <ProviderSelect
+            <ProviderInput
               required
               defaultValue={sub?.providers.vendor?.id}
-              items={brandOptions}
               name="vendorId"
             />
           </span>
@@ -155,10 +146,9 @@ export const SubscriptionForm = ({
             <Label className="text-center text-xs" htmlFor="platformId">
               Platform
             </Label>
-            <ProviderSelect
+            <ProviderInput
               required
               defaultValue={sub?.providers.platform?.id}
-              items={brandOptions}
               name="platformId"
             />
           </span>

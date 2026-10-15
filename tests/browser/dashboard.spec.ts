@@ -132,7 +132,7 @@ test('profile mutation updates profile and navigation without hard reload', asyn
   await expect(
     page.getByRole('heading', { name: 'owner Fixture', exact: true, level: 1 })
   ).toBeVisible()
-  await page.locator('a[href="profile/edit"]').click()
+  await page.locator('a[href="profile/edit"]:visible').click()
   await page.locator('#name').fill('Updated owner')
   await page.locator('#occupation').fill('Test role')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
@@ -181,7 +181,7 @@ test('forecast renders, keyboard tooltip works, and month controls update UI sta
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/dashboard')
-  const forecast = page.getByLabel('Expense forecast')
+  const forecast = page.getByLabel('Expense forecast').filter({ visible: true })
   await expect(forecast).toBeVisible()
   const chart = forecast.getByRole('application')
   await expect(chart).toBeVisible()
@@ -216,7 +216,9 @@ test('themes persist and dashboard/dialog fit mobile screens', async ({
   page
 }, testInfo) => {
   await page.goto('/dashboard')
-  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  await expect(
+    page.getByLabel('Expense forecast').filter({ visible: true })
+  ).toBeVisible()
   const body = page.locator('body')
   const light = page.getByRole('button', { name: 'Switch to light theme' })
   if (await light.isVisible()) await light.click()
@@ -231,7 +233,9 @@ test('themes persist and dashboard/dialog fit mobile screens', async ({
   await expect(body).toHaveClass(/dark/)
   await expect(body).toHaveCSS('background-color', 'rgb(15, 23, 42)')
   await page.reload()
-  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  await expect(
+    page.getByLabel('Expense forecast').filter({ visible: true })
+  ).toBeVisible()
   await expect(body).toHaveClass(/dark/)
   await page.screenshot({
     path: testInfo.outputPath('dark-desktop.png'),
@@ -239,7 +243,9 @@ test('themes persist and dashboard/dialog fit mobile screens', async ({
     animations: 'disabled'
   })
   await page.setViewportSize({ width: 390, height: 844 })
-  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  await expect(
+    page.getByLabel('Expense forecast').filter({ visible: true })
+  ).toBeVisible()
   await page.screenshot({
     path: testInfo.outputPath('dark-mobile.png'),
     fullPage: true,

@@ -2,7 +2,7 @@ import { CONTRACT_TYPE, subscriptionInclude } from '@lib/contract'
 import { prisma } from '@lib/prisma'
 
 import { ApiError, requireUser } from './api'
-import { ownedPage } from './pagination'
+import { ownedPage, pageOptions } from './pagination'
 
 const shareInclude = {
   to: true,
@@ -74,4 +74,53 @@ export async function readProviderRelations(req?: Request) {
     orderBy: [{ provider: { name: 'asc' } }, { id: 'asc' }],
     include: { provider: true }
   })
+}
+
+export const profileSelect = {
+  id: true,
+  name: true,
+  email: true,
+  image: true,
+  occupation: true
+} as const
+export async function readProfile(req?: Request) {
+  return prisma.user.findUniqueOrThrow({
+    where: { id: await requireUser(req) },
+    select: profileSelect
+  })
+}
+export async function readProviders(req?: Request) {
+  await requireUser(req)
+  return prisma.provider.findMany({
+    orderBy: [{ name: 'asc' }, { id: 'asc' }],
+    ...pageOptions(req)
+  })
+}
+
+// Prefetch the same complete list as the browser SDK; a first page is never a full cache entry.
+export async function readAll<T extends { id: string }>(
+  reader: (req?: Request) => Promise<T[]>
+): Promise<T[]> {
+  const items: T[] = []
+  const seen = new Set<string>()
+  let cursor = ''
+  for (let page = 0; page < 100; page++) {
+    const records = await reader(
+      new Request(
+        `http://localhost/?limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
+      )
+    )
+    for (const record of records) {
+      if (seen.has(record.id))
+        throw new ApiError(500, 'Inconsistent pagination')
+      seen.add(record.id)
+    }
+    items.push(...records)
+    if (records.length < 100) return items
+    cursor = records[records.length - 1].id
+  }
+  throw new ApiError(
+    400,
+    'Too many records to display; narrow the requested data'
+  )
 }

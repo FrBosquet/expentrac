@@ -51,6 +51,13 @@ export const UserProviderSummary = ({ className }: Props) => {
           type={type}
         />
       </section>
+      {filteredProviders.length === 0 && (
+        <p className="p-6 text-center text-sm text-theme-light">
+          {providers.length === 0
+            ? 'No providers linked to your contracts yet.'
+            : 'No providers match this search.'}
+        </p>
+      )}
       <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
         {filteredProviders.map((userProvider) => {
           return (
