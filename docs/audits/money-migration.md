@@ -17,7 +17,7 @@ The release entry point is `scripts/migrate-production.mjs`. It never loads `.en
 pnpm migration:production
 ```
 
-First run on an isolated restored copy. The report contains money counts, invalid values, expected rounded cent totals, duplicate share groups and legacy inventory. Invalid money or mixed units cause a nonzero exit. Counts do not establish legacy equivalence: separately reconcile Loans/Subscriptions/UserProviders against Contracts, periods, provider links and acceptance states. The runner preserves all legacy rows.
+First run on an isolated restored copy. The report contains money counts, invalid values, expected rounded cent totals, duplicate share groups and legacy inventory. Invalid money or mixed units cause a nonzero exit. Counts do not establish legacy equivalence: use `pnpm migration:reconcile` and the [legacy reconciliation procedure](legacy-reconciliation.md). The runner preserves all legacy rows.
 
 After stopping application traffic and cron, set `EXPENTRAC_MAINTENANCE_CONFIRMED=true`, `EXPENTRAC_RESTORE_REHEARSED=true` (only after rehearsal), and `EXPENTRAC_MIGRATION_BACKUP_DIR` to a **new** directory outside the repository on durable encrypted storage with sufficient space.
 
