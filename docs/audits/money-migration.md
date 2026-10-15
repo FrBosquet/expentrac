@@ -10,7 +10,7 @@ Splits operate on each payment's integer cents. The owner receives the first rem
 
 `pnpm test:money` creates old-schema synthetic rows, takes a real `pg_dump` backup, migrates, checks rounded cents in all affected tables, restores with `pg_restore`, verifies original data and rejects an unsafe negative-value migration with rollback. On macOS install the client-only `libpq` tools; Linux CI runs PostgreSQL 17 client tools in Docker. These checks never use production credentials or data.
 
-## Production sequence — not executed
+## Production sequence
 
 The release entry point is `scripts/migrate-production.mjs`. It never loads `.env` or `.env.local`: inject `EXPENTRAC_MIGRATION_URL` securely with a direct PostgreSQL connection. Run from the repository root with pinned Node/pnpm versions. Preserve required SSL settings. Install PostgreSQL client tools at least as new as the server.
 
@@ -39,4 +39,4 @@ Recovery: restore `before.dump` using `pg_restore --no-owner --no-acl --exit-on-
 4. Take a fresh restorable backup, apply the reviewed migration, deploy the matching generated client and code, run owner/recipient/third-user and monetary smoke checks, then restore access.
 5. On failure, stop writes and restore the pre-migration backup with the previous application version. Do not divide values blindly: rounding cannot recover original fractional cents. Reconcile any intervening writes before recovery.
 
-Do not retire the legacy tables until actual data reconciliation and rollback rehearsal pass. No production migration, deployment, data equivalence, backup restoration or SSL/pooling verification is claimed by this implementation.
+Production conversion and deployment completed on 2026-10-15 after an actual backup restore/rehearsal; see the [release record](production-release.md). Row counts and expected cent totals matched. Legacy reconciliation has 21 unresolved exceptions, so retirement remains blocked. Client TLS is verified and the pool is capped per process; aggregate concurrency and real authenticated/provider smoke remain follow-up checks.

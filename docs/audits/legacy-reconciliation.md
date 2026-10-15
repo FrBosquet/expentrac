@@ -30,3 +30,7 @@ Before retiring tables:
 4. Prepare a separate destructive migration only after review. Preserve the dump and mapping for the agreed retention period. Restore the backup with the compatible old application to recover; do not recreate empty tables as a rollback.
 
 No DROP TABLE migration is included because production equivalence and prior migration history are currently unverified. Integer-cent conversion and nonunique read indexes can be deployed while retaining these rows, using the production migration runner and maintenance procedure.
+
+## Production snapshot reviewed on 2026-10-15
+
+The real backup was restored into isolated localhost PostgreSQL and reconciliation checked 27 records: six matched, 21 require review. Private reports remain with the release backups outside Git; see the [release record](production-release.md). All legacy rows were retained through the production cents migration. No mappings were inferred, imports performed or tables dropped.
