@@ -1,1 +1,1 @@
-export * from 'react-icons/ai'
+export { AiOutlineGoogle } from 'react-icons/ai'

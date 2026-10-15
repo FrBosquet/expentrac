@@ -28,3 +28,5 @@ Baseline browser sample after the typed WORK-query correction (2026-10-15, befor
 | /dashboard/profile | 3.7 | 257,039 | 26 | 4 | 1,535 |
 
 These resource totals are recorded after network idle and can include framework prefetches. They are not first-load build estimates. The profile previously fetched all contracts for its WORK section; it now requests `type=WORK` with a separate cache key. The regression checks for unfiltered/expense requests, not merely for a smaller fixture response.
+
+After moving TooltipProvider into the dashboard and narrowing the icon re-export, the same fixture recorded `/` 177,460 encoded JS bytes (16 scripts), `/blog` 177,701 (17), dashboard 368,559 (23) and profile 256,670 (26). Public transfer decreased 21,125 bytes in this sample. TTFB varied within a few milliseconds, which is not evidence of a latency improvement. Session/theme providers remain because public sign-in and body styling consume them. Dashboard keyboard tooltips and theme/dialog checks still pass.

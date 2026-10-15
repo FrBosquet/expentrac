@@ -1,6 +1,7 @@
 import { DashboardDataBoundary } from '@components/dashboard/data-boundary'
 import { DashboardLayout } from '@components/NavigationMenu'
 import { Toaster } from '@components/ui/sonner'
+import { TooltipProvider } from '@components/ui/tooltip'
 import { authOptions } from '@lib/auth'
 import { hasUser } from '@lib/session'
 import { StoreProvider } from '@store'
@@ -17,10 +18,12 @@ export default async function Layout({
   if (!hasUser(data)) redirect('/')
   return (
     <StoreProvider userId={data.user.id}>
-      <DashboardLayout>
-        <Toaster />
-        <DashboardDataBoundary>{children}</DashboardDataBoundary>
-      </DashboardLayout>
+      <TooltipProvider delayDuration={75}>
+        <DashboardLayout>
+          <Toaster />
+          <DashboardDataBoundary>{children}</DashboardDataBoundary>
+        </DashboardLayout>
+      </TooltipProvider>
     </StoreProvider>
   )
 }

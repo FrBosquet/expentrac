@@ -6,8 +6,6 @@ import { SessionProvider } from 'next-auth/react'
 import { createContext, type ReactNode, useLayoutEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import { TooltipProvider } from './ui/tooltip'
-
 const montserrat = localFont({
   src: [
     {
@@ -73,18 +71,16 @@ export const DarkModeProvider = ({ children }: { children: ReactNode }) => {
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
       <SessionProvider>
-        <TooltipProvider delayDuration={75}>
-          <body
-            className={twMerge(
-              inter.variable,
-              montserrat.variable,
-              'font-sans [view-timeline-name: fall] bg-theme-back border-theme-border text-foreground',
-              forceDarkMode && 'dark'
-            )}
-          >
-            {children}
-          </body>
-        </TooltipProvider>
+        <body
+          className={twMerge(
+            inter.variable,
+            montserrat.variable,
+            'font-sans [view-timeline-name: fall] bg-theme-back border-theme-border text-foreground',
+            forceDarkMode && 'dark'
+          )}
+        >
+          {children}
+        </body>
       </SessionProvider>
     </DarkModeContext.Provider>
   )
