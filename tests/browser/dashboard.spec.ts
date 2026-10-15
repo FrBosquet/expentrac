@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test'
 
+test('public blog renders published content and unknown slugs return 404', async ({ page, request }) => {
+  await page.goto('/blog')
+  await page.getByRole('link', { name: /Hello world/ }).click()
+  await expect(page.getByRole('heading', { name: '👋 Hello world!', exact: true })).toBeVisible()
+  await expect(page).toHaveTitle(/Hello world/)
+  expect((await request.get('/blog/unknown-audit-fixture')).status()).toBe(404)
+  expect((await request.get('/blog/hello-world.mdx')).status()).toBe(404)
+})
+
 test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   page.on('pageerror', (error) =>

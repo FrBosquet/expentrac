@@ -1,10 +1,13 @@
-import { getPost, getPostSlugs, type Post } from '@lib/blog'
+import { getPost, getPostMetadata, getPostSlugs, type Post } from '@lib/blog'
 import { fullDateFormater } from '@lib/dates'
 import { MoveLeft } from 'lucide-react'
 import { type Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
+
+export const dynamicParams = false
 
 interface Props {
   params: Promise<{
@@ -92,9 +95,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
-  const post = await getPost(params.slug)
+  const post = getPostMetadata(params.slug)
+  if (!post) notFound()
 
   return {
-    title: post.frontmatter.title
+    title: post.title
   }
 }
