@@ -1,6 +1,6 @@
 import { SectionTitle } from '@components/web/SectionTitle'
 import me from '@public/me.webp'
-import { GithubIcon } from 'lucide-react'
+import { AiFillGithub as GithubIcon } from 'react-icons/ai'
 import Image from 'next/image'
 
 export default function Team() {
@@ -34,8 +34,8 @@ export default function Team() {
       </p>
       <p className="max-w-lg text-center text-slate-300">
         You can also check the repo and even fork and make a PR{' '}
-        <a href="github.com/frbosquet/expentrac">in Github</a>. Eventually this
-        project will become private.
+        <a href="https://github.com/frbosquet/expentrac">in Github</a>.
+        Eventually this project will become private.
       </p>
       <a
         className="flex max-w-lg gap-3 rounded-md bg-expentrac-800 p-3 text-center text-slate-200 shadow-md transition hover:bg-primary-300"
@@ -43,7 +43,7 @@ export default function Team() {
         rel="noreferrer"
         target="_blank"
       >
-        <GithubIcon /> Expentrac repository
+        <GithubIcon size={24} /> Expentrac repository
       </a>
     </section>
   )
