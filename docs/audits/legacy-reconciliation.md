@@ -2,6 +2,8 @@
 
 The app uses Contract/Period/Share/ProvidersOnContract/Resource. `/api/loan` and `/api/subscription` are active typed Contract operations, not obsolete legacy-table endpoints. No runtime queries to the old Loan, Subscription, LoanShare, SubscriptionShare or UserProvider models remain. Retain their schema/data until a production restore has been reconciled and recovery rehearsed.
 
+The user confirmed on 2026-10-15 that prior legacy migration history is unknown. Reconcile before deciding on imports or retirement; do not infer completion from the existence of Contract records.
+
 Run on an isolated restored copy using the pinned runtime:
 
 ```sh

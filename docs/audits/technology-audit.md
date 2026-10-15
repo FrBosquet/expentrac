@@ -1,6 +1,6 @@
 # Auditoría tecnológica de Expentrac
 
-> Remediación, 15/10/2026: este documento conserva el diagnóstico inicial del 13/10. El [estado de implementación y sus comprobaciones](implementation.md) recoge los cambios actuales. Quedan abiertos la configuración del scheduler según el plan de hosting y los controles de datos/despliegue en producción; no se ha operado sobre producción.
+> Remediación, 15/10/2026: este documento conserva el diagnóstico inicial del 13/10. El [estado de implementación y sus comprobaciones](implementation.md) recoge los cambios actuales. El scheduler está configurado cada cinco minutos para Vercel Pro+, pendiente de verificar tras el despliegue. Quedan abiertos los controles de datos/despliegue en producción; no se ha operado sobre producción.
 
 Fecha: 13 de octubre de 2026. Alcance: repositorio local, aplicación 0.5.0. Análisis del código y configuración, inventario instalado y bloqueado, comprobaciones locales y documentación oficial consultada en esta fecha. No se han actualizado dependencias ni modificado aplicación, base de datos, despliegue o secretos.
 

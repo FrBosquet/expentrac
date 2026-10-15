@@ -1,6 +1,0 @@
-{
-  "crons": [
-    { "path": "/api/notification/cron", "schedule": "0 10 * * *" },
-    { "path": "/api/notification/outbox", "schedule": "*/5 * * * *" }
-  ]
-}

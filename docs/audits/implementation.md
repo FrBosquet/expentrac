@@ -1,6 +1,6 @@
 # Technology audit remediation
 
-Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline from 2026-10-13. Code remediation is implemented and verified locally. The audit remains open for deployment-specific scheduling, production data reconciliation/migration, actual provider configuration and destructive legacy retirement. No production database operation, deployment or real email delivery was performed.
+Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline from 2026-10-13. Code remediation is implemented and verified locally. The audit remains open for scheduler activation, production data reconciliation/migration, actual provider configuration and destructive legacy retirement. No production database operation, deployment or real email delivery was performed.
 
 ## Agreed decisions
 
@@ -15,7 +15,7 @@ Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline fr
 |---|---|---|
 | P0 private reads and user search | Identity from session; forged userId rejected; owner-scoped lists/cursors; bounded pages/search; minimal DTOs and invitation previews | Unit and real-session anonymous/owner/pending/accepted/third-user cases; cursor ownership/type filtering |
 | P0 arbitrary email/notification and maintenance HTTP | Public write/maintenance/revalidation routes removed; maintenance is explicit offline tooling | Build manifest and callers checked; no production endpoint probes |
-| P0 cron/email | Bearer secret, daily durable ID, metrics-only replies, persistent outbox, conditional leases, bounded retries, queue-only digest production | Repeated authenticated cron, missing secret/key, races, rollback and provider-error regressions; frequent worker schedule still awaits hosting-plan confirmation |
+| P0 cron/email | Bearer secret, daily durable ID, metrics-only replies, persistent outbox, conditional leases, bounded retries, queue-only digest production | Repeated authenticated cron, missing secret/key, races, rollback and provider-error regressions; five-minute worker configured for confirmed Vercel Pro+; deployed execution remains unverified |
 | P0 share authorization | Recipient-only boolean pending→final transition; accepted-only reads; owner-only edits and action controls | Real recipient detail, repeated answer, third-user write denial and cache isolation |
 | P0 public revalidation secret | Endpoint/client secret use removed; authenticated mutations invalidate session-scoped queries | Remove obsolete NEXT_PUBLIC_REVALIDATE_SECRET from deployment configuration |
 | P1 type/WORK/ack correctness | Contract filter honored; WORK excluded; ack is explicitly optional true/false | Unit/API/cron fixtures include income and expense types |
@@ -54,8 +54,8 @@ Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline fr
 
 ## Release gates still open
 
-1. Confirm hosting plan and activate a compatible frequent outbox worker schedule. The protected endpoint and Pro template are prepared; active vercel.json remains once daily. A daily schedule alone cannot provide prompt retries inside the 23-hour cutoff.
-2. Restore a real production backup into an isolated database. Run read-only migration inspection and legacy reconciliation, review exceptions/mappings and rehearse recovery. Synthetic equivalence does not prove actual legacy data was migrated.
+1. Deploy and verify the configured five-minute outbox worker on the confirmed Vercel Pro+ plan, including the scheduler Authorization header, secret configuration and backlog monitoring. The daily digest remains at 10:00 UTC.
+2. Restore a real production backup into an isolated database. Run read-only migration inspection and legacy reconciliation, review exceptions/mappings and rehearse recovery. The user confirmed prior legacy migration history is unknown; reconcile before deciding whether imports or retirement are appropriate. Synthetic equivalence does not prove actual legacy data was migrated.
 3. Confirm PostgreSQL provider/server version, direct URL, SSL/certificates, migration permissions and aggregate connection budget. Stop application writes/financial reads and cron during the in-place unit conversion.
 4. Use the guarded production runner, deploy the matching app/client, verify Google OAuth/session creation, owner/recipient/third-user behavior, money totals and actual scheduler/provider delivery, then reopen access.
 5. Prepare destructive legacy retirement only after real equivalence, explicit import decisions for missing records and backup/restore approval. Preserve the source tables and recovery dump meanwhile.
