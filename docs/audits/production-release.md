@@ -20,13 +20,13 @@ Deployed source commit: `d8a5702`. Vercel deployment: `dpl_5b9XviQqi8B1KyFDL3cG5
 
 Private backups and reports are outside the repository at `/Users/frbosquet/Projects/expentrac-production-backups/2026-10-15-release/`, with directory mode 0700 and dump/report mode 0600. `rehearsal.dump` was actually restored; `production-cutover/before.dump` is the fresh maintenance-window backup. Preserve these securely and make a durable encrypted off-device copy under the owner's backup policy.
 
-Legacy reconciliation checked 27 records: six matched the scripted comparisons and 21 require review. Exceptions include missing explicit mappings/import decisions, scheduling/history information and changed fields/relations. Reports contain private IDs and remain outside Git. All eight legacy Loans, 19 Subscriptions and 27 standalone provider links were retained; no inferred import or destructive retirement occurred.
+Legacy reconciliation checked 27 records: six matched the scripted comparisons and 21 were initially flagged for review. Exceptions include missing explicit mappings/import decisions, scheduling/history information and changed fields/relations. Reports contain private IDs and remain outside Git. All eight legacy Loans, 19 Subscriptions and 27 standalone provider links were retained; no inferred import or destructive retirement occurred.
 
 ## Remaining verification and follow-up
 
 - The user confirmed the requested authenticated smoke works. Actual provider delivery still needs an intended product action; this release did not manually send emails or trigger the daily digest.
 - Continue monitoring worker backlog/failures; the first automatic invocation returned HTTP 200. Actual provider delivery and the daily digest have not been manually triggered.
-- The [follow-up legacy review](legacy-review.md) established 25 migrated identities. Resolve the two missing-record decisions and three missing annual months with the owner; preserve evolved current records and all legacy rows meanwhile.
+- The [completed legacy review](legacy-review.md) accounted for all 27 source records: 25 migrated identities and two owner-confirmed archived sources. The three owner-confirmed January months were repaired in production after backup/rehearsal. Retain legacy rows as historical archives.
 - Check aggregate connection use under actual concurrency. The per-process cap does not establish total deployment capacity.
 - Two unpatched development-only dependency advisories remain documented. Runtime auth initialization emits Node's DEP0169 dependency deprecation warning; observed sign-in requests succeeded. It is not an application request failure and has not been suppressed.
 - Implementation commits and this release record remain local until a separately approved Git push.

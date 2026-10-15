@@ -1,6 +1,6 @@
 # Legacy reconciliation review — 2026-10-15
 
-This follows the initial strict-comparison report from the production release. The 21 reported exceptions were differences or missing historical information, not 21 demonstrated missing migrations. The review was read-only, against the restored maintenance-window backup; production was not modified.
+This follows the initial strict-comparison report from the production release. The 21 reported exceptions were differences or missing historical information, not 21 demonstrated missing migrations. The initial review was read-only against the restored maintenance-window backup. The subsequent owner-confirmed production repair is recorded below.
 
 ## Migration provenance established
 
@@ -12,15 +12,16 @@ Six records passed every initial strict comparison. The other 19 linked records 
 
 A removed legacy invitation was explicitly declined, so it provides no basis for restoring accepted access or sending another invitation. Provider relations used by linked records match the initial comparisons. There are two legacy provider-library links with no legacy contract references: one is represented on current contracts; the other remains archived in UserProvider. Retain that information while retirement remains undecided.
 
-## Concrete unresolved decisions
+## Owner decisions and completed repair
 
-- Two subscriptions have no same-ID Contract. One has a same-owner/type/name candidate created in 2025; the other has no same-name candidate. A matching name does not prove identity or establish whether an older record was intentionally deleted. The owner has been asked whether to leave these historical records archived or recover one/both. Do not create charges or infer mappings pending that answer.
-- Three open YEARLY periods have no paymonth. The old schema has no month to recover. Current UI calculation falls back to January, while paymentDayMatches requires an explicit month and therefore excludes these periods from digests. The owner has been asked for the actual dates or cancellation status. No billing month should be guessed from a database-import timestamp.
+The owner confirmed that the two missing-ID subscriptions are historical records to archive. Keep current records; do not recreate charges, infer a replacement mapping or restore invitations. The old source rows and standalone provider-library link remain in the retained legacy tables and private backups as historical archives.
 
-The two missing-record decisions and three annual schedules are the actionable follow-up. Migration provenance for 25 records is established, but this does not prove every current financial value is correct or authorize destructive retirement.
+The owner confirmed January for the three open YEARLY periods with missing paymonth, keeping the existing days. The reviewed repair set paymonth to 0 on exactly those three production periods, preserving days 10, 17 and 17 and all fees, dates, relations and other fields except updatedAt. The repair was tested against synthetic fixtures and the restored production backup before execution. The live target identities and original versions were checked, a fresh full production backup was taken, and the row changes were applied together with private before/after snapshots. Independent queries confirmed all three live schedules. The actual payment-day matcher accepts their January dates and rejects February; no emails were sent during verification.
 
-## Private evidence and next steps
+**Reconciliation is complete:** all 27 source records are accounted for (25 migrated identities, two owner-confirmed archived records), and the three annual months are repaired. Current data remains authoritative; strict comparison differences against frozen legacy rows are reviewed historical differences, not instructions to overwrite current records. No imports, access grants or legacy deletions occurred. Retaining the old tables as archives is the chosen disposition; removing them later is optional, separate maintenance requiring an explicit retention/recovery decision.
 
-Record IDs, names, dates, comparison details and dispositions are saved with the release backups outside Git in `legacy-review-details.json` and `legacy-reviewed-dispositions.json`. No private customer data is added to this repository.
+## Private evidence and recovery
 
-After the owner supplies the missing business information, prepare a narrow, idempotent repair if needed, test it against the restored copy and check the current live values before applying. Preserve later production edits. Keep the legacy tables and backups until a separate retirement decision accounts for unresolved records, standalone provider links and recovery retention.
+Record IDs, names, dates, comparison details and owner dispositions are saved with the release backups outside Git in `legacy-review-details.json` and `legacy-reviewed-dispositions.json`. The private plan, full pre-repair dump, row snapshots and live verification are `annual-month-plan.json`, `annual-month-before.dump`, `annual-month-production/{before,after}.json` and `annual-month-production-verified.json`. No private customer data is added to this repository.
+
+The repair tooling and recovery considerations are documented in [annual month repair](annual-month-repair.md). It defaults to inspection, refuses stale or conflicting targets and makes no further changes on a repeat run. Do not restore a whole database over later live writes to undo a narrow schedule repair.

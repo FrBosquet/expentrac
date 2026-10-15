@@ -2,7 +2,7 @@
 
 The app uses Contract/Period/Share/ProvidersOnContract/Resource. `/api/loan` and `/api/subscription` are active typed Contract operations, not obsolete legacy-table endpoints. No runtime queries to the old Loan, Subscription, LoanShare, SubscriptionShare or UserProvider models remain. Retain their schema/data until a production restore has been reconciled and recovery rehearsed.
 
-The user confirmed on 2026-10-15 that prior legacy migration history is unknown. Reconcile before deciding on imports or retirement; do not infer completion from the existence of Contract records.
+The owner initially did not know the prior migration history. The [completed record review](legacy-review.md) established provenance for 25 records, archived two historical records by owner decision and repaired three annual billing months. The strict comparison tool below remains useful for inspection; historical differences do not imply missing migrations.
 
 Run on an isolated restored copy using the pinned runtime:
 
@@ -29,7 +29,7 @@ Before retiring tables:
 3. Save the reviewed report/mapping and take a restorable pre-retirement backup. Rehearse restore, row counts, owner/recipient access and financial totals against both application versions.
 4. Prepare a separate destructive migration only after review. Preserve the dump and mapping for the agreed retention period. Restore the backup with the compatible old application to recover; do not recreate empty tables as a rollback.
 
-No DROP TABLE migration is included because historical exceptions and retention decisions remain unresolved. Integer-cent conversion and nonunique read indexes can be deployed while retaining these rows, using the production migration runner and maintenance procedure.
+No DROP TABLE migration is included: the owner chose to archive historical source records and keep current data. Integer-cent conversion and nonunique read indexes can be deployed while retaining these rows, using the production migration runner and maintenance procedure.
 
 ## Production snapshot reviewed on 2026-10-15
 
@@ -37,4 +37,4 @@ The real backup was restored into isolated localhost PostgreSQL and reconciliati
 
 ## Record-by-record follow-up
 
-The [subsequent review](legacy-review.md) established migration provenance for 25 of 27 records using preserved IDs, owner/type/creation timestamps and the historical migration code. The initial 21 exceptions do not mean 21 missing migrations. Two missing-ID subscriptions need an owner decision, and three open annual schedules have no recoverable billing month. Current values and all legacy rows remain unchanged pending those answers.
+The [subsequent review](legacy-review.md) established migration provenance for 25 of 27 records using preserved IDs, owner/type/creation timestamps and the historical migration code. The initial 21 exceptions do not mean 21 missing migrations. The owner confirmed archiving both missing-ID source subscriptions and January for the three missing annual months. The tested, backed-up production repair updated those months and preserved days and money. All source records are accounted for; the old tables remain as historical archives.

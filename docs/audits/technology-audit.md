@@ -1,6 +1,6 @@
 # Auditoría tecnológica de Expentrac
 
-> Remediación, 15/10/2026: este documento conserva el diagnóstico inicial del 13/10. El [estado de implementación](implementation.md) y el [registro del despliegue](production-release.md) recogen los cambios y comprobaciones actuales. La migración de producción y el despliegue coordinado están realizados; la revisión legacy confirma 25 identidades migradas y deja dos decisiones sobre suscripciones antiguas y tres meses de cobro anual pendientes de información del propietario. Quedan también las comprobaciones de proveedor. La primera ejecución automática del worker devolvió HTTP 200.
+> Remediación, 15/10/2026: este documento conserva el diagnóstico inicial del 13/10. El [estado de implementación](implementation.md) y el [registro del despliegue](production-release.md) recogen los cambios y comprobaciones actuales. La migración de producción y el despliegue coordinado están realizados; la reconciliación legacy está completada: 25 identidades migradas, dos registros antiguos archivados por decisión del propietario y tres meses de cobro anual corregidos a enero en producción. Quedan también las comprobaciones de proveedor. La primera ejecución automática del worker devolvió HTTP 200.
 
 Fecha: 13 de octubre de 2026. Alcance: repositorio local, aplicación 0.5.0. Análisis del código y configuración, inventario instalado y bloqueado, comprobaciones locales y documentación oficial consultada en esta fecha. No se han actualizado dependencias ni modificado aplicación, base de datos, despliegue o secretos.
 
