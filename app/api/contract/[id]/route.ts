@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { authOptions } from '@lib/auth'
 import { subscriptionInclude } from '@lib/contract'
 import { prisma } from '@lib/prisma'
@@ -35,6 +36,7 @@ const handleDELETE = async (
     )
   }
 
+  await assertDatabaseReady()
   const contract = await prisma.contract.findUnique({ where: { id } })
 
   if (!contract) {
@@ -97,6 +99,7 @@ const handleGET = async (
     )
   }
 
+  await assertDatabaseReady()
   const contract = await prisma.contract.findUnique({
     where: { id },
     include: subscriptionInclude

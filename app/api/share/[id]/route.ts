@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { authOptions } from '@lib/auth'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { notificationSdk, deliverNotifications } from '@lib/notification'
@@ -63,6 +64,7 @@ const handlePATCH = async (
   }
 
   const userId = session.user.id
+  await assertDatabaseReady()
 
   const { id } = await params
 

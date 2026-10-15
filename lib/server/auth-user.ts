@@ -3,12 +3,14 @@ import 'server-only'
 import { prisma } from '@lib/prisma'
 import { emailSdk } from '@lib/email'
 import { type AdapterUser } from 'next-auth/adapters'
+import { assertDatabaseReady } from './schema-state'
 
 // An enqueue/render failure must not leave an unlinked new OAuth user behind.
 export const createAuthUser = async (
   data: Omit<AdapterUser, 'id'>
 ): Promise<AdapterUser> =>
   prisma.$transaction(async (db) => {
+    await assertDatabaseReady(db)
     const user = await db.user.create({ data })
     await emailSdk.sendWelcome(
       data.email,

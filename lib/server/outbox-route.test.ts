@@ -1,3 +1,6 @@
+jest.mock('@lib/server/schema-state', () => ({
+  assertDatabaseReady: jest.fn(async () => {})
+}))
 import { GET } from '../../app/api/notification/outbox/route'
 import { deliverOutbox } from './outbox'
 

@@ -4,6 +4,7 @@ import { type Contract, prisma } from '@lib/prisma'
 import { deliverOutbox } from '@lib/server/outbox'
 import { madridDay, paymentDayMatches } from '@lib/server/payment-day'
 import { NOTIFICATION_TYPE } from '@types'
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { NextResponse } from 'next/server'
 
 export const revalidate = 0
@@ -12,6 +13,7 @@ export const GET = async (req: Request) => {
   if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
+  await assertDatabaseReady()
   const day = madridDay(new Date())
   const periods = await prisma.period.findMany({
     where: {
@@ -60,14 +62,12 @@ export const GET = async (req: Request) => {
       queued++
     } catch (error) {
       // A concurrent cron may have won the unique-id insert. Other failures must surface.
-      if (
-        !(
-          error &&
-          typeof error === 'object' &&
-          'code' in error &&
-          error.code === 'P2002'
-        )
-      )
+      if (!(
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'P2002'
+      ))
         throw error
     }
   }

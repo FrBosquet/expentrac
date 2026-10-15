@@ -11,3 +11,15 @@ export function pageOptions(req?: Request) {
     throw new ApiError(400, 'Invalid cursor')
   return { take, ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}) }
 }
+
+// Prisma uses cursor sort values before applying the list filter. Scope that
+// lookup too, so another user's cursor cannot reveal ordering information.
+export async function ownedPage(
+  req: Request | undefined,
+  find: (id: string) => PromiseLike<unknown>
+) {
+  const options = pageOptions(req)
+  if (options.cursor && !(await find(options.cursor.id)))
+    throw new ApiError(400, 'Invalid cursor')
+  return options
+}

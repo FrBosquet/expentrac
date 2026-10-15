@@ -1,3 +1,6 @@
+jest.mock('@lib/server/schema-state', () => ({
+  assertDatabaseReady: jest.fn(async () => {})
+}))
 import { notificationSdk } from '@lib/notification'
 import { prisma } from '@lib/prisma'
 import { getServerSession } from 'next-auth'
@@ -23,10 +26,19 @@ jest.mock('@lib/notification', () => ({
 }))
 jest.mock('@lib/prisma', () => ({
   prisma: {
-    contract: { findMany: jest.fn(), findUnique: jest.fn() },
-    share: { findMany: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
-    notification: { findMany: jest.fn() },
-    providersOnContract: { findMany: jest.fn() },
+    contract: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      findFirst: jest.fn()
+    },
+    share: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      findFirst: jest.fn()
+    },
+    notification: { findMany: jest.fn(), findFirst: jest.fn() },
+    providersOnContract: { findMany: jest.fn(), findFirst: jest.fn() },
     user: { findMany: jest.fn() }
   }
 }))
@@ -49,6 +61,8 @@ beforeEach(() => {
     if (model && typeof model === 'object' && 'findMany' in model) {
       ;(model.findMany as jest.Mock).mockResolvedValue([])
     }
+    if (model && typeof model === 'object' && 'findFirst' in model)
+      (model.findFirst as jest.Mock).mockResolvedValue(null)
   }
 })
 
@@ -66,6 +80,30 @@ test.each(readers)(
 
 test.each(readers)('private reader rejects a forged userId', async (read) => {
   expect((await read(request('?userId=other'))).status).toBe(403)
+})
+
+test.each(readers)(
+  'private pagination rejects a cursor outside the authorized result set',
+  async (read) => {
+    expect((await read(request('?cursor=other-user-object'))).status).toBe(400)
+    expect(prisma.contract.findMany).not.toHaveBeenCalled()
+    expect(prisma.share.findMany).not.toHaveBeenCalled()
+    expect(prisma.notification.findMany).not.toHaveBeenCalled()
+    expect(prisma.providersOnContract.findMany).not.toHaveBeenCalled()
+  }
+)
+
+test('contract cursor lookup includes owner and type before reading its sort values', async () => {
+  ;(prisma.contract.findFirst as jest.Mock).mockResolvedValue({
+    id: 'own-cursor'
+  })
+  expect(
+    (await contracts(request('?cursor=own-cursor&type=SUBSCRIPTION'))).status
+  ).toBe(200)
+  expect(prisma.contract.findFirst).toHaveBeenCalledWith({
+    where: { id: 'own-cursor', userId: 'owner', type: 'SUBSCRIPTION' },
+    select: { id: true }
+  })
 })
 
 test('contract filter retains subscription type and session identity', async () => {

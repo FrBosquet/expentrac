@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { authOptions } from '@lib/auth'
 import { type Prisma, prisma } from '@lib/prisma'
 import { ApiError, apiResponse } from '@lib/server/api'
@@ -25,6 +26,7 @@ const handlePATCH = async (
   }
 
   const userId = session.user.id
+  await assertDatabaseReady()
 
   const body = await jsonObject(req)
   if (typeof body.ack !== 'boolean')

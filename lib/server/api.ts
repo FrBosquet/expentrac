@@ -2,16 +2,9 @@ import { authOptions } from '@lib/auth'
 import { safeDto } from '@lib/dto'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    message: string
-  ) {
-    super(message)
-    Object.setPrototypeOf(this, new.target.prototype)
-  }
-}
+import { ApiError } from './errors'
+import { assertDatabaseReady } from './schema-state'
+export { ApiError } from './errors'
 
 export async function requireUser(req?: Request) {
   const session = await getServerSession(authOptions)
@@ -19,6 +12,7 @@ export async function requireUser(req?: Request) {
   if (!id) throw new ApiError(401, 'Authentication required')
   const requestedId = req && new URL(req.url).searchParams.get('userId')
   if (requestedId && requestedId !== id) throw new ApiError(403, 'Forbidden')
+  await assertDatabaseReady()
   return id
 }
 

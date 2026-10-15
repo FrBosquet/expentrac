@@ -2,6 +2,8 @@
 
 These measurements use synthetic data and localhost. They do not predict production latency, cardinality, network transfer or provider connection budgets.
 
+Authenticated calls now include a schema-readiness metadata query to prevent mixing euro/cent application versions. HTTP request counts below are not total SQL counts and do not measure that guard's production overhead.
+
 `pnpm test:queries` creates 1,000 users, 40,000 contracts, 100,000 notifications and 40,000 shares in disposable PostgreSQL 17. It drops/recreates only the measured indexes inside a rolled-back fixture transaction, runs `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` and verifies unchanged result counts plus index access. Sample on 2026-10-15:
 
 | Query | Before, ms | After, ms | Before rows discarded | After access |

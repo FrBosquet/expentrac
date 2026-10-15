@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { recordInvitations } from '@lib/server/invitations'
 import { eurosToCents } from '@lib/money'
 import { authOptions } from '@lib/auth'
@@ -32,6 +33,7 @@ const handlePOST = async (req: Request) => {
   }
 
   const userId = session.user.id
+  await assertDatabaseReady()
 
   const raw = await jsonObject(req)
   const notificationIds: string[] = []

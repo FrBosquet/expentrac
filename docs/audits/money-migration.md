@@ -2,6 +2,8 @@
 
 Storage uses PostgreSQL INTEGER cents for Contract/Period and retained legacy Loan/Subscription money fields. Prisma exposes `feeCents`/`initialCents` with `@map` so physical column names remain unchanged. Range: 0–2,147,483,647 cents (€21,474,836.47). Decimal inputs and old stored euro values round half-up to cents; negative/nonfinite/out-of-range historical values stop the migration before conversion.
 
+Authenticated financial access checks current Contract/Period integer columns and required outbox/invitation tables before reading or mutating them. An old or partial schema returns maintenance status 503; it cannot silently interpret/write euro values as cents. Checks are not cached and do not run during import/build. This guard does not replace stopping traffic, backups, coordinated deployment or the production restore rehearsal. The previous application must remain stopped during conversion because it has no knowledge of the new units.
+
 Splits operate on each payment's integer cents. The owner receives the first remainder cent, followed by accepted recipients sorted by ID. Duplicate/pending recipients do not receive another allocation. Current accepted membership is used, matching the existing app's current-share view; this is not a ledger of historical acceptance changes. Viewer identity selects the correct share. Totals derive from per-payment allocations; formatting converts to euros at UI/email boundaries. Legacy notification money fields are normalized while reading.
 
 ## Verified locally

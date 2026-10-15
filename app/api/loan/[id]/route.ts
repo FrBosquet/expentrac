@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from '@lib/server/schema-state'
 import { updateContractLink } from '@lib/server/contract-relations'
 import { recordInvitations } from '@lib/server/invitations'
 import { eurosToCents } from '@lib/money'
@@ -52,6 +53,7 @@ const handlePATCH = async (req: Request, { params }: Query) => {
   }
 
   const userId = session.user.id
+  await assertDatabaseReady()
 
   const raw = await jsonObject(req)
   const notificationIds: string[] = []

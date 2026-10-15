@@ -4,6 +4,7 @@ import { NOTIFICATION_TYPE } from '@types'
 import { recordInvitations } from './invitations'
 import { deliverOutbox } from './outbox'
 import { createAuthUser } from './auth-user'
+import { assertDatabaseReady } from './schema-state'
 
 jest.mock('@lib/auth', () => ({ authOptions: {} }))
 
@@ -232,5 +233,31 @@ suite('isolated database transactions', () => {
         where: { email: 'auth-rollback@example.test' }
       })
     ).toBeNull()
+  })
+
+  test.each([
+    'ALTER TABLE "Period" ALTER COLUMN fee TYPE DOUBLE PRECISION',
+    'DROP TABLE "EmailOutbox"'
+  ])('old or partial schemas are refused before a write: %s', async (sql) => {
+    await expect(
+      prisma.$transaction(async (db) => {
+        await db.$executeRawUnsafe(sql)
+        await assertDatabaseReady(db)
+        await db.contract.create({
+          data: {
+            id: 'must-not-write-old-schema',
+            userId: 'fixture-user',
+            type: 'LOAN',
+            name: 'Must not write'
+          }
+        })
+      })
+    ).rejects.toMatchObject({ status: 503 })
+    expect(
+      await prisma.contract.findUnique({
+        where: { id: 'must-not-write-old-schema' }
+      })
+    ).toBeNull()
+    await expect(assertDatabaseReady()).resolves.toBeUndefined()
   })
 })

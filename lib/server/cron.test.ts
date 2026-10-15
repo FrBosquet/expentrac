@@ -1,3 +1,6 @@
+jest.mock('@lib/server/schema-state', () => ({
+  assertDatabaseReady: jest.fn(async () => {})
+}))
 import { notificationSdk } from '@lib/notification'
 import { prisma } from '@lib/prisma'
 

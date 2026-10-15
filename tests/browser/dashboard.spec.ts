@@ -1,9 +1,14 @@
 import { expect, test } from '@playwright/test'
 
-test('public blog renders published content and unknown slugs return 404', async ({ page, request }) => {
+test('public blog renders published content and unknown slugs return 404', async ({
+  page,
+  request
+}) => {
   await page.goto('/blog')
   await page.getByRole('link', { name: /Hello world/ }).click()
-  await expect(page.getByRole('heading', { name: '👋 Hello world!', exact: true })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: '👋 Hello world!', exact: true })
+  ).toBeVisible()
   await expect(page).toHaveTitle(/Hello world/)
   expect((await request.get('/blog/unknown-audit-fixture')).status()).toBe(404)
   expect((await request.get('/blog/hello-world.mdx')).status()).toBe(404)
@@ -38,6 +43,20 @@ test('real session APIs enforce owner, accepted recipient, and third-user polici
       })
     ).status()
   ).toBe(403)
+  expect(
+    (
+      await request.get('/api/contract?cursor=browser-loan', {
+        headers: cookie('third')
+      })
+    ).status()
+  ).toBe(400)
+  expect(
+    (
+      await request.get('/api/contract?cursor=browser-loan&type=SUBSCRIPTION', {
+        headers: cookie('owner')
+      })
+    ).status()
+  ).toBe(400)
   const owner = await request.get('/api/contract/browser-loan', {
     headers: cookie('owner')
   })

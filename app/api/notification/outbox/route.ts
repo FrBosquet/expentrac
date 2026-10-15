@@ -1,5 +1,6 @@
 import { ApiError, apiResponse } from '@lib/server/api'
 import { deliverOutbox } from '@lib/server/outbox'
+import { assertDatabaseReady } from '@lib/server/schema-state'
 
 export const maxDuration = 60
 export const GET = (req: Request) =>
@@ -7,5 +8,6 @@ export const GET = (req: Request) =>
     const secret = process.env.CRON_SECRET
     if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`)
       throw new ApiError(401, 'Unauthorized')
+    await assertDatabaseReady()
     return deliverOutbox()
   })
