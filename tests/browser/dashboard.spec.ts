@@ -1,55 +1,183 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ context, page }) => {
-  page.on('pageerror', (error) => console.error('Browser runtime error:', error.message))
+  page.on('pageerror', (error) =>
+    console.error('Browser runtime error:', error.message)
+  )
 
-  await context.addCookies([{ name: 'next-auth.session-token', value: 'browser-session-owner', url: 'http://127.0.0.1:3100' }])
+  await context.addCookies([
+    {
+      name: 'next-auth.session-token',
+      value: 'browser-session-owner',
+      url: 'http://127.0.0.1:3100'
+    }
+  ])
 })
 
-test('real session APIs enforce owner, accepted recipient, and third-user policies', async ({ request }) => {
-  const cookie = (role: string) => ({ Cookie: `next-auth.session-token=browser-session-${role}` })
+test('real session APIs enforce owner, accepted recipient, and third-user policies', async ({
+  request
+}) => {
+  const cookie = (role: string) => ({
+    Cookie: `next-auth.session-token=browser-session-${role}`
+  })
   expect((await request.get('/api/contract')).status()).toBe(401)
-  expect((await request.get('/api/contract?userId=browser-third', { headers: cookie('owner') })).status()).toBe(403)
-  const owner = await request.get('/api/contract/browser-loan', { headers: cookie('owner') })
+  expect(
+    (
+      await request.get('/api/contract?userId=browser-third', {
+        headers: cookie('owner')
+      })
+    ).status()
+  ).toBe(403)
+  const owner = await request.get('/api/contract/browser-loan', {
+    headers: cookie('owner')
+  })
   expect(owner.status()).toBe(200)
   const ownerData = await owner.json()
   expect(ownerData.data.user.emailVerified).toBeUndefined()
   expect(ownerData.data.user.email).toBeUndefined()
-  const invitation = await (await request.get('/api/share', { headers: cookie('recipient') })).json()
+  const invitation = await (
+    await request.get('/api/share', { headers: cookie('recipient') })
+  ).json()
   expect(invitation[0].contract).toBeNull()
   expect(invitation[0].preview.name).toBe('Private owner loan')
-  expect((await request.get('/api/contract/browser-loan', { headers: cookie('recipient') })).status()).toBe(403)
-  expect((await request.patch('/api/share/browser-share', { headers: cookie('third'), data: { accepted: true } })).status()).toBe(403)
-  expect((await request.patch('/api/share/browser-share', { headers: cookie('recipient'), data: { accepted: 'true' } })).status()).toBe(400)
-  expect((await request.patch('/api/share/browser-share', { headers: cookie('recipient'), data: { accepted: true } })).status()).toBe(200)
-  expect((await request.get('/api/contract/browser-loan', { headers: cookie('recipient') })).status()).toBe(200)
-  expect((await request.get('/api/contract/browser-loan', { headers: cookie('third') })).status()).toBe(403)
+  expect(
+    (
+      await request.get('/api/contract/browser-loan', {
+        headers: cookie('recipient')
+      })
+    ).status()
+  ).toBe(403)
+  expect(
+    (
+      await request.patch('/api/share/browser-share', {
+        headers: cookie('third'),
+        data: { accepted: true }
+      })
+    ).status()
+  ).toBe(403)
+  expect(
+    (
+      await request.patch('/api/share/browser-share', {
+        headers: cookie('recipient'),
+        data: { accepted: 'true' }
+      })
+    ).status()
+  ).toBe(400)
+  expect(
+    (
+      await request.patch('/api/share/browser-share', {
+        headers: cookie('recipient'),
+        data: { accepted: true }
+      })
+    ).status()
+  ).toBe(200)
+  expect(
+    (
+      await request.get('/api/contract/browser-loan', {
+        headers: cookie('recipient')
+      })
+    ).status()
+  ).toBe(200)
+  expect(
+    (
+      await request.get('/api/contract/browser-loan', {
+        headers: cookie('third')
+      })
+    ).status()
+  ).toBe(403)
   expect((await request.get('/api/notification/cron')).status()).toBe(401)
-  const subs = await (await request.get('/api/contract?type=SUBSCRIPTION', { headers: cookie('owner') })).json()
-  expect(subs.map((item: { type: string }) => item.type)).toEqual(['SUBSCRIPTION'])
+  const subs = await (
+    await request.get('/api/contract?type=SUBSCRIPTION', {
+      headers: cookie('owner')
+    })
+  ).json()
+  expect(subs.map((item: { type: string }) => item.type)).toEqual([
+    'SUBSCRIPTION'
+  ])
 })
 
-test('profile mutation updates profile and navigation without hard reload', async ({ page }) => {
+test('profile mutation updates profile and navigation without hard reload', async ({
+  page
+}) => {
   await page.goto('/dashboard/profile')
-  await expect(page.getByRole('heading', { name: 'owner Fixture', exact: true, level: 1 })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'owner Fixture', exact: true, level: 1 })
+  ).toBeVisible()
   await page.locator('a[href="profile/edit"]').click()
   await page.locator('#name').fill('Updated owner')
   await page.locator('#occupation').fill('Test role')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })
+  ).toBeVisible()
   await expect(page.getByText('Test role', { exact: true })).toBeVisible()
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Updated owner', exact: true, level: 1 })
+  ).toBeVisible()
 })
 
-test('contract detail survives direct navigation and reload; fresh account cannot see owner data', async ({ page, context }) => {
+test('contract detail survives direct navigation and reload; fresh account cannot see owner data', async ({
+  page,
+  context
+}) => {
   await page.goto('/dashboard/loans/browser-loan')
-  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toBeVisible()
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toBeVisible()
   await context.clearCookies()
-  await context.addCookies([{ name: 'next-auth.session-token', value: 'browser-session-third', url: 'http://127.0.0.1:3100' }])
+  await context.addCookies([
+    {
+      name: 'next-auth.session-token',
+      value: 'browser-session-third',
+      url: 'http://127.0.0.1:3100'
+    }
+  ])
   await page.goto('/dashboard/loans/browser-loan')
-  await expect(page.getByText('Resource not found or no longer shared with you.')).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Private owner loan' })).toHaveCount(0)
+  await expect(
+    page.getByText('Resource not found or no longer shared with you.')
+  ).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Private owner loan' })
+  ).toHaveCount(0)
+})
+
+test('forecast renders, keyboard tooltip works, and month controls update UI state', async ({
+  page
+}, testInfo) => {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/dashboard')
+  const forecast = page.getByLabel('Expense forecast')
+  await expect(forecast).toBeVisible()
+  const chart = forecast.getByRole('application')
+  await expect(chart).toBeVisible()
+  await chart.focus()
+  await chart.press('ArrowRight')
+  await expect(forecast.getByText(/Monthly amount/)).toBeVisible()
+  const original = await page
+    .getByRole('button', {
+      name: /October|November|December|January|February|March|April|May|June|July|August|September/i
+    })
+    .first()
+    .innerText()
+  await page.getByRole('button', { name: 'Next month', exact: true }).click()
+  await expect(
+    page.getByRole('button', { name: original, exact: true })
+  ).toHaveCount(0)
+  await page
+    .getByRole('button', { name: 'Previous month', exact: true })
+    .click()
+  await expect(
+    page.getByRole('button', { name: original, exact: true })
+  ).toBeVisible()
+  await page.screenshot({
+    path: testInfo.outputPath('dashboard.png'),
+    fullPage: true
+  })
+  expect(errors).toEqual([])
 })

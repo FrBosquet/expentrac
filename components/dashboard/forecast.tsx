@@ -12,34 +12,27 @@ import {
   CardTitle
 } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
-import { type FC } from 'react'
 import {
   Area,
   AreaChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
+  type TooltipContentProps,
   XAxis,
   YAxis
 } from 'recharts'
-
-const now = new Date().toLocaleString('default', { month: 'short' })
 
 const useForecastData = () => {
   const { date } = useDate()
   const currentDate = new Date()
   const startDate = new Date(date)
-  const endDate = new Date(date)
 
   startDate.setMonth(startDate.getMonth() - 2)
-  endDate.setMonth(endDate.getMonth() + 8)
 
   const { loans } = useLoans()
   const { subs } = useSubs()
   const payplan = usePayplan(startDate, { loans, subs })
-
-  startDate.setMonth(startDate.getMonth() - 2)
-  endDate.setMonth(endDate.getMonth() + 8)
 
   const forecastData = payplan.map((monthData) => {
     const {
@@ -68,26 +61,18 @@ const useForecastData = () => {
   return { forecastData }
 }
 
-const TooltipContent: FC = ({
+const TooltipContent = ({
   active,
   payload,
   label
-}: {
-  active?: boolean
-  payload?: Array<{
-    color?: string
-    value: number
-    name: string
-  }>
-  label?: string
-}) => {
+}: Partial<TooltipContentProps<number, string>>) => {
   if (active) {
     return (
       <div className="rounded-md border bg-slate-800 p-4 text-slate-100 shadow-md">
         <p className="text-lg font-semibold">{label}</p>
         {payload?.map((item) => (
           <p key={item.name} style={{ color: item.color }}>
-            {item.name} {euroFormatter.format(item.value)}
+            {item.name} {euroFormatter.format(Number(item.value ?? 0))}
           </p>
         ))}
       </div>
@@ -114,9 +99,10 @@ interface Props {
 
 export const Forecast = ({ className }: Props) => {
   const { forecastData } = useForecastData()
+  const now = new Date().toLocaleString('default', { month: 'short' })
 
   return (
-    <Card className={className}>
+    <Card className={className} aria-label="Expense forecast">
       <CardHeader>
         <CardTitle>Forecast</CardTitle>
         <CardDescription>

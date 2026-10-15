@@ -59,10 +59,20 @@ export const DateSelector = () => {
 
   return (
     <article className="flex flex-row items-center justify-between gap-2">
-      <Button className="h-auto p-2" variant="ghost" onClick={prevMonth}>
+      <Button
+        aria-label="Previous month"
+        className="h-auto p-2"
+        variant="ghost"
+        onClick={prevMonth}
+      >
         <ArrowLeft size={12} />
       </Button>
-      <Button className="h-auto p-2" variant="ghost" onClick={nextMonth}>
+      <Button
+        aria-label="Next month"
+        className="h-auto p-2"
+        variant="ghost"
+        onClick={nextMonth}
+      >
         <ArrowRight size={12} />
       </Button>
       <Button
