@@ -1,9 +1,5 @@
-import { ProfileHeader } from '@components/profile/header'
+import { PageSkeleton } from '@components/dashboard/skeletons'
 
-export default function ProfileLoading() {
-  return (
-    <>
-      <ProfileHeader.skeleton />
-    </>
-  )
+export default function Loading() {
+  return <PageSkeleton kind="profile" />
 }

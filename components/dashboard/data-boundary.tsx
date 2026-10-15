@@ -7,33 +7,29 @@ import {
   useShareQuery
 } from '@hooks/resources'
 import { usePathname } from 'next/navigation'
+import { QueryState } from './query-state'
+import { PageSkeleton } from './skeletons'
 
-function State({
-  pending,
-  error,
-  retry,
-  children
+function Contracts({
+  children,
+  detail,
+  dashboard
 }: {
-  pending: boolean
-  error: Error | null
-  retry: () => void
   children: React.ReactNode
+  detail: boolean
+  dashboard: boolean
 }) {
-  if (pending) return <p role="status">Loading your data…</p>
-  if (error)
-    return (
-      <div role="alert">
-        <p>{error.message}</p>
-        <button onClick={retry}>Try again</button>
-      </div>
-    )
-  return children
-}
-function Contracts({ children }: { children: React.ReactNode }) {
   const contracts = useContracts()
   const shares = useShareQuery()
   return (
-    <State
+    <QueryState
+      skeleton={
+        <PageSkeleton
+          kind={dashboard ? 'dashboard' : detail ? 'detail' : 'list'}
+        />
+      }
+      hasData={contracts.data !== undefined && shares.data !== undefined}
+      fetching={contracts.isFetching || shares.isFetching}
       error={contracts.error ?? shares.error}
       pending={contracts.isPending || shares.isPending}
       retry={() => {
@@ -42,13 +38,16 @@ function Contracts({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </State>
+    </QueryState>
   )
 }
 function Providers({ children }: { children: React.ReactNode }) {
   const query = useProviderRelations()
   return (
-    <State
+    <QueryState
+      skeleton={<PageSkeleton kind="list" />}
+      hasData={query.data !== undefined}
+      fetching={query.isFetching}
       error={query.error}
       pending={query.isPending}
       retry={() => {
@@ -56,13 +55,16 @@ function Providers({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </State>
+    </QueryState>
   )
 }
 function Notifications({ children }: { children: React.ReactNode }) {
   const query = useNotificationQuery()
   return (
-    <State
+    <QueryState
+      skeleton={<PageSkeleton kind="list" />}
+      hasData={query.data !== undefined}
+      fetching={query.isFetching}
       error={query.error}
       pending={query.isPending}
       retry={() => {
@@ -70,7 +72,7 @@ function Notifications({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </State>
+    </QueryState>
   )
 }
 export function DashboardDataBoundary({
@@ -84,5 +86,12 @@ export function DashboardDataBoundary({
     return <Providers>{children}</Providers>
   if (path.startsWith('/dashboard/notifications'))
     return <Notifications>{children}</Notifications>
-  return <Contracts>{children}</Contracts>
+  return (
+    <Contracts
+      detail={path.split('/').length > 3}
+      dashboard={path === '/dashboard'}
+    >
+      {children}
+    </Contracts>
+  )
 }

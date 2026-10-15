@@ -27,22 +27,16 @@ export const ProviderDialog = ({
   sideEffect?: (userProvider: Provider) => void
 }) => {
   const create = useProviderWrite()
-  const [loading, setLoading] = useState(false)
+  const loading = create.isPending
 
   const handleSubmit = async (brand: Brand) => {
     try {
-      setLoading(true)
-
       const provider = await create.mutateAsync(brand)
 
       sideEffect?.(provider)
       setOpen(false)
-    } catch (e) {
-      // TODO: toast
-      // eslint-disable-next-line no-console
-      console.error(e)
-    } finally {
-      setLoading(false)
+    } catch {
+      /* Keep the selection; mutation displays the error. */
     }
   }
 
@@ -54,6 +48,7 @@ export const ProviderDialog = ({
           <DialogTitle>Add a provider</DialogTitle>
           <DialogDescription>Add a new provider to yout list</DialogDescription>
         </DialogHeader>
+        {create.isError && <p role="alert">{create.error.message}</p>}
         <BrandAutocomplete loading={loading} onSelect={handleSubmit} />
       </DialogContent>
     </Dialog>

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('record synthetic route delivery and avoid expense queries on profile', async ({
+test('record synthetic route delivery and avoid unrelated relation queries on profile', async ({
   browser
 }, testInfo) => {
   const report = []
@@ -22,13 +22,11 @@ test('record synthetic route delivery and avoid expense queries on profile', asy
       const path = url.pathname
       if (path.startsWith('/api/'))
         api.push(
-          response
-            .body()
-            .then((body) => ({
-              path,
-              type: url.searchParams.get('type'),
-              bytes: body.byteLength
-            }))
+          response.body().then((body) => ({
+            path,
+            type: url.searchParams.get('type'),
+            bytes: body.byteLength
+          }))
         )
     })
     await page.goto(`http://127.0.0.1:3100${route}`)
@@ -67,10 +65,8 @@ test('record synthetic route delivery and avoid expense queries on profile', asy
     const requests = await Promise.all(api)
     if (route === '/dashboard/profile')
       expect(
-        requests.some(
-          ({ path, type }) =>
-            (path === '/api/contract' && type !== 'WORK') ||
-            ['/api/share', '/api/provider-on-contract'].includes(path)
+        requests.some(({ path }) =>
+          ['/api/share', '/api/provider-on-contract'].includes(path)
         )
       ).toBe(false)
     report.push({

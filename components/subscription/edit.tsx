@@ -36,27 +36,23 @@ export const SubEdit = ({
   triggerDecorator = TRIGGER_DECORATOR
 }: Props) => {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const writes = useSubscriptionWrites()
+  const mutation = writes.update
+  const loading = mutation.isPending
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
-    setLoading(true)
 
     try {
       const formData = Object.fromEntries(
         new FormData(e.currentTarget)
       ) as unknown as SubFormData
 
-      await writes.update(sub.id, formData)
+      await mutation.mutateAsync({ id: sub.id, body: formData })
 
       setOpen(false)
-    } catch (e) {
-      // TODO: toast
-      // eslint-disable-next-line no-console
-      console.error(e)
-    } finally {
-      setLoading(false)
+    } catch {
+      /* Keep the draft; the mutation displays the error. */
     }
   }
 
@@ -64,7 +60,15 @@ export const SubEdit = ({
   if (sub.userId !== viewerId) return null
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!loading) {
+          mutation.reset()
+          setOpen(value)
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           className={cn('p-2 h-auto', className)}
@@ -84,6 +88,7 @@ export const SubEdit = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
+        {mutation.isError && <p role="alert">{mutation.error.message}</p>}
         <DialogHeader>
           <DialogTitle>Edit subscription</DialogTitle>
           <DialogDescription>

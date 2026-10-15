@@ -1,4 +1,5 @@
 'use client'
+import { PageSkeleton } from '@components/dashboard/skeletons'
 
 import { ButtonLink } from '@components/button-link'
 import { ProviderLogo } from '@components/provider/ProviderLogo'
@@ -20,8 +21,8 @@ export default function Page() {
   const id = params.id
   const { sub, isLoading, error } = useSub(id as string)
 
-  if (isLoading) return <p role="status">Loading…</p>
-  if (error) return <p role="alert">{error.message}</p>
+  if (isLoading) return <PageSkeleton kind="detail" />
+  if (error && !sub) return <p role="alert">{error.message}</p>
   if (!sub) return <p>Resource not found or no longer shared with you.</p>
 
   const {

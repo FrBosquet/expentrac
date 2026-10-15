@@ -1,22 +1,12 @@
 'use client'
 
 import { Search, ServerOff, X } from 'lucide-react'
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react'
+import { type ChangeEvent, type FormEvent, useState } from 'react'
+import { useBrandSearch } from '@hooks/search'
+import { type Brand } from '@sdk/brands'
+export type { Brand } from '@sdk/brands'
 
 import { Spinner } from './ui/spinner'
-
-export interface Brand {
-  name: string
-  domain: string
-  icon: string
-  brandId: string
-}
 
 export interface Autocomplete {
   value: string
@@ -29,20 +19,24 @@ interface Props {
   loading?: boolean
 }
 
-export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
+export const BrandAutocomplete = ({ loading = false, onSelect }: Props) => {
   const [value, setValue] = useState({
     text: '',
     active: false,
     brand: null as Brand | null
   })
-  const [queries, setQueries] = useState<Brand[]>([])
+  const {
+    query: search,
+    results: queries,
+    searching,
+    enabled
+  } = useBrandSearch(value.text, value.active && !loading)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
     const text = queries?.[0]?.domain || value.text
     setValue({ text, active: false, brand: null })
-    setQueries([])
   }
 
   const handleClick = (brand: Brand) => {
@@ -51,34 +45,8 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
   }
 
   const reset = () => {
-    setQueries([])
     setValue({ text: '', active: false, brand: null })
   }
-
-  const getQueries = useCallback(async (searchValue: string) => {
-    if (searchValue !== '') {
-      try {
-        const url = `https://api.brandfetch.io/v2/search/${searchValue}`
-
-        const res = await fetch(url)
-        if (res.ok) {
-          const data = await res.json()
-          setQueries(data)
-        }
-      } catch (err) {
-        // TODO: Add a toast notification
-        // eslint-disable-next-line no-console
-        console.error('Something went wrong, try again later.')
-      }
-      return
-    }
-
-    setQueries([])
-  }, [])
-
-  useEffect(() => {
-    void getQueries(value.text)
-  }, [getQueries, value.text])
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -122,7 +90,25 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
       <div>
         {value.active && value.text !== '' && (
           <div className="absolute inset-x-0 max-h-[200px] overflow-y-auto rounded-md border  bg-background p-2 shadow-lg">
-            {queries.length > 0 ? (
+            {searching ? (
+              <p role="status" className="p-3">
+                Searching…
+              </p>
+            ) : enabled && search.isError ? (
+              <div role="alert" className="p-3">
+                <p>{search.error.message}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void search.refetch()
+                  }}
+                >
+                  Try again
+                </button>
+              </div>
+            ) : value.text.trim().length < 2 ? (
+              <p className="p-3">At least two characters</p>
+            ) : queries.length > 0 ? (
               <div className="flex flex-col gap-1">
                 {queries.map((query, i) => (
                   <div

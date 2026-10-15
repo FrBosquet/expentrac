@@ -38,23 +38,18 @@ export const LoanDelete = ({
 }: Props) => {
   const { id, name } = loan
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const writes = useLoanWrites()
+  const mutation = writes.remove
+  const loading = mutation.isPending
 
   const handleDelete = async () => {
-    setLoading(true)
-
     try {
-      await writes.remove(id)
+      await mutation.mutateAsync(id)
 
       setOpen(false)
       void sideEffect?.()
-    } catch (e) {
-      // TODO: toast
-      // eslint-disable-next-line no-console
-      console.error(e)
-    } finally {
-      setLoading(false)
+    } catch {
+      /* Keep the draft; the mutation displays the error. */
     }
   }
 
@@ -62,7 +57,15 @@ export const LoanDelete = ({
   if (loan.userId !== viewerId) return null
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!loading) {
+          mutation.reset()
+          setOpen(value)
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           aria-label="Delete loan"
@@ -76,6 +79,7 @@ export const LoanDelete = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
+        {mutation.isError && <p role="alert">{mutation.error.message}</p>}
         <DialogHeader>
           <DialogTitle>Delete loan</DialogTitle>
           <DialogDescription>

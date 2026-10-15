@@ -1,7 +1,7 @@
 import { type Brand } from '@components/BrandAutocomplete'
 
 import { provider } from './decode'
-import { envelope, request } from './http'
+import { allPages, envelope, request } from './http'
 
 const add = async (body: Brand) =>
   request(
@@ -9,4 +9,5 @@ const add = async (body: Brand) =>
     { method: 'POST', body: JSON.stringify(body) },
     envelope(provider)
   )
-export const providerSdk = { add }
+const get = (signal?: AbortSignal) => allPages('provider', provider, signal)
+export const providerSdk = { add, get }

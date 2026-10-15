@@ -1,6 +1,8 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { PageSkeleton } from '@components/dashboard/skeletons'
+import { createQueryClient } from '@lib/query-policy'
 import { useSession } from 'next-auth/react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { create } from 'zustand'
@@ -18,19 +20,7 @@ function SessionQueries({
   children: React.ReactNode
   userId: string
 }) {
-  const [client] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60_000,
-            retry: (count, error) =>
-              count < 2 && (!('status' in error) || Number(error.status) >= 500)
-          },
-          mutations: { retry: false }
-        }
-      })
-  )
+  const [client] = useState(createQueryClient)
   useEffect(
     () => () => {
       void client.cancelQueries()
@@ -53,7 +43,7 @@ export function StoreProvider({
   userId: string
 }) {
   const { data: session, status } = useSession()
-  if (status === 'loading') return <p role="status">Loading your session…</p>
+  if (status === 'loading') return <PageSkeleton />
   const currentUserId = session?.user?.id
   if (!currentUserId) return <p>Please sign in to continue.</p>
   return (

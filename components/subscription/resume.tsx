@@ -44,26 +44,22 @@ export const SubResume = ({
   children = TRIGGER_DECORATOR
 }: Props) => {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const writes = useSubscriptionWrites()
+  const mutation = writes.resume
+  const loading = mutation.isPending
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
 
     try {
       const form = e.currentTarget
       const formData = new FormData(form)
 
-      await writes.resume(formData)
+      await mutation.mutateAsync(formData)
 
       setOpen(false)
-    } catch (e) {
-      // TODO: toast
-      // eslint-disable-next-line no-console
-      console.error(e)
-    } finally {
-      setLoading(false)
+    } catch {
+      /* Keep the draft; the mutation displays the error. */
     }
   }
 
@@ -78,7 +74,15 @@ export const SubResume = ({
   if (sub.userId !== viewerId) return null
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!loading) {
+          mutation.reset()
+          setOpen(value)
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           aria-label="Resume subscription"
@@ -92,6 +96,7 @@ export const SubResume = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
+        {mutation.isError && <p role="alert">{mutation.error.message}</p>}
         <DialogHeader>
           <DialogTitle>Resume subscription</DialogTitle>
           <DialogDescription>

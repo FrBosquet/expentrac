@@ -10,6 +10,8 @@ import {
   CardMenu,
   CardTitle
 } from '@components/ui/card'
+import { QueryState } from '@components/dashboard/query-state'
+import { RowsSkeleton } from '@components/dashboard/skeletons'
 import { useContracts } from '@hooks/resources'
 import { CONTRACT_TYPE } from '@lib/contract'
 import { euroFormatter } from '@lib/currency'
@@ -82,7 +84,7 @@ const WorkContractRow = ({ contract }: { contract: Contract }) => {
 }
 
 export const WorkContractSummary = ({ className }: Props) => {
-  const query = useContracts(CONTRACT_TYPE.WORK)
+  const query = useContracts()
   const contracts = query.contracts.filter(
     (contract) => contract.type === CONTRACT_TYPE.WORK
   )
@@ -104,23 +106,32 @@ export const WorkContractSummary = ({ className }: Props) => {
         </Button>
       </CardMenu>
       <CardContent>
-        {query.isLoading && <p>Loading...</p>}
-        {query.isError && <p>Error: {query.error?.message}</p>}
-        {query.isSuccess && contracts.length === 0 && (
-          <p>No work contracts yet.</p>
-        )}
-        {query.isSuccess && (
-          <ul>
-            {contracts.map((contract) => {
-              return (
-                <WorkContractRow
-                  key={contract.id}
-                  contract={contract as Contract}
-                />
-              )
-            })}
-          </ul>
-        )}
+        <QueryState
+          pending={query.isPending}
+          error={query.error}
+          hasData={query.data !== undefined}
+          fetching={query.isFetching}
+          retry={() => {
+            void query.refetch()
+          }}
+          skeleton={<RowsSkeleton label="Loading work contracts" />}
+        >
+          {query.data !== undefined && contracts.length === 0 && (
+            <p>No work contracts yet.</p>
+          )}
+          {query.data !== undefined && (
+            <ul>
+              {contracts.map((contract) => {
+                return (
+                  <WorkContractRow
+                    key={contract.id}
+                    contract={contract as Contract}
+                  />
+                )
+              })}
+            </ul>
+          )}
+        </QueryState>
       </CardContent>
     </Card>
   )

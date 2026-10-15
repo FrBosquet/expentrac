@@ -1,4 +1,6 @@
 'use client'
+import { QueryState } from '@components/dashboard/query-state'
+import { PageSkeleton } from '@components/dashboard/skeletons'
 import { Input } from '@components/ui/input'
 import { useProfile, useProfileWrite } from '@hooks/resources'
 import { useRouter } from 'next/navigation'
@@ -24,12 +26,19 @@ export default function Page() {
       /* Mutation error is displayed; keep the draft intact. */
     }
   }
-  if (query.isPending) return <p role="status">Loading profile…</p>
-  if (query.isError) return <p role="alert">{query.error.message}</p>
   const user = query.data
 
   return (
-    <>
+    <QueryState
+      pending={query.isPending}
+      error={query.error}
+      hasData={query.data !== undefined}
+      fetching={query.isFetching}
+      retry={() => {
+        void query.refetch()
+      }}
+      skeleton={<PageSkeleton kind="form" />}
+    >
       <form className="col-span-4 flex gap-8" onSubmit={handleSubmit}>
         <fieldset className="flex flex-1 flex-col justify-center gap-2">
           <label className="text-xs uppercase text-theme-light" htmlFor="name">
@@ -72,6 +81,6 @@ export default function Page() {
         </button>
         {mutation.isError && <p role="alert">{mutation.error.message}</p>}
       </form>
-    </>
+    </QueryState>
   )
 }

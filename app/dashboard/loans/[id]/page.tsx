@@ -1,4 +1,5 @@
 'use client'
+import { PageSkeleton } from '@components/dashboard/skeletons'
 
 import { ButtonLink } from '@components/button-link'
 import { useLoan } from '@components/loan/context'
@@ -17,8 +18,8 @@ export default function Page() {
   const id = params.id
   const { loan, isLoading, error } = useLoan(id as string)
 
-  if (isLoading) return <p role="status">Loading…</p>
-  if (error) return <p role="alert">{error.message}</p>
+  if (isLoading) return <PageSkeleton kind="detail" />
+  if (error && !loan) return <p role="alert">{error.message}</p>
   if (!loan) return <p>Resource not found or no longer shared with you.</p>
 
   const {

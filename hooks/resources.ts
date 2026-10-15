@@ -6,12 +6,11 @@ import {
   updateSubscriptionPrice
 } from '@components/subscription/actions'
 import { type LoanFormData } from '@lib/loan'
-import { type Contract } from '@lib/models'
-import { type CONTRACT_TYPE } from '@lib/contract'
 import { type SubFormData } from '@lib/sub'
 import { contractSdk } from '@sdk/contract'
-import { contract, provider, user } from '@sdk/decode'
-import { allPages, envelope, request } from '@sdk/http'
+import { profileSdk } from '@sdk/profile'
+import { workContractSdk } from '@sdk/work-contract'
+import { keys, invalidateResources } from '@lib/query-policy'
 import { loanSdk } from '@sdk/loan'
 import { notificationSdk } from '@sdk/notifications'
 import { providerSdk } from '@sdk/provider'
@@ -20,6 +19,7 @@ import { shareSdk } from '@sdk/share'
 import { subscriptionSdk } from '@sdk/subscription'
 import { useQueryScope } from '@store'
 import {
+  queryOptions,
   useMutation,
   useQuery,
   useQueryClient,
@@ -42,24 +42,22 @@ function queryState<T>(query: UseQueryResult<T>) {
     refetch: query.refetch
   }
 }
-export const keys = {
-  scope: (id: string) => ['private', id] as const,
-  resource: (id: string, name: string) => ['private', id, name] as const
-}
-export function useContracts(type?: CONTRACT_TYPE) {
-  const id = useQueryScope()
-  const query = useQuery({
-    queryKey: keys.resource(id, type ? `contracts/${type}` : 'contracts'),
-    queryFn: ({ signal }) => contractSdk.get(id, signal, type),
+export { keys } from '@lib/query-policy'
+export const contractOptions = (id: string) =>
+  queryOptions({
+    queryKey: keys.resource(id, 'contracts'),
+    queryFn: ({ signal }) => contractSdk.get(undefined, signal),
     enabled: !!id
   })
+export function useContracts() {
+  const query = useQuery(contractOptions(useQueryScope()))
   return { ...queryState(query), contracts: query.data ?? empty }
 }
 export function useShareQuery() {
   const id = useQueryScope()
   const query = useQuery({
     queryKey: keys.resource(id, 'shares'),
-    queryFn: ({ signal }) => shareSdk.get(id, signal),
+    queryFn: ({ signal }) => shareSdk.get(undefined, signal),
     enabled: !!id
   })
   return { ...queryState(query), shares: query.data ?? empty }
@@ -68,7 +66,8 @@ export function useNotificationQuery() {
   const id = useQueryScope()
   const query = useQuery({
     queryKey: keys.resource(id, 'notifications'),
-    queryFn: ({ signal }) => notificationSdk.get(id, signal),
+    staleTime: 20_000,
+    queryFn: ({ signal }) => notificationSdk.get(undefined, signal),
     enabled: !!id
   })
   return { ...queryState(query), notifications: query.data ?? empty }
@@ -77,7 +76,7 @@ export function useProviderRelations() {
   const id = useQueryScope()
   const query = useQuery({
     queryKey: keys.resource(id, 'provider-relations'),
-    queryFn: ({ signal }) => providerOnContractSdk.get(id, signal),
+    queryFn: ({ signal }) => providerOnContractSdk.get(undefined, signal),
     enabled: !!id
   })
   return { ...queryState(query), relations: query.data ?? empty }
@@ -86,8 +85,8 @@ export function useProfile() {
   const id = useQueryScope()
   return useQuery({
     queryKey: keys.resource(id, 'profile'),
-    queryFn: ({ signal }) =>
-      request(`profile?userId=${encodeURIComponent(id)}`, { signal }, user),
+    staleTime: 5 * 60_000,
+    queryFn: ({ signal }) => profileSdk.get(signal),
     enabled: !!id
   })
 }
@@ -95,20 +94,29 @@ export function useProviderCatalog() {
   const id = useQueryScope()
   const query = useQuery({
     queryKey: keys.resource(id, 'providers'),
-    queryFn: ({ signal }) =>
-      allPages(`provider?userId=${encodeURIComponent(id)}`, provider, signal),
+    staleTime: 5 * 60_000,
+    queryFn: ({ signal }) => providerSdk.get(signal),
     enabled: !!id
   })
   return { ...queryState(query), providers: query.data ?? empty }
 }
-function useWrite<T, V>(operation: (value: V) => Promise<T>) {
+const contractResources = [
+  'contracts',
+  'shares',
+  'provider-relations',
+  'notifications'
+] as const
+function useWrite<T, V>(
+  operation: (value: V) => Promise<T>,
+  resources: readonly string[] = contractResources
+) {
   const id = useQueryScope()
   const client = useQueryClient()
   return useMutation({
     mutationFn: operation,
     onError: (error) => toast.error(error.message),
     onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: keys.scope(id) })
+      await invalidateResources(client, id, resources)
     }
   })
 }
@@ -119,10 +127,9 @@ export function useLoanWrites() {
   )
   const remove = useWrite(loanSdk.delete)
   return {
-    create: create.mutateAsync,
-    update: (id: string, body: LoanFormData) =>
-      update.mutateAsync({ id, body }),
-    remove: remove.mutateAsync
+    create,
+    update,
+    remove
   }
 }
 export function useSubscriptionWrites() {
@@ -135,12 +142,12 @@ export function useSubscriptionWrites() {
   const resume = useWrite(resumeSubscription)
   const price = useWrite(updateSubscriptionPrice)
   return {
-    create: create.mutateAsync,
-    update: (id: string, body: SubFormData) => update.mutateAsync({ id, body }),
-    remove: remove.mutateAsync,
-    pause: pause.mutateAsync,
-    resume: resume.mutateAsync,
-    price: price.mutateAsync
+    create,
+    update,
+    remove,
+    pause,
+    resume,
+    price
   }
 }
 export function useShareWrite() {
@@ -163,20 +170,7 @@ export function useAckWrite() {
     [mutateAsync]
   )
 }
-export const useProviderWrite = () => useWrite(providerSdk.add)
-export const useProfileWrite = () =>
-  useWrite((body: { name: string; occupation: string }) =>
-    request(
-      'profile',
-      { method: 'PATCH', body: JSON.stringify(body) },
-      envelope(user)
-    )
-  )
+export const useProviderWrite = () => useWrite(providerSdk.add, ['providers'])
+export const useProfileWrite = () => useWrite(profileSdk.update, ['profile'])
 export const useWorkWrite = () =>
-  useWrite((body: Record<string, FormDataEntryValue>) =>
-    request(
-      'work-contract',
-      { method: 'POST', body: JSON.stringify(body) },
-      envelope(contract)
-    )
-  )
+  useWrite(workContractSdk.create, contractResources)
