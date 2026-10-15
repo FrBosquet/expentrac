@@ -1,56 +1,70 @@
-# Technology audit implementation
+# Technology audit remediation
 
-Scope: `technology-audit.md` and its dashboard React Query follow-up. All audit commits use `:chore:`. The changelog generator belongs to another project.
+Updated 2026-10-15. The original [audit](technology-audit.md) is the baseline from 2026-10-13. Code remediation is implemented and verified locally. The audit remains open for deployment-specific scheduling, production data reconciliation/migration, actual provider configuration and destructive legacy retirement. No production database operation, deployment or real email delivery was performed.
 
-Agreed policy: shared contract reads require acceptance; edits remain owner-only. WORK is excluded from expense digests. Money will move to integer cents with explicit rounding and deterministic splits.
+## Agreed decisions
 
-## Verification environment
+- Audit commits begin with `:chore:`; there is no changelog generator in this repository.
+- Store money as integer cents, with half-up conversion and deterministic owner-first/recipient-ID remainder allocation.
+- WORK is income and is excluded from expense digests. Shared contracts are readable only after acceptance; edits are owner-only.
+- Existing development credentials point to production. Tests use synthetic, disposable PostgreSQL and explicit URL overrides. Production execution is a separate release step.
 
-Development credentials point to production. Do not run migration, seed, maintenance, cron, or API smoke tests against those credentials. `scripts/test-database.mjs` creates disposable localhost PostgreSQL with synthetic data and overrides connection variables. It neither loads nor copies production data.
+## Audit-item status
 
-## Completed batches
+| Audit area | Implemented result | Verification / remaining gate |
+|---|---|---|
+| P0 private reads and user search | Identity from session; forged userId rejected; owner-scoped lists/cursors; bounded pages/search; minimal DTOs and invitation previews | Unit and real-session anonymous/owner/pending/accepted/third-user cases; cursor ownership/type filtering |
+| P0 arbitrary email/notification and maintenance HTTP | Public write/maintenance/revalidation routes removed; maintenance is explicit offline tooling | Build manifest and callers checked; no production endpoint probes |
+| P0 cron/email | Bearer secret, daily durable ID, metrics-only replies, persistent outbox, conditional leases, bounded retries, queue-only digest production | Repeated authenticated cron, missing secret/key, races, rollback and provider-error regressions; frequent worker schedule still awaits hosting-plan confirmation |
+| P0 share authorization | Recipient-only boolean pending→final transition; accepted-only reads; owner-only edits and action controls | Real recipient detail, repeated answer, third-user write denial and cache isolation |
+| P0 public revalidation secret | Endpoint/client secret use removed; authenticated mutations invalidate session-scoped queries | Remove obsolete NEXT_PUBLIC_REVALIDATE_SECRET from deployment configuration |
+| P1 type/WORK/ack correctness | Contract filter honored; WORK excluded; ack is explicitly optional true/false | Unit/API/cron fixtures include income and expense types |
+| P1 mutation validation/reliability | Dates, money, enums, URLs and relations validated; serializable domain + notification + rendered outbox changes; durable sliding-hour invitation limit | Eleven database tests include concurrent bursts and render rollback; deleted shares cannot reset the limit; unchanged recipients are free |
+| P1 subscription and carryover editing | Active period selected without rewriting closed history; pause/resume preserved; missing LINK is created safely; billing edits disabled while paused | Browser CRUD and real pause/resume without reload; owner policy checked before mutation validation |
+| P1 browser transport | Same-origin cookies, no-store, timeout/abort, HTTP/JSON/envelope validation, encoded IDs, no automatic write retry; nested Date restoration is idempotent | SDK regression tests and real accepted-recipient rendering |
+| P1 dashboard state | TanStack Query owns remote resources, per-account clients/keys, mutation invalidation, loading/error/retry boundaries; Zustand retains date state only | Account change/direct navigation/reload/profile/CRUD/browser regressions; profile fetches WORK only |
+| P1 precision | INTEGER cent storage in current and retained legacy tables; cent-based splits/payplan totals; old notification money normalized on read | Runtime guards refuse old/partial schemas before financial access; actual conversion, rounding, rejected unsafe data, repeated deployment, real pg_dump/pg_restore of synthetic rows |
+| P2 Prisma/DB | Prisma 5→6→7, aligned CLI/client/adapter, generated client outside node_modules, per-process pool cap and development singleton; shared browser types separated | Generate/migrations/transactions/build verified; production TLS/server version/connection budget remain release checks |
+| P2 date/job behavior | Europe/Madrid digest date, DST and 29–31 month-end rules; sequential production/delivery; UI payment previews clamp month-end/leap days and honor stored payday | Calendar and browser tests; deployment job volume/backlog/runtime limits need real-environment verification |
+| P2 list performance | Pagination plus nonunique owner/recipient/notification and relation indexes | Real synthetic PostgreSQL plans show index access; no production speed claim; see performance.md |
+| P2 public bundle/providers/icons | TooltipProvider moved to dashboard; named icon exports; Session/theme retained for actual public consumers; Recharts is dashboard-only | Comparable local fixture measured 21,125 fewer public JS transfer bytes; no production latency claim |
+| P2 blog | Metadata parsed independently of MDX; published inventory allowlist, request-memoized content, static pages and explicit 404 | Metadata/traversal tests plus built public page/unknown-slug browser checks |
+| P2 dependencies/toolchain | Staged framework/ORM/UI/email upgrades, pinned Node/pnpm, coherent lock, explicit checks/CI, unused dependencies removed | Frozen install; clean archived checkout install/build with fake env and unreachable DB; runtime audit clean; two unpatched development advisories documented |
+| P2 docs/config | AGENTS.md, current README/env template/reference, coherent TS/ESLint config, safe local Prisma wrappers and offline scripts | Local command bypass guards and optional payday dry-run/apply/idempotency tested |
+| Legacy retirement | Consumers inventoried; read-only equivalence/mapping tool and rollback/retirement procedure provided; all old tables retained | Actual production equivalence is unverified. No DROP TABLE or inferred import is authorized by a synthetic test |
 
-- Session identity for private list GETs; reject forged `userId`; direct authorized dashboard reads; contract type filter; owner/accepted-recipient detail access; recipient-only boolean share responses.
-- Removed arbitrary HTTP email/notification creation, maintenance GET, public-secret revalidation and browser callers. Maintenance moved to an explicit opt-in offline script.
-- Authenticated bounded cron, Madrid calendar and month-end payment rules, WORK excluded, durable daily notification key.
-- Atomic notification + rendered email outbox, leased delivery, stable Resend keys and bounded retries. Existing email consumers enqueue and attempt delivery after commit. No raw recipient/payload errors are logged.
-- Disposable PostgreSQL applied all 25 migrations. Integration tests confirm notification/outbox commit, rollback on rendering failure and unique delivery keys. Unit tests cover authorization, cron and delivery behavior.
+## Current stack and migration evidence
 
-- Patched baseline: Next/MDX/plugin 14.2.35, NextAuth 4.24.15, Node 24.21.0 and pnpm 10.20.0 pinned. Explicit lint/typecheck/tests/build CI; invalid TS config and missing script removed; development Prisma singleton and shared type module. Build passes with fake credentials and no database.
-- Baseline Next 14 build output: landing first-load JS 125 kB, blog 96.5 kB, dashboard 262 kB. These are build-reported estimates, not live TTFB measurements.
+- Node 24.21.0, pnpm 10.20.0; TypeScript 5.9.3, ESLint 10 flat config.
+- Next 14.2.35 containment, then 15.5.28/React 19, then Next/MDX/plugin 16.4.1 with React/DOM 19.3.1 and compatible UI peers. Explicit Webpack is retained: the attempted default Turbopack build emitted an empty app-path manifest despite exit 0. A compiled-route guard prevents that silent result. Compiler/Cache Components remain disabled.
+- Prisma 6.19.3 intermediate, then CLI/client/adapter 7.10.0. NextAuth remains patched stable v4.24.15 with its v4 adapter; new-user and welcome queuing are atomic.
+- Query 5.104.2; Zustand 4 patch then 5.0.15; Recharts 3.10.1; Tailwind/PostCSS integration 4.3.3 with merge 3.7.0; React Email 6.11.1 and Resend 6.33.0; Lucide 1.57.0. Existing copied shadcn components and compatible animation plugin are retained and browser-tested.
+- Package/lock files are authoritative. All implementation batches are committed locally with `:chore:`. No push or deployment was made.
 
-- Runtime mutation validation and authenticated serializable pause/resume/price actions; provider metadata timeout and validation; consistent transport errors, DTO envelope checks and encoded IDs.
-- Dashboard resources moved to session-scoped Query clients and mutation invalidation; Zustand retains only date. Profile/WORK use client queries and mutations; bell is inside provider; loading/error/retry boundaries included.
-- Three real-session browser/API tests pass on synthetic localhost data: permissions/filtering, profile + navigation consistency, direct detail/reload/account isolation. Google OAuth itself remains untested.
+## Local verification
 
-- Next 15.5.28 / React 19.3.1 stage: async route params and metadata, remote image patterns, current Radix/Query/form/toast peers. Unit tests, typecheck, lint, production build and real-session production-bundle browser checks pass. Next 15 dev served a truncated first-load layout chunk during recompilation; this remains a dev smoke check for the Next 16 stage. The codemod could not transform wrapped route exports; those were migrated manually and checked.
+- `pnpm check`: 143 Jest regression cases, typecheck and warning-free lint. Eleven database cases are deliberately skipped in the ordinary test run and executed separately.
+- `pnpm test:db`: eleven real PostgreSQL tests for transaction atomicity, concurrency, durable keys, daily queuing, OAuth/welcome rollback and rejection of old/partial schemas.
+- `pnpm test:browser`: eleven real-session browser/API tests covering policy, public blog/404, profile, shared detail, CRUD, carryover links, historical periods, quotas, protected jobs, pause/resume, themes, chart keyboard tooltip and mobile/dialog layout. No real Google OAuth or email delivery.
+- `pnpm test:emails`: nine rendered templates with escaping/CSS checks; light-card screenshot QA reviewed locally.
+- `pnpm test:money`: old euro schema → cents, exact counts/totals, repeated deploy without double conversion, backup/restore and unsafe-value rollback.
+- `pnpm test:queries`, `test:legacy`, `test:maintenance`: actual synthetic plans, explicit legacy mapping/mismatch checks, loopback command guards and optional Madrid payday backfill.
+- `pnpm build`: 35 compiled routes, static public pages and dynamic authenticated routes. A fresh archive of commit fff55e6 also passed frozen install/build without .env.local, node_modules, generated client or Next cache, using fake credentials and an unreachable database URL.
+- Final `pnpm audit --prod`: zero reported advisories. Full audit retains unpatched development-only braces/sprintf-js findings; no suppressions. Remote CI has not been run.
 
-- Next 16.4.1 and ESLint 10.12.0 flat config pass checks, full production build, compiled-route guard and production/dev real-session browser tests. Explicit Webpack is retained: a default Turbopack build emitted an empty app-path manifest despite exit 0. The Next 15 dev hydration failure no longer reproduces on Next 16. Compiler/Cache Components remain disabled.
+## Release gates still open
 
-- Prisma 6.19.3 intermediate stage: exact CLI/client alignment, generation, all migrations on disposable PostgreSQL, transaction regressions, full checks/build and real-session browser/API checks passed. No schema/data conversion was coupled to this bump.
+1. Confirm hosting plan and activate a compatible frequent outbox worker schedule. The protected endpoint and Pro template are prepared; active vercel.json remains once daily. A daily schedule alone cannot provide prompt retries inside the 23-hour cutoff.
+2. Restore a real production backup into an isolated database. Run read-only migration inspection and legacy reconciliation, review exceptions/mappings and rehearse recovery. Synthetic equivalence does not prove actual legacy data was migrated.
+3. Confirm PostgreSQL provider/server version, direct URL, SSL/certificates, migration permissions and aggregate connection budget. Stop application writes/financial reads and cron during the in-place unit conversion.
+4. Use the guarded production runner, deploy the matching app/client, verify Google OAuth/session creation, owner/recipient/third-user behavior, money totals and actual scheduler/provider delivery, then reopen access.
+5. Prepare destructive legacy retirement only after real equivalence, explicit import decisions for missing records and backup/restore approval. Preserve the source tables and recovery dump meanwhile.
 
-- Prisma 7.10.0: generated client outside node_modules, explicit environment/migration config, aligned PostgreSQL adapter, per-process pool cap and development cache. Documented CommonJS generator output preserves existing tooling. Generation, checks, full build, disposable migration/transaction tests and real-session browser/API checks pass. Production SSL/provider connection budget still needs release verification.
+## Operational references
 
-- Integer cents implemented in current and retained legacy money columns. Half-up conversion, viewer-aware deterministic splits and cent-based payplan totals are tested. Old-schema seeded migration, unsafe-data rollback and real synthetic pg_dump/pg_restore pass, as do checks/build/database/browser regressions. See `money-migration.md` for the maintenance-window and rollback procedure; production remains unchanged.
-
-- React Email consolidated to 6.11.1; nine templates render with escaped user text and resolved CSS, local screenshot QA checked. Unsupported shadow-variable CSS and invalid list markup corrected; theme toggle now uses the UI Button, toasts use the actual theme context. Deprecated email packages, unused Postgres SDK/docuporter and replaced next-themes removed.
-
-## Remaining work
-
-- Zustand 4 patch then 5.0.15, Recharts 3.10.1 and Tailwind 4.3.3/PostCSS/merge 3 upgraded in separate batches. CSS-first theme replaces the preset/config; custom utilities retained. Existing copied shadcn animations use the compatible JS plugin via `@plugin`. Five browser tests cover chart keyboard tooltip, date controls, theme persistence, mobile fit and dialog open/Escape. Local light/dark/mobile screenshots reviewed. Summary cards now show loaded values without a delayed zero state.
-
-- Production migration runner added: explicit direct URL, read-only inspection by default, exclusive private backup, maintenance/restore attestations, deploy and post-conversion counts/totals. Its real backup is restored in the synthetic money fixture; repeated deployment checks prevent double conversion. Production execution remains a release step.
-
-- Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.
-- Reproducible Node/pnpm/CI baseline and patched supported framework; Next 14→15→16 / React 19.
-- Common browser transport; React Query for all remote dashboard resources; session-scoped cache and mutations.
-- Prisma singleton, separate shared types, Prisma 5→6→7.
-- Integer-cent schema, conversion/reconciliation/rollback; legacy inventory and gated retirement.
-- UI/email/tooling updates, blog metadata/slug handling, bundle and query measurements, indexes/pagination.
-- Documentation and operational verification.
-
-## Release requirements
-
-The outbox migration must be applied before deploying code that uses it. Configure a server-only `CRON_SECRET` and verify Vercel sends its bearer header. Remove `NEXT_PUBLIC_REVALIDATE_SECRET` from deployment configuration. Sources: [Vercel cron authentication](https://vercel.com/docs/cron-jobs/manage-cron-jobs), [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys).
-
-Resend deduplicates keys for 24 hours. Automated retries stop after 23 hours from first attempt or five attempts. Failed/uncertain deliveries require reconciliation, not blind replay with a new key. The existing daily cron retries queued work; operators can invoke the authenticated cron inside the retry window. No deployment, production migration, production backup verification, Google OAuth test, live data reconciliation, or real query plan/bundle improvement is claimed.
+- [Production migration and rollback](money-migration.md)
+- [Legacy reconciliation and retirement](legacy-reconciliation.md)
+- [Mutation/delivery guarantees](mutation-reliability.md)
+- [Retry worker scheduling](outbox-operations.md)
+- [Dependency security status](dependency-security.md)
+- [Performance measurements and limits](performance.md)
