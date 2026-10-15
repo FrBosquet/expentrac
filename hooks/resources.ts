@@ -7,6 +7,7 @@ import {
 } from '@components/subscription/actions'
 import { type LoanFormData } from '@lib/loan'
 import { type Contract } from '@lib/models'
+import { type CONTRACT_TYPE } from '@lib/contract'
 import { type SubFormData } from '@lib/sub'
 import { contractSdk } from '@sdk/contract'
 import { contract, provider, user } from '@sdk/decode'
@@ -45,11 +46,11 @@ export const keys = {
   scope: (id: string) => ['private', id] as const,
   resource: (id: string, name: string) => ['private', id, name] as const
 }
-export function useContracts() {
+export function useContracts(type?: CONTRACT_TYPE) {
   const id = useQueryScope()
   const query = useQuery({
-    queryKey: keys.resource(id, 'contracts'),
-    queryFn: ({ signal }) => contractSdk.get(id, signal),
+    queryKey: keys.resource(id, type ? `contracts/${type}` : 'contracts'),
+    queryFn: ({ signal }) => contractSdk.get(id, signal, type),
     enabled: !!id
   })
   return { ...queryState(query), contracts: query.data ?? empty }

@@ -1,12 +1,12 @@
 generator client {
-  provider = "prisma-client"
-  output = "../generated/prisma"
-  moduleFormat = "cjs"
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  moduleFormat        = "cjs"
   importFileExtension = ""
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model Account {
@@ -76,11 +76,13 @@ model Contract {
   user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   type      String
-  feeCents Int? @map("fee")
+  feeCents  Int?                  @map("fee")
   periods   Period[]
   shares    Share[]
   providers ProvidersOnContract[]
   resources Resource[]
+
+  @@index([userId, name, id])
 }
 
 model Resource {
@@ -92,6 +94,8 @@ model Resource {
   type       String
   name       String
   url        String
+
+  @@index([contractId])
 }
 
 model Period {
@@ -100,12 +104,14 @@ model Period {
   id          String    @id @default(cuid())
   from        DateTime
   to          DateTime?
-  feeCents Int @map("fee")
+  feeCents    Int       @map("fee")
   payday      Int?
   paymonth    Int?
   periodicity String?
   contractId  String
   contract    Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId, from])
 }
 
 model Share {
@@ -119,6 +125,10 @@ model Share {
   toId       String
   to         User     @relation(name: "SharesReceived", fields: [toId], references: [id], onDelete: Cascade)
   accepted   Boolean?
+
+  @@index([toId, id])
+  @@index([fromId, createdAt])
+  @@index([contractId])
 }
 
 model ProvidersOnContract {
@@ -130,6 +140,8 @@ model ProvidersOnContract {
   contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
   providerId String
   provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
 }
 
 model Provider {
@@ -157,9 +169,11 @@ model Notification {
   type      String
   payload   Json?
   ack       Boolean  @default(false)
+
+  @@index([userId, date(sort: Desc), id(sort: Desc)])
 }
 
-// TO REMOVE ONCE dashboard-ui is merged
+// Retain legacy models until restored production data passes explicit reconciliation.
 model UserProvider {
   createdAt               DateTime       @default(now())
   updatedAt               DateTime       @updatedAt
@@ -176,24 +190,24 @@ model UserProvider {
 }
 
 model Loan {
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  id         String        @id @default(cuid())
-  name       String
-  feeCents Int @map("fee")
-  initialCents Int @default(0) @map("initial")
-  startDate  DateTime
-  endDate    DateTime
-  userId     String
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vendorId   String?
-  vendor     UserProvider? @relation(name: "LoanVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
-  platformId String?
-  platform   UserProvider? @relation(name: "LoanPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
-  lenderId   String?
-  lender     UserProvider? @relation(name: "LoanLenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
-  shares     LoanShare[]
-  link       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  feeCents     Int           @map("fee")
+  initialCents Int           @default(0) @map("initial")
+  startDate    DateTime
+  endDate      DateTime
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorId     String?
+  vendor       UserProvider? @relation(name: "LoanVendorRelation", fields: [vendorId], references: [id], onDelete: Cascade)
+  platformId   String?
+  platform     UserProvider? @relation(name: "LoanPlatformRelation", fields: [platformId], references: [id], onDelete: Cascade)
+  lenderId     String?
+  lender       UserProvider? @relation(name: "LoanLenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
+  shares       LoanShare[]
+  link         String?
 }
 
 model LoanShare {
@@ -212,7 +226,7 @@ model Subscription {
   updatedAt  DateTime            @updatedAt
   id         String              @id @default(cuid())
   name       String
-  feeCents Int @map("fee")
+  feeCents   Int                 @map("fee")
   userId     String
   yearly     Boolean             @default(false)
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -238,18 +252,18 @@ model SubscriptionShare {
 
 // Durable snapshots for retryable email delivery. Never log html or recipient addresses.
 model EmailOutbox {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  to            String
-  subject       String
-  html          String   @db.Text
-  status        String   @default("pending")
-  attempts      Int      @default(0)
-  nextAttemptAt DateTime @default(now())
-  leaseUntil    DateTime?
+  id             String    @id @default(cuid())
+  createdAt      DateTime  @default(now())
+  to             String
+  subject        String
+  html           String    @db.Text
+  status         String    @default("pending")
+  attempts       Int       @default(0)
+  nextAttemptAt  DateTime  @default(now())
+  leaseUntil     DateTime?
   firstAttemptAt DateTime?
-  sentAt        DateTime?
-  errorCode     String?
+  sentAt         DateTime?
+  errorCode      String?
 
   @@index([status, nextAttemptAt])
 }

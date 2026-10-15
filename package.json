@@ -18,6 +18,7 @@
     "typecheck": "tsc --noEmit --incremental false",
     "check": "pnpm test --runInBand && pnpm typecheck && pnpm lint",
     "test:db": "node scripts/test-database.mjs node_modules/.bin/jest lib/server/database.integration.test.ts --runInBand",
+    "test:queries": "node scripts/test-database.mjs node scripts/measure-queries.mjs",
     "test:browser": "node scripts/test-database.mjs node scripts/browser-tests.mjs",
     "test:money": "EXPENTRAC_MONEY_FIXTURE=true node scripts/test-database.mjs",
     "migration:production": "node scripts/migrate-production.mjs",

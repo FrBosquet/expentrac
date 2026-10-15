@@ -82,7 +82,7 @@ const WorkContractRow = ({ contract }: { contract: Contract }) => {
 }
 
 export const WorkContractSummary = ({ className }: Props) => {
-  const query = useContracts()
+  const query = useContracts(CONTRACT_TYPE.WORK)
   const contracts = query.contracts.filter(
     (contract) => contract.type === CONTRACT_TYPE.WORK
   )
