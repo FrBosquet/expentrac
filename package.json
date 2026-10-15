@@ -68,7 +68,7 @@
     "sonner": "^2.0.8",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.7"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.4.1",
