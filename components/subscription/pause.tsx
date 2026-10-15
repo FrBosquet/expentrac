@@ -86,7 +86,7 @@ export const SubPause = ({
                 Until
               </label>
               <input
-                className="rounded-sm bg-slate-800 p-2 scheme-dark"
+                className="rounded-xs bg-slate-800 p-2 scheme-dark"
                 defaultValue={toHTMLInputFormat(new Date())}
                 name="date"
                 type="date"

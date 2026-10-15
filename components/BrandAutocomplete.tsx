@@ -96,7 +96,7 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
           </label>
 
           <input
-            className="flex-1 py-2 pl-2 transition-[padding-left] focus:pl-4 focus:outline-none disabled:bg-white dark:bg-slate-700"
+            className="flex-1 py-2 pl-2 transition-[padding-left] focus:pl-4 focus:outline-hidden disabled:bg-white dark:bg-slate-700"
             placeholder={
               loading ? `creating ${value.brand?.name}...` : 'search a provider'
             }
@@ -132,7 +132,7 @@ export const BrandAutocomplete = ({ loading = true, onSelect }: Props) => {
                       handleClick(query)
                     }}
                   >
-                    <div className="relative size-10 overflow-hidden rounded-md shadow-sm">
+                    <div className="relative size-10 overflow-hidden rounded-md shadow-xs">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         alt={query.name}

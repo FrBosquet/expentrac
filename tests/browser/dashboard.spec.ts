@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ context, page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   page.on('pageerror', (error) =>
     console.error('Browser runtime error:', error.message)
   )
@@ -177,7 +178,84 @@ test('forecast renders, keyboard tooltip works, and month controls update UI sta
   ).toBeVisible()
   await page.screenshot({
     path: testInfo.outputPath('dashboard.png'),
-    fullPage: true
+    fullPage: true,
+    animations: 'disabled'
   })
   expect(errors).toEqual([])
+})
+
+test('themes persist and dashboard/dialog fit mobile screens', async ({
+  page
+}, testInfo) => {
+  await page.goto('/dashboard')
+  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  const body = page.locator('body')
+  const light = page.getByRole('button', { name: 'Switch to light theme' })
+  if (await light.isVisible()) await light.click()
+  await expect(body).not.toHaveClass(/dark/)
+  await expect(body).toHaveCSS('background-color', 'rgb(226, 232, 240)')
+  await page.screenshot({
+    path: testInfo.outputPath('light-desktop.png'),
+    fullPage: true,
+    animations: 'disabled'
+  })
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+  await expect(body).toHaveClass(/dark/)
+  await expect(body).toHaveCSS('background-color', 'rgb(15, 23, 42)')
+  await page.reload()
+  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  await expect(body).toHaveClass(/dark/)
+  await page.screenshot({
+    path: testInfo.outputPath('dark-desktop.png'),
+    fullPage: true,
+    animations: 'disabled'
+  })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect(page.getByLabel('Expense forecast')).toBeVisible()
+  await page.screenshot({
+    path: testInfo.outputPath('dark-mobile.png'),
+    fullPage: true,
+    animations: 'disabled'
+  })
+  const overflow = await page.evaluate(() =>
+    [...document.querySelectorAll('body *')]
+      .filter((node) => {
+        const box = node.getBoundingClientRect()
+        return box.right > window.innerWidth + 1 && box.width > 0
+      })
+      .slice(0, 12)
+      .map((node) => ({
+        tag: node.tagName,
+        class: node.className,
+        width: node.getBoundingClientRect().width
+      }))
+  )
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth
+        ),
+      { message: JSON.stringify(overflow) }
+    )
+    .toBe(true)
+  await page.goto('/dashboard/loans')
+  await page.getByRole('button', { name: 'NEW LOAN' }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  const box = await page.getByRole('dialog').boundingBox()
+  expect(box!.width).toBeLessThanOrEqual(390)
+  await page.screenshot({
+    path: testInfo.outputPath('dialog-mobile.png'),
+    fullPage: true,
+    animations: 'disabled'
+  })
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.goto('/')
+  await expect(page.getByRole('heading').first()).toBeVisible()
+  await page.screenshot({
+    path: testInfo.outputPath('landing-mobile.png'),
+    fullPage: true,
+    animations: 'disabled'
+  })
 })

@@ -16,7 +16,7 @@ const PostHeader = ({ title, date, image }: Post) => {
   return (
     <>
       <header className="mb-4 flex flex-col border-b-2 border-slate-300 pb-2">
-        <h1 className="inline-block bg-gradient-to-r from-theme to-theme-accent bg-clip-text py-2 text-6xl text-transparent">
+        <h1 className="inline-block bg-linear-to-r from-theme to-theme-accent bg-clip-text py-2 text-6xl text-transparent">
           {title}
         </h1>
         <span className="text-sm text-slate-500">

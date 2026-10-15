@@ -37,6 +37,8 @@ Development credentials point to production. Do not run migration, seed, mainten
 
 ## Remaining work
 
+- Zustand 4 patch then 5.0.15, Recharts 3.10.1 and Tailwind 4.3.3/PostCSS/merge 3 upgraded in separate batches. CSS-first theme replaces the preset/config; custom utilities retained. Existing copied shadcn animations use the compatible JS plugin via `@plugin`. Five browser tests cover chart keyboard tooltip, date controls, theme persistence, mobile fit and dialog open/Escape. Local light/dark/mobile screenshots reviewed. Summary cards now show loaded values without a delayed zero state.
+
 - Production migration runner added: explicit direct URL, read-only inspection by default, exclusive private backup, maintenance/restore attestations, deploy and post-conversion counts/totals. Its real backup is restored in the synthetic money fixture; repeated deployment checks prevent double conversion. Production execution remains a release step.
 
 - Minimal DTOs and pending-invitation previews; complete API/input/relationship validation and error handling.

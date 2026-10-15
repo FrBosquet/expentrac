@@ -9,7 +9,7 @@ import { Header } from '@components/web/Header'
 // TODO: If we put this page in the (web) group, the layout breaks, so for now we need to stick to leave it here and try to re work i in the future
 export default function Home() {
   return (
-    <main className="dark relative h-screen overflow-x-hidden bg-gradient-to-r from-slate-800 to-slate-500 text-slate-200 perspective-container">
+    <main className="dark relative h-screen overflow-x-hidden bg-linear-to-r from-slate-800 to-slate-500 text-slate-200 perspective-container">
       <div className="absolute left-1/4 top-1/2 -translate-y-1/2 scale-[200%] text-8xl font-semibold text-slate-200 opacity-5 blur-xs">
         <p>Your finances</p>
         <p>under your control</p>
@@ -23,7 +23,7 @@ export default function Home() {
         <section className="flex w-full max-w-screen-xl flex-1 flex-col items-start justify-center gap-6 p-6">
           <h1 className="animate-fall text-6xl leading-tight text-slate-200 sm:text-8xl">
             Your finances <br />
-            <span className="bg-gradient-to-r from-theme to-theme-accent bg-clip-text font-semibold text-transparent">
+            <span className="bg-linear-to-r from-theme to-theme-accent bg-clip-text font-semibold text-transparent">
               under your control
             </span>
           </h1>

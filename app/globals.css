@@ -1,29 +1,294 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin 'tailwindcss-animate';
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* For some reason, Im not able to move this to tailwind-preset. Try again in the future */
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+
+  --primary: hsl(222.2 47.4% 11.2%);
+  --primary-foreground: hsl(210 40% 98%);
+
+  --secondary: hsl(210 40% 96.1%);
+  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+
+  --accent: hsl(210 40% 96.1%);
+  --accent-foreground: hsl(222.2 47.4% 11.2%);
+
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(222.2 84% 4.9%);
+
+  --radius: 0.5rem;
+
+  --theme-bottom: #e2e8f0;
+  --theme-back: #e2e8f0;
+  --theme-border: #cbd5e1;
+  --theme-front: #0f172a;
+  --theme-light: #64748b;
+  --theme-accent: #675b39;
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
+
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
+
+  --primary: hsl(210 40% 98%);
+  --primary-foreground: hsl(222.2 47.4% 11.2%);
+
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
+
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
+
+  --theme-bottom: #020617;
+  --theme-back: #0f172a;
+  --theme-border: #334155;
+  --theme-front: #e2e8f0;
+  --theme-light: #64748b;
+  --theme-accent: #ede2d3;
+}
+
+@theme inline {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-300: var(--primary);
+  --color-primary-600: var(--primary);
+  --color-primary-800: var(--primary);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-expentrac-300: #7deead;
+  --color-expentrac-800: #2aa45e;
+  --color-expentrac: #2dff87;
+  --color-gradient-start: #2dff87;
+  --color-gradient-end: #ede2d3;
+  --color-theme: #2dff87;
+  --color-theme-back: var(--theme-back);
+  --color-theme-border: var(--theme-border);
+  --color-theme-front: var(--theme-front);
+  --color-theme-light: var(--theme-light);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-card: var(--theme-card);
+  --color-theme-bottom: var(--theme-bottom);
+  --font-sans: var(--font-inter);
+  --font-logo: var(--font-montserrat);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --blur-xs: 2px;
+  --shadow-bloom-md: 0 0 6px 2px #ffffffff, 0 0 120px 15px #ffffff55;
+  --shadow-bloom-sm: 0 0 3px 1px #ffffffff, 0 0 60px 7.5px #ffffff55;
+  --shadow-bloom-green: 1px 0 1px 1px #7deead, 3px 1px 200px 7.5px #ffffff55;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fall: fall 1s ease-out;
+  --animate-fall-short: fall-short 1s ease-out;
+  --animate-spin-slow: spin 700s linear infinite;
+  --animate-spin-slower: spin 800s linear infinite;
+  --animate-spin-slowest: spin 900s linear infinite;
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--tw-gradient-stops)
+  );
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= 96rem) {
+    max-width: 1400px;
+  }
+}
+
+@utility perspective-wheel {
+  transform: rotateY(300deg) rotateX(20deg);
+}
+
+@utility perspective-container {
+  --perspective: 1000px;
+  --perspective-origin: 50% 50%;
+  perspective: var(--perspective);
+  perspective-origin: var(--perspective-origin);
+  -webkit-perspective: var(--perspective);
+  -webkit-perspective-origin: var(--perspective-origin);
+  -moz-perspective: var(--perspective);
+  -moz-perspective-origin: var(--perspective-origin);
+}
+
+@utility scroll-anim-snapshot {
+  view-timeline-name: --snapshot;
+  view-timeline-axis: block;
+  animation-range: entry 25% cover 75%;
+  animation-timeline: --snapshot;
+  animation-name: doc-snapshot;
+  animation-fill-mode: both;
+}
+
+@utility scroll-anim-fall {
+  view-timeline-name: --fall;
+  view-timeline-axis: block;
+  animation-range: entry 0% cover 100%;
+  animation-timeline: --fall;
+  animation-name: fall;
+  animation-fill-mode: both;
+}
+
+@utility scroll-anim-rise {
+  view-timeline-name: --rise;
+  view-timeline-axis: block;
+  animation-range: entry 0% cover 80%;
+  animation-timeline: --rise;
+  animation-name: rise;
+  animation-fill-mode: both;
+}
+
+@utility scroll-anim-fade {
+  view-timeline-name: --fade;
+  view-timeline-axis: block;
+  animation-range: 50% 90%;
+  animation-timeline: --fade;
+  animation-name: wheel-fade;
+  animation-fill-mode: both;
+}
+
+@utility scheme-dark {
+  color-scheme: dark;
+}
+
+@utility scheme-light {
+  color-scheme: light;
+}
+
+@utility dashboard-label {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  color: var(--theme-light);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@utility dashboard-value {
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  color: var(--foreground);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fall-short {
+  from {
+    transform: translateY(-2rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @keyframes doc-snapshot {
   from {
-    opacity: .25;
     transform: rotateY(35deg) rotateX(18deg) scale(1.1) translateX(-100px);
+    opacity: 0.25;
   }
-
   to {
-    opacity: 1;
     transform: rotateY(5deg) rotateX(5deg) scale(1) translate3d(0, 0, 100px);
+    opacity: 1;
   }
 }
 
 @keyframes rise {
   from {
     transform: translateY(150px);
-    opacity: 0
+    opacity: 0;
   }
-
   to {
     transform: translateY(0);
-    opacity: 1
+    opacity: 1;
   }
 }
 
@@ -31,95 +296,7 @@
   from {
     opacity: 1;
   }
-
   to {
     opacity: 0;
-  }
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
- 
-    --radius: 0.5rem;
-
-    --theme-bottom: #e2e8f0;
-    --theme-back: #e2e8f0;
-    --theme-border: #cbd5e1;
-    --theme-front: #0f172a;
-    --theme-light: #64748b;
-    --theme-accent: #675b39
-  }
- 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --theme-bottom: #020617;
-    --theme-back: #0f172a;
-    --theme-border: #334155;
-    --theme-text: #e2e8f0,
-    --theme-light: #64748b;
-    --theme-accent: #EDE2D3
-  }
-}
- 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

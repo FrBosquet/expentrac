@@ -23,14 +23,14 @@ import {
   User
 } from 'lucide-react'
 import Image from 'next/image'
-import { type ReactNode, useLayoutEffect, useState } from 'react'
+import { type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import Grid from '@/public/grid.png'
 import Money from '@/public/money.png'
 
 const ConceptCard = ({
-  value: realValue,
+  value,
   label,
   Icon,
   className,
@@ -44,19 +44,11 @@ const ConceptCard = ({
   hidden?: boolean
   tooltip?: ReactNode
 }) => {
-  const [value, setValue] = useState(0)
-
-  useLayoutEffect(() => {
-    if (value !== realValue) {
-      setTimeout(() => setValue(realValue), 300)
-    }
-  }, [realValue, value])
-
   if (hidden) return null
 
   return (
     <Tooltip side="bottom" tooltip={tooltip ?? label}>
-      <Card className={twMerge('animate-fall-short h-full', className)}>
+      <Card className={twMerge('motion-safe:animate-fall-short h-full', className)}>
         <CardHeader className="flex flex-col items-center gap-2">
           <Icon />
           <CardTitle className="break-words text-center">
@@ -206,7 +198,7 @@ export const Summary = ({ className }: Props) => {
     <>
       <Card
         className={twMerge(
-          'bg-gradient-to-l from-expentrac-800 to-background relative',
+          'bg-linear-to-l from-expentrac-800 to-background relative',
           className
         )}
       >

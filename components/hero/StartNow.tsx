@@ -4,7 +4,7 @@ import { SignInRegular } from './signin'
 
 export const StartNow = () => {
   return (
-    <section className="h-[80vh] bg-gradient-to-t from-slate-900 to-slate-800 text-theme">
+    <section className="h-[80vh] bg-linear-to-t from-slate-900 to-slate-800 text-theme">
       <div
         className="m-auto flex size-full max-w-screen-xl items-center justify-center gap-12 p-6
     "
