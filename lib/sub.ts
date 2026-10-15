@@ -1,5 +1,5 @@
 import { centsToEuros, holderAmount as sharedAmount } from './money'
-import { PERIODICITY } from './dates'
+import { PERIODICITY, paymentDate } from './dates'
 import {
   type Contract,
   type Period,
@@ -24,52 +24,35 @@ export type SubFormData = {
   periodicity?: string
 } & Record<`sharedWith:${string}`, string>
 
-const now = new Date()
-const nowDate = now.getDate()
-const nowMonth = now.getMonth()
-
 const getIsPaidThisMonth = (period: Period) => {
-  const { periodicity } = period
-
-  const payday = period.payday ?? 1
-  const paymonth = period.paymonth ?? 0
-
-  if (periodicity === 'YEARLY') {
-    return nowMonth > paymonth || (nowMonth === paymonth && nowDate >= payday)
-  } else {
-    // TODO: Compare the current month payment date with NOW
-    return nowDate >= payday
-  }
+  const now = new Date()
+  return now >= getPeriodPaymentDate(period, now)
 }
 
-const getPeriodPaymentDate = (period: Period, date = now) => {
+const getPeriodPaymentDate = (period: Period, date = new Date()) => {
   const { periodicity } = period
 
   const payday = period.payday ?? 1
   const paymonth = period.paymonth ?? 0
 
-  const refDate = new Date(date)
-
-  if (periodicity === PERIODICITY.YEARLY) refDate.setMonth(paymonth)
-
-  refDate.setDate(payday)
-
-  return refDate
+  return paymentDate(
+    date.getFullYear(),
+    periodicity === PERIODICITY.YEARLY ? paymonth : date.getMonth(),
+    payday
+  )
 }
 
 const getNextPaymentDate = (period: Period) => {
+  const now = new Date()
   const periodPaymentDate = getPeriodPaymentDate(period)
 
   if (now.getTime() > periodPaymentDate.getTime()) {
-    const next = new Date(periodPaymentDate)
-
-    if (period.periodicity === 'YEARLY') {
-      next.setFullYear(next.getFullYear() + 1)
-    } else {
-      next.setMonth(next.getMonth() + 1)
-    }
-
-    return next
+    const yearly = period.periodicity === PERIODICITY.YEARLY
+    return paymentDate(
+      now.getFullYear() + (yearly ? 1 : 0),
+      yearly ? (period.paymonth ?? 0) : now.getMonth() + 1,
+      period.payday ?? 1
+    )
   } else {
     return periodPaymentDate
   }
@@ -80,10 +63,8 @@ export const unwrapSub = (
   date = new Date(),
   viewerId = rawSub.userId
 ) => {
+  const now = new Date()
   const { shares, periods, resources, providers } = rawSub
-
-  const refNowDate = now.getDate()
-  const refMonth = date.getMonth()
 
   const activePeriods = periods.filter((period) => {
     return period.to === null
@@ -177,12 +158,7 @@ export const unwrapSub = (
   const hasPayday =
     referencePeriod?.payday !== null && referencePeriod?.payday !== undefined
 
-  const sameDayAsPayday = referencePeriod?.payday === refNowDate
-  const sameMonthAsPayday = referencePeriod?.paymonth === refMonth
-
-  const isPayday = isYearly
-    ? sameDayAsPayday && sameMonthAsPayday
-    : sameDayAsPayday
+  const isPayday = currentPaymentDate?.toDateString() === now.toDateString()
 
   const { vendor, platform } = providers.reduce<{
     vendor?: Provider

@@ -3,7 +3,7 @@ import {
   eurosToCents,
   holderAmount as sharedAmount
 } from './money'
-import { monthBeetween } from './dates'
+import { monthBeetween, paymentDate } from './dates'
 import { type Contract, type Provider } from './models'
 
 export type LoanFormData = {
@@ -19,10 +19,6 @@ export type LoanFormData = {
   endDate: string
   link: string
 } & Record<`sharedWith:${string}`, string>
-
-const now = new Date()
-const thisMonth = new Date()
-thisMonth.setDate(1)
 
 export const getPaymentPlan = (
   start: Date,
@@ -58,6 +54,7 @@ export const unwrapLoan = (
   refDate: Date = new Date(),
   viewerId = rawLoan.userId
 ) => {
+  const now = new Date()
   const { shares, feeCents: baseFee, periods, resources } = rawLoan
 
   const initial = centsToEuros(baseFee ?? 0)
@@ -103,14 +100,17 @@ export const unwrapLoan = (
 
   const holderAmount = 1 + sharesAccepted
 
-  const currentMonthPaymentDate = new Date(startDate)
-  currentMonthPaymentDate.setMonth(refDate.getMonth())
-  currentMonthPaymentDate.setFullYear(refDate.getFullYear())
-
-  const nextPaymentDate = new Date(currentMonthPaymentDate)
+  const payday = periods[0].payday ?? startDate.getUTCDate()
+  const currentMonthPaymentDate = paymentDate(
+    refDate.getFullYear(),
+    refDate.getMonth(),
+    payday
+  )
   const isPaidThisMonth = now >= currentMonthPaymentDate
 
-  if (isPaidThisMonth) nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1)
+  const nextPaymentDate = isPaidThisMonth
+    ? paymentDate(refDate.getFullYear(), refDate.getMonth() + 1, payday)
+    : currentMonthPaymentDate
 
   const isOngoing =
     (hasStarted && !hasEnded) || startsThisMonth || endsThisMonth
@@ -124,8 +124,7 @@ export const unwrapLoan = (
   const hasAcceptedShares = sharesAccepted > 0
 
   const link = resources.find((r) => r.type === 'LINK')?.url
-  const payday = startDate.getDate()
-  const isPayday = now.getDate() === payday
+  const isPayday = now.toDateString() === currentMonthPaymentDate.toDateString()
 
   const { vendor, platform, lender } = rawLoan.providers.reduce<{
     vendor?: Provider

@@ -2,6 +2,7 @@ import { useDate } from '@components/date/context'
 import { Tooltip } from '@components/Tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { euroFormatter } from '@lib/currency'
+import { paymentDate as dateOfPayment } from '@lib/dates'
 import { type Loan } from '@lib/loan'
 
 interface Props {
@@ -26,8 +27,11 @@ export const LoanPayplan = ({ loan, className }: Props) => {
         acc: fee.initial
       }
     } else {
-      const date = new Date(startDate)
-      date.setMonth(date.getMonth() + index)
+      const date = dateOfPayment(
+        startDate.getFullYear(),
+        startDate.getMonth() + index,
+        loan.time.payday
+      )
       return {
         date,
         amount: fee.monthly,

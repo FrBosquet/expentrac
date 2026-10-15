@@ -7,6 +7,16 @@ export enum PERIODICITY {
   YEARLY = 'YEARLY'
 }
 
+export function paymentDate(year: number, month: number, payday: number) {
+  if (!Number.isInteger(payday) || payday < 1 || payday > 31)
+    throw new Error('Invalid payday')
+  return new Date(
+    year,
+    month,
+    Math.min(payday, new Date(year, month + 1, 0).getDate())
+  )
+}
+
 export const toHTMLInputFormat = (d: Date) => {
   const date = new Date(d)
   const year = date.getFullYear()
