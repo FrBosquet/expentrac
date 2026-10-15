@@ -2,7 +2,7 @@ import 'server-only'
 
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import matter from 'gray-matter'
+import { parse } from 'yaml'
 
 export const POSTS_DIRECTORY = path.join(process.cwd(), 'app/(web)/blog/_posts')
 export interface Post {
@@ -31,9 +31,16 @@ export function getPostsFileNames() {
 
 export function getPostMetadata(slug: string): Post | undefined {
   if (!getPostsFileNames().includes(`${slug}.mdx`)) return undefined
-  const { data } = matter(
-    readFileSync(path.join(POSTS_DIRECTORY, `${slug}.mdx`), 'utf8')
-  )
+  const source = readFileSync(path.join(POSTS_DIRECTORY, `${slug}.mdx`), 'utf8')
+  const header = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(source)
+  if (!header) throw new Error(`Missing blog metadata: ${slug}`)
+  const data = parse(header[1], {
+    schema: 'core',
+    uniqueKeys: true,
+    maxAliasCount: 0
+  }) as Record<string, unknown>
+  if (!data || typeof data !== 'object' || Array.isArray(data))
+    throw new Error(`Invalid blog metadata: ${slug}`)
   if (data.published !== true) return undefined
   if (
     typeof data.title !== 'string' ||

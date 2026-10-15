@@ -20,6 +20,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --prod
       - run: pnpm prisma:generate
       - run: pnpm check
       - run: pnpm test:emails
