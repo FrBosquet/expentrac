@@ -13,6 +13,7 @@ import {
 } from '@components/ui/card'
 import { useUser } from '@components/user/hooks'
 import { euroFormatter } from '@lib/currency'
+import { sumMoney } from '@lib/money'
 import NumberFlow from '@number-flow/react'
 import {
   Coins,
@@ -82,7 +83,6 @@ const Cards = ({ className }: { className: string }) => {
   const { loans } = useLoans()
   const payplan = useMonthPayplan(date, { subs, loans })
   const {
-    owed,
     holderOwed,
     monthlyPay,
     monthlyHolderFee,
@@ -94,6 +94,7 @@ const Cards = ({ className }: { className: string }) => {
     subs: activeSubs
   } = payplan
 
+  const totalOwed = sumMoney(...loans.map((loan) => loan.amount.owed))
   const loanCount = activeLoans.length
   const subCount = activeSubs.length
 
@@ -102,7 +103,7 @@ const Cards = ({ className }: { className: string }) => {
       <h3 className="flex gap-2 text-theme-light">
         <Coins size={12} /> Total money owed:
       </h3>
-      <p className="font-semibold">{euroFormatter.format(owed)}</p>
+      <p className="font-semibold">{euroFormatter.format(totalOwed)}</p>
       <h3 className="flex gap-2 text-theme-light">
         <User size={12} /> You owe:
       </h3>
@@ -117,9 +118,11 @@ const Cards = ({ className }: { className: string }) => {
       </h3>
       <p className="font-semibold">{euroFormatter.format(monthlyPay)}</p>
       <h3 className="flex gap-2 text-theme-light">
-        <User size={12} /> You pay:
+        <User size={12} /> Your monthly share:
       </h3>
-      <p className="font-semibold">{euroFormatter.format(monthlyHolderFee)}</p>
+      <p className="font-semibold">
+        {euroFormatter.format(monthlyHolderFee)}
+      </p>
     </aside>
   )
 
@@ -161,7 +164,7 @@ const Cards = ({ className }: { className: string }) => {
         Icon={Coins}
         label="Total owed money"
         tooltip={owedTooltip}
-        value={holderOwed}
+        value={totalOwed}
       />
       <ConceptCard
         className={className}

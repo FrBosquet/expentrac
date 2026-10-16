@@ -13,8 +13,13 @@ const globalForPrisma = globalThis as unknown as {
 const max = Number(process.env.DB_POOL_MAX ?? 3)
 if (!Number.isInteger(max) || max < 1 || max > 20)
   throw new Error('DB_POOL_MAX must be 1–20')
+
+const connectionUrl = new URL(process.env.POSTGRES_PRISMA_URL!)
+if (!['localhost', '127.0.0.1', '::1'].includes(connectionUrl.hostname))
+  connectionUrl.searchParams.set('sslmode', 'verify-full')
+
 const adapter = new PrismaPg({
-  connectionString: process.env.POSTGRES_PRISMA_URL,
+  connectionString: connectionUrl.toString(),
   max,
   connectionTimeoutMillis: 10_000,
   idleTimeoutMillis: 10_000
