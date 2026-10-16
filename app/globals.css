@@ -115,7 +115,7 @@
   --color-theme-card: var(--theme-card);
   --color-theme-bottom: var(--theme-bottom);
   --font-sans: var(--font-inter);
-  --font-logo: var(--font-montserrat);
+  --font-logo: var(--font-inter);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
