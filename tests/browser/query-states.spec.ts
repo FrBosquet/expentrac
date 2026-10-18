@@ -13,7 +13,7 @@ test.beforeEach(async ({ context }) => {
 test('an uncached account shows a skeleton while its first query loads', async ({
   page,
   context
-}) => {
+}, testInfo) => {
   await page.goto('/dashboard/loans/browser-loan')
   await expect(
     page.getByRole('heading', { name: 'Private owner loan' })
@@ -46,7 +46,7 @@ test('an uncached account shows a skeleton while its first query loads', async (
     await expect(
       page.getByRole('heading', { name: 'Private owner loan' })
     ).not.toBeVisible()
-    await page.screenshot({ path: '/private/tmp/expentrac-query-skeleton.png' })
+    await page.screenshot({ path: testInfo.outputPath('query-skeleton.png') })
     release()
     await expect(
       page.getByText('Resource not found or no longer shared with you.')
@@ -113,7 +113,8 @@ test('profile mutation keeps its draft and shows an inline failure', async ({
   page
 }) => {
   await page.goto('/dashboard/profile/edit')
-  await page.locator('#name').fill('Retained draft')
+  const nameInput = page.locator('#name').first()
+  await nameInput.fill('Retained draft')
   await page.route('**/api/profile', async (route) => {
     if (route.request().method() === 'PATCH')
       await route.fulfill({
@@ -128,7 +129,7 @@ test('profile mutation keeps its draft and shows an inline failure', async ({
       .locator('[role=alert]')
       .filter({ hasText: /Could not refresh|Fixture validation/ })
   ).toContainText('Fixture validation failed')
-  await expect(page.locator('#name')).toHaveValue('Retained draft')
+  await expect(nameInput).toHaveValue('Retained draft')
   await expect(
     page.getByRole('button', { name: 'Save', exact: true })
   ).toBeEnabled()
