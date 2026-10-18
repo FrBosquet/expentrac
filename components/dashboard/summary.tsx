@@ -27,9 +27,6 @@ import Image from 'next/image'
 import { type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import Grid from '@/public/grid.png'
-import Money from '@/public/money.png'
-
 const ConceptCard = ({
   value,
   label,
@@ -219,14 +216,15 @@ export const Summary = ({ className }: Props) => {
         <Image
           alt="grid layout"
           className="absolute top-0 size-full object-cover opacity-20"
-          src={Grid}
+          fill
+          src="/grid.png"
         />
         <div className="absolute inset-0 flex justify-end overflow-hidden">
           <Image
             alt="Expenses graphics"
             className="hidden w-[45%] object-contain hue-rotate-180 md:block xl:w-auto"
             height={400}
-            src={Money}
+            src="/money.png"
             width={400}
           />
         </div>

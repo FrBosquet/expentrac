@@ -1,5 +1,4 @@
 import { SectionTitle } from '@components/web/SectionTitle'
-import me from '@public/me.webp'
 import { AiFillGithub as GithubIcon } from 'react-icons/ai'
 import Image from 'next/image'
 
@@ -12,7 +11,7 @@ export default function Team() {
           alt="Fran Bosquet"
           className="mb-4 rounded-full shadow-bloom-sm"
           height={200}
-          src={me}
+          src="/me.webp"
           width={200}
         />
         <h2 className="text-3xl">Fran Bosquet</h2>

@@ -1,6 +1,3 @@
-import ImgCoin from '@public/coin.webp'
-import ImgFinance from '@public/finance.webp'
-import ImgVods from '@public/vods.webp'
 import Image from 'next/image'
 
 export const Wheel = () => {
@@ -15,16 +12,18 @@ export const Wheel = () => {
       <Image
         alt="coins"
         className="absolute inset-0 size-full animate-spin-slowest bg-cover opacity-20 saturate-0"
-        placeholder="blur"
-        src={ImgCoin}
+        height={1920}
+        src="/coin.webp"
+        width={1357}
       />
 
       <div className="absolute aspect-square h-4/6 -translate-x-5 overflow-hidden rounded-full border border-slate-200/50 bg-slate-700 shadow-bloom-md">
         <Image
           alt="coins"
           className="absolute inset-0 size-full animate-spin-slower bg-cover opacity-25 saturate-0"
-          placeholder="blur"
-          src={ImgVods}
+          height={1087}
+          src="/vods.webp"
+          width={1179}
         />
       </div>
 
@@ -32,8 +31,9 @@ export const Wheel = () => {
         <Image
           alt="coins"
           className="absolute inset-0 size-full animate-spin-slow bg-cover opacity-25 saturate-0"
-          placeholder="blur"
-          src={ImgFinance}
+          height={845}
+          src="/finance.webp"
+          width={1280}
         />
       </div>
     </div>
