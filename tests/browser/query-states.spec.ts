@@ -334,7 +334,7 @@ test('creating WORK updates the canonical contracts cache and provider relations
   page
 }) => {
   await page.goto('/dashboard/profile/add-contract')
-  await page.locator('#name').fill('Hydrated work fixture')
+  await page.getByLabel('Role').first().fill('Hydrated work fixture')
   await page.getByRole('combobox').first().click()
   await page
     .getByRole('option', { name: 'Fixture employer', exact: true })
