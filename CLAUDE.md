@@ -39,7 +39,7 @@ Formatting is Prettier: no semicolons, single quotes, no trailing commas.
 | `app/(web)/` | Public marketing pages and MDX blog (`blog/_posts/*.mdx`) |
 | `app/dashboard/` | Authenticated app: loans, subscriptions, providers, notifications, profile |
 | `app/api/` | Route handlers; thin wrappers around `lib/server/` |
-| `app/api/notification/{cron,outbox}` | Vercel crons (`vercel.json`): daily digest and 5‑minute email retry worker, guarded by `CRON_SECRET` |
+| `app/api/notification/{cron,outbox}` | Vercel crons (`vercel.json`): daily digest and 6‑hourly email retry worker, guarded by `CRON_SECRET` |
 | `lib/server/` | Server-only services: auth (`api.ts`), authorized reads (`reads.ts`), validation, invitations, outbox, payment-day logic, schema readiness |
 | `lib/` | Shared domain logic: `money.ts` (integer cents), `dates.ts`, `contract.ts` (`LOAN` / `SUBSCRIPTION` / `WORK`), `dto.ts`, `query-policy.ts`, `notification/` |
 | `lib/models.ts` | Types safe to import from the browser. `lib/prisma.ts` is `server-only` |
